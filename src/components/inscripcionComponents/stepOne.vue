@@ -5,42 +5,41 @@
                 <div v-if="slides.pos == 1" :class="{animateRight : animationToggle, animateLeft : !animationToggle}">
                     <h1>Datos del Comité</h1>
                     <div class="stepone">
-                        <div class="min-container">
+                        <FormulateInput type="group" class="min-container">
                             <FormulateInput type="text" name="provincia" label="Provincia" validation="required" class="textInput"/>
                             <FormulateInput type="text" name="municipio" label="Municipio" validation="required" class="textInput"/>
                             <FormulateInput type="text" name="estacion" label="Estacion" validation="required" class="textInput"/>
-                        </div>
+                        </FormulateInput>
                     </div>
                 </div>
 
                 <div v-if="slides.pos == 2" :class="{animateRight : animationToggle, animateLeft : !animationToggle}">
                     <h1>Datos Personales</h1>
                     <div class="steptwo">
-
-                        <div class="min-container">
-                            <FormulateInput name="identity" validation-name="Cedula/Pasaporte" type="text" label="Cedula/Pasaporte" validation="required" class="textInput"/>
+                        <FormulateInput type="group" class="min-container">
+                            <FormulateInput type="text" validation-name="Cedula/Pasaporte" name="identity" label="Cedula/Pasaporte" validation="required" class="textInput"/>
                             <FormulateInput type="text" name="Nombre" label="Nombres" validation="required" class="textInput"/>
                             <FormulateInput type="text" name="Apellido" label="Apellidos" validation="required" class="textInput"/>
                             <FormulateInput type="text" validation-name="Lugar de nacimiento" name="nacimientolugar" label="Lugar de nacimiento" class="textInput"/>
                             <FormulateInput type="date" validation-name="Fecha de nacimiento" name="nacimientofecha" label="Fecha de nacimiento" class="textInput"/>
                             <FormulateInput type="text" name="Nacionalidad" label="Nacionalidad" validation="required" class="textInput"/>
                             <FormulateInput type="text" validation-name="Estado civil" name="ecivil" label="Estado civil" class="textInput"/>
-                        </div>
+                        </FormulateInput>
                         
-                        <div class="min-container">
+                        <FormulateInput type="group" class="min-container">
                             <h2>Direccion</h2>
                             <FormulateInput type="text" name="provincia" label="Provincia" validation="required" class="textInput"/>
                             <FormulateInput type="text" name="sector" label="Sector" validation="required" class="textInput"/>
                             <FormulateInput type="text" name="calle" label="Calle" class="textInput"/>
                             <FormulateInput type="text" name="casa_no" label="No. de casa" class="textInput"/>
-                        </div>
+                        </FormulateInput>
 
-                        <div class="min-container">
+                        <FormulateInput type="group" class="min-container">
                             <h2>Contacto</h2>
                             <FormulateInput type="text" name="telefono" label="Telefono fijo" class="textInput"/>
                             <FormulateInput type="text" name="celular" label="Celular" validation="required" class="textInput"/>
                             <FormulateInput type="text" name="email" label="Correo electronico" validation="required|email" class="textInput"/>
-                        </div>
+                        </FormulateInput>
 
                     </div>
                 </div>
@@ -58,21 +57,21 @@
                             </div>
 
                             <div :style="{marginTop: '20px'}">
-                                <input v-model="studyModel.grade" name="stdGrado" type="select" label="Estudio" :options="options" />
-                                <input v-model="studyModel.place" type="text" name="stdPlace" label="Centro de estudio" class="textInput" />
-                                <input v-model="studyModel.age" type="number" name="stdAge" label="Año de graduación"  class="textInput" />
+                                <FormulateInput v-model="studyModel.grade" name="stdGrado" type="select" label="Estudio" :options="options" />
+                                <FormulateInput v-model="studyModel.place" type="text" name="stdPlace" label="Centro de estudio" class="textInput" />
+                                <FormulateInput v-model="studyModel.age" type="number" name="stdAge" label="Año de graduación"  class="textInput" />
                                 <p class="stdAdd" @click="addStudy">Agregar</p>
                             </div>
                         </div>
 
-                        <div class="min-container" :style="{marginTop: '20px'}">
+                        <FormulateInput type="group" class="min-container" :style="{marginTop: '20px'}">
                             <h2 :style="{marginBottom: '15px'}">Idiomas</h2>
                             <FormulateInput :style="{marginBottom: '5px', marginLeft: '30px'}" name="lang" type="checkbox" label="Español" />
                             <FormulateInput :style="{marginBottom: '5px', marginLeft: '30px'}" name="lang" type="checkbox" label="Ingles" />
                             <FormulateInput :style="{marginBottom: '5px', marginLeft: '30px'}" name="lang" type="checkbox" label="Frances" />
                             <FormulateInput :style="{marginBottom: '5px', marginLeft: '30px'}" name="lang" type="checkbox" label="Otros"  @change="otherLang = !otherLang" />
                             <FormulateInput v-if="otherLang" type="text" validation-name="Otro idioma" name="otherlang" label="Escriba su otro idioma" validation="required" class="textInput"/>
-                        </div>
+                        </FormulateInput>
                     </div>
                 </div>
 
@@ -83,15 +82,15 @@
                             <FormulateInput name="blood" type="select" label="Tipo de sangre" :options="bloodOptions" />
                         </div>
 
-                        <div class="min-container">
+                        <FormulateInput type="group" class="min-container">
                             <FormulateInput name="terms" type="checkbox" label="¿Sufre alguna enfermedad?" @change="desease = !desease"/>
-                            <FormulateInput v-if="desease" type="textarea" name="email" label="Especifique sus padecimientos" validation="required|email" class="textInput"/>
-                        </div>
+                            <FormulateInput v-if="desease" type="textarea" name="desease" label="Especifique sus padecimientos" validation="required" class="textInput"/>
+                        </FormulateInput>
 
-                        <div class="min-container">
+                        <FormulateInput type="group" class="min-container">
                             <FormulateInput name="terms" type="checkbox" label="¿Es alergico a algun medicamento?" @change="medicines = !medicines"/>
-                            <FormulateInput v-if="medicines" type="textarea" name="email" label="Especifique los medicamentos" validation="required|email" class="textInput"/>
-                        </div>
+                            <FormulateInput v-if="medicines" type="textarea" name="email" label="Especifique los medicamentos" validation="required" class="textInput"/>
+                        </FormulateInput>
 
                         <div class="min-container">
                             <p></p>
@@ -121,7 +120,7 @@
                         
                         <div class="min-container" :style="{width: '85%'}">
                             <p :style="{marginBottom: '10px'}">¿A que area te gustaria pertenecer?</p>
-                            <div class="volTypes">
+                            <FormulateInput type="group" class="volTypes">
 
                                 <p>
                                     <FormulateInput type="radio" id="dep1" name="departamento" />
@@ -151,12 +150,12 @@
                                     <span>Descripcion del area.</span>
                                 </p>
 
-                            </div>
+                            </FormulateInput>
                         </div>
 
                         <div class="min-container" :style="{marginTop: '20px', width: '85%'}">
                             <p :style="{marginBottom: '10px'}">Tipo de miembro de la institución</p>
-                            <div class="volTypes">
+                            <FormulateInput type="group" class="volTypes">
 
                                 <p>
                                     <FormulateInput type="radio" id="vol1" name="tipoVoluntario" />
@@ -179,7 +178,7 @@
                                     <span>Descripcion del voluntario.</span>
                                 </p>
 
-                            </div>
+                            </FormulateInput>
                         </div>
                     </div>
                 </div>
