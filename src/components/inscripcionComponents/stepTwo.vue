@@ -1,0 +1,61 @@
+<template>
+    <div>
+        <h1>Datos Personales</h1>
+        <FormulateForm class="steptwo" v-model="formResult">
+            <div type="group" class="min-container">
+                <FormulateInput type="text" validation-name="Cedula/Pasaporte" name="identity" label="Cedula/Pasaporte" validation="required" class="textInput"/>
+                <FormulateInput type="text" name="Nombre" label="Nombres" validation="required" class="textInput"/>
+                <FormulateInput type="text" name="Apellido" label="Apellidos" validation="required" class="textInput"/>
+                <FormulateInput type="text" validation-name="Lugar de nacimiento" name="nacimientolugar" label="Lugar de nacimiento" class="textInput"/>
+                <FormulateInput type="date" validation-name="Fecha de nacimiento" name="nacimientofecha" label="Fecha de nacimiento" class="textInput"/>
+                <FormulateInput type="text" name="Nacionalidad" label="Nacionalidad" validation="required" class="textInput"/>
+                <FormulateInput type="text" validation-name="Estado civil" name="ecivil" label="Estado civil" class="textInput"/>
+            </div>
+            
+            <div type="group" class="min-container">
+                <h2>Direccion</h2>
+                <FormulateInput type="text" name="provincia" label="Provincia" validation="required" class="textInput"/>
+                <FormulateInput type="text" name="sector" label="Sector" validation="required" class="textInput"/>
+                <FormulateInput type="text" name="calle" label="Calle" class="textInput"/>
+                <FormulateInput type="text" name="casa_no" label="No. de casa" class="textInput"/>
+            </div>
+
+            <div type="group" class="min-container">
+                <h2>Contacto</h2>
+                <FormulateInput type="text" name="telefono" label="Telefono fijo" class="textInput"/>
+                <FormulateInput type="text" name="celular" label="Celular" validation="required" class="textInput"/>
+                <FormulateInput type="text" name="email" label="Correo electronico" validation="required|email" class="textInput"/>
+            </div>
+        </FormulateForm>
+    </div>
+</template>
+
+<script>
+export default {
+    data() {
+        return {
+            formResult: {}
+        }
+    },
+    methods: {
+        validate(e) {
+            this.validations[e.name] = { validity: !(e.hasErrors) }
+        }
+    }
+}
+</script>
+
+<style lang="scss" scoped>
+.steptwo {
+    div {
+        width: 75%;
+    }
+    border: 2px solid rgb(170, 170, 170);
+    max-width: 40vw;
+    min-width: 40vw;
+    padding: 5px 0px 25px 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+</style>
