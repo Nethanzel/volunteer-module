@@ -5,7 +5,7 @@
                 <div v-if="slides.pos == 1" :class="{animateRight : animationToggle, animateLeft : !animationToggle}">
                     <h1>Datos del Comité</h1>
                     <div class="stepone">
-                        <FormulateInput type="group" class="min-container">
+                        <FormulateInput type="group" class="min-container" name="comite">
                             <FormulateInput type="text" name="provincia" label="Provincia" validation="required" class="textInput"/>
                             <FormulateInput type="text" name="municipio" label="Municipio" validation="required" class="textInput"/>
                             <FormulateInput type="text" name="estacion" label="Estacion" validation="required" class="textInput"/>
@@ -20,6 +20,7 @@
                             <FormulateInput type="text" validation-name="Cedula/Pasaporte" name="identity" label="Cedula/Pasaporte" validation="required" class="textInput"/>
                             <FormulateInput type="text" name="Nombre" label="Nombres" validation="required" class="textInput"/>
                             <FormulateInput type="text" name="Apellido" label="Apellidos" validation="required" class="textInput"/>
+                            
                             <FormulateInput type="text" validation-name="Lugar de nacimiento" name="nacimientolugar" label="Lugar de nacimiento" class="textInput"/>
                             <FormulateInput type="date" validation-name="Fecha de nacimiento" name="nacimientofecha" label="Fecha de nacimiento" class="textInput"/>
                             <FormulateInput type="text" name="Nacionalidad" label="Nacionalidad" validation="required" class="textInput"/>
