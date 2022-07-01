@@ -1,35 +1,52 @@
 <template>
    <div>
         <h1>Areas de desarrollo de la institución</h1>
-        <FormulateForm class="stepfive" v-model="formResult">
+        <FormulateForm 
+            class="stepfive" 
+            v-model="formResult"
+            name="step_5"
+            @submit="validateForm"
+            @input="enableSend($event)"
+        >
             
             <div class="min-container" :style="{width: '85%'}">
                 <p :style="{marginBottom: '10px'}">¿A que area te gustaria pertenecer?</p>
+
+                <p
+                    v-if="depRequired"
+                    :style="{
+                        color: '#f00',
+                        marginTop: '8px',
+                        marginLeft: '20px',
+                        marginBottom: '10px'
+                    }"
+                >Esta información es necesaria.</p>
+
                 <div type="group" class="volTypes">
 
                     <p>
-                        <FormulateInput type="radio" id="dep1" name="departamento" :style="{display: 'inline-block', marginRight: '10px'}" />
+                        <FormulateInput value="Socorro y Gestion del Riesgo" type="radio" id="dep1" name="departamento" :style="{display: 'inline-block', marginRight: '10px'}" />
                         <label for="dep1">Socorro y Gestion del Riesgo</label> 
                         <br>
                         <span>Descripcion del area.</span>
                     </p>
 
                     <p>
-                        <FormulateInput type="radio" id="dep2" name="departamento" :style="{display: 'inline-block', marginRight: '10px'}" />
+                        <FormulateInput value="Juventud" type="radio" id="dep2" name="departamento" :style="{display: 'inline-block', marginRight: '10px'}" />
                         <label for="dep2">Juventud</label>
                         <br>
                         <span>Descripcion del area.</span>
                     </p>
 
                     <p>
-                        <FormulateInput type="radio" id="dep3" name="departamento" :style="{display: 'inline-block', marginRight: '10px'}" />
+                        <FormulateInput value="Salud Comunitaria" type="radio" id="dep3" name="departamento" :style="{display: 'inline-block', marginRight: '10px'}" />
                         <label for="dep3">Salud Comunitaria</label>
                         <br>
                         <span>Descripcion del area.</span>
                     </p>
 
                     <p>
-                        <FormulateInput type="radio" id="dep4" name="departamento" :style="{display: 'inline-block', marginRight: '10px'}" />
+                        <FormulateInput value="Doctrina y Proteccion" type="radio" id="dep4" name="departamento" :style="{display: 'inline-block', marginRight: '10px'}" />
                         <label for="dep4">Doctrina y Proteccion</label>
                         <br>
                         <span>Descripcion del area.</span>
@@ -40,24 +57,35 @@
 
             <div class="min-container" :style="{marginTop: '20px', width: '85%'}">
                 <p :style="{marginBottom: '10px'}">Tipo de miembro de la institución</p>
+                
+                <p
+                    v-if="tipoRequired"
+                    :style="{
+                        color: '#f00',
+                        marginTop: '8px',
+                        marginLeft: '20px',
+                        marginBottom: '10px'
+                    }"
+                >Esta información es necesaria.</p>
+
                 <div type="group" class="volTypes">
 
                     <p>
-                        <FormulateInput type="radio" id="vol1" name="tipoVoluntario" :style="{display: 'inline-block', marginRight: '10px'}" />
+                        <FormulateInput value="Activo" type="radio" id="vol1" name="tipoVoluntario" :style="{display: 'inline-block', marginRight: '10px'}" />
                         <label for="vol1">Activo</label> 
                         <br>
                         <span>Descripcion del voluntario.</span>
                     </p>
 
                     <p>
-                        <FormulateInput type="radio" id="vol2" name="tipoVoluntario" :style="{display: 'inline-block', marginRight: '10px'}" />
+                        <FormulateInput value="Pasivo" type="radio" id="vol2" name="tipoVoluntario" :style="{display: 'inline-block', marginRight: '10px'}" />
                         <label for="vol2">Pasivo</label> 
                         <br>
                         <span>Descripcion del voluntario.</span>
                     </p>
                     
                     <p>
-                        <FormulateInput type="radio" id="vol3" name="tipoVoluntario" :style="{display: 'inline-block', marginRight: '10px'}" />
+                        <FormulateInput value="Suspcritor" type="radio" id="vol3" name="tipoVoluntario" :style="{display: 'inline-block', marginRight: '10px'}" />
                         <label for="vol3">Suspcritor</label> 
                         <br>
                         <span>Descripcion del voluntario.</span>
@@ -66,6 +94,7 @@
                 </div>
             </div>
         </FormulateForm>
+        <div class="btnSend" @click="formFinish" v-if="ready" ><span>Enviar</span></div>
     </div>
 </template>
 
@@ -73,12 +102,40 @@
 export default {
     data() {
         return {
-            formResult: {}
+            formResult: {},
+            depRequired: false,
+            tipoRequired: false,
+            ready: false
         }
     },
     methods: {
-        validate(e) {
-            this.validations[e.name] = { validity: !(e.hasErrors) }
+        validateForm() {
+            this.depRequired = false;
+            this.tipoRequired = false;
+
+            if(!this.formResult.tipoVoluntario || !this.formResult.departamento) {
+                if(!this.formResult.departamento) {
+                    this.depRequired = true;
+                }
+
+                if(!this.formResult.tipoVoluntario) {
+                    this.tipoRequired = true;
+                }
+
+                return this.$emit("validation", false);
+            }
+            this.$emit("validation", {result: this.formResult, pos: 5});
+        },
+        formFinish() {
+            this.$formulate.submit(`step_5`);
+        },
+        enableSend(e) {
+            console.log(e);
+            if(e.tipoVoluntario && e.departamento) {
+                this.ready = true;
+            } else {
+                this.ready = false;
+            }
         }
     }
 }
@@ -167,4 +224,20 @@ export default {
   }
 }
 
+.btnSend {
+    border: 1px solid gray;
+    text-align: center;
+    margin:  30px 30%;
+    height: 40px;
+    display: flex;
+    cursor: pointer;
+
+    span {
+        margin: auto;
+    }
+
+    &:hover {
+      background: #00ff0025;  
+    }
+}
 </style>

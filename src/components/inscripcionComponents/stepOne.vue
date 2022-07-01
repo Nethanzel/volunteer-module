@@ -5,7 +5,7 @@
             name="step_1"
             class="stepone" 
             v-model="formResult" 
-            @input="validateForm"
+            @validation="validateForm"
             @failed-validation="validateForm(false)"
             invalid-message="Completa la informacion requerida"
         >

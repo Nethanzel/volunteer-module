@@ -5,36 +5,50 @@
             class="stepfour" 
             name="step_4"
             @submit="validateForm"
+            @input="validateForm"
             @failed-validation="validateForm(false)"
             invalid-message="Completa la informacion requerida"
         >
             <div class="min-container">
-                <FormulateInput name="blood" type="select" label="Tipo de sangre" :options="bloodOptions" @validation="validate($event)" />
+                <FormulateInput 
+                    v-model="bloodInput"
+                    validation="required"
+                    name="blood"
+                    type="select"
+                    label="Tipo de sangre"
+                    validation-name="Tipo de sangre"
+                    :options="bloodOptions" 
+                    @validation="validate($event)" 
+                />
             </div>
 
             <FormulateInput type="group" class="min-container" name="deseases">
-                <FormulateInput name="sickness" type="checkbox" label="¿Sufre alguna enfermedad?" @change="desease = !desease"/>
+                <FormulateInput name="sickness" type="checkbox" label="¿Sufre alguna enfermedad?" @change="desease.state = !desease.state"/>
                 <FormulateInput 
-                    v-if="desease" 
+                    v-if="desease.state" 
                     type="textarea" 
                     name="sicknessDetails" 
                     label="Especifique sus padecimientos" 
-                    validation="required" 
+                    validation="required"
+                    validation-name="Padecimientos"
                     class="textInput" 
                     @validation="validate($event)"
+                    v-model="desease.contents"
                 />
             </FormulateInput>
 
             <FormulateInput type="group" class="min-container" name="medicines" >
-                <FormulateInput name="terms" type="checkbox" label="¿Es alergico a algun medicamento?" @change="medicines = !medicines"/>
+                <FormulateInput name="terms" type="checkbox" label="¿Es alergico a algun medicamento?" @change="medicines.state = !medicines.state"/>
                 <FormulateInput 
-                    v-if="medicines" 
+                    v-if="medicines.state" 
                     type="textarea" 
                     name="allergies" 
-                    label="Especifique los medicamentos" 
+                    label="Especifique los medicamentos"
+                    validation-name="Medicamentos"
                     validation="required" 
                     class="textInput" 
                     @validation="validate($event)" 
+                    v-model="medicines.contents"
                 />
             </FormulateInput>
 
@@ -79,8 +93,14 @@ export default {
                 relation: '',
                 phone: ''
             },
-            medicines: false,
-            desease: false,
+            medicines: {
+                state: false,
+                contents: ''
+            },
+            desease: {
+                state: false,
+                contents: ''
+            },
             bloodOptions: {
                 "O-": "O-",
                 "O+": "O+",
@@ -93,7 +113,8 @@ export default {
             },
             family: [],
             validations: {},
-            familyRequired: false
+            familyRequired: false,
+            bloodInput: ''
         }
     },
     methods: {
@@ -130,11 +151,13 @@ export default {
             }
 
             let formResult = {
-                bloodType: undefined,
-                desease: false,
-                deseaseList: undefined,
-                allergy: false,
-                allergyList: undefined,
+                bloodType: this.bloodInput,
+                desease: {
+                    state : false
+                },
+                medicine: {
+                    state : false
+                },
                 emergencyContacts: []
             }
 
@@ -146,14 +169,14 @@ export default {
                 return this.$emit("validation", false); 
             }
 
-            if(this.desease) {
-                formResult.desease = true;
-                formResult.desease = '';
+            if(this.desease.state) {
+                formResult.desease.state = true;
+                formResult.desease.contents = this.desease.contents;
             }
 
-            if(this.allergy) {
-                formResult.allergy = true;
-                formResult.allergyList = '';
+            if(this.medicines.state) {
+                formResult.medicine.state = true;
+                formResult.medicine.contents = this.medicines.contents;
             }
             this.$emit("validation", {result: formResult, pos: 4});
         }

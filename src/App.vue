@@ -51,7 +51,11 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
-input[type=text], input[type=date], input[type=number], select {
+textarea {
+  height: 120px;
+}
+
+input[type=text], input[type=date], input[type=number], select, textarea {
   font-size: 15px;
   background: rgb(226, 226, 226);
   outline: none;
@@ -62,7 +66,7 @@ input[type=text], input[type=date], input[type=number], select {
   width: 100%;
 }
 
-input[type=text]:focus, input[type=date]:focus, input[type=number]:focus, select:focus {
+input[type=text]:focus, input[type=date]:focus, input[type=number]:focus, select:focus, textarea:focus {
   color: #000;
   background: #fff;
   border: #000 2px solid;

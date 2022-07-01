@@ -5,6 +5,7 @@
             name="step_3"
             class="stepthree"
             @submit="validateForm"
+            @input="validateForm"
         >
             <div class="min-container">
                 <h2 :style="{marginBottom: '20px'}">Estudios</h2>

@@ -5,7 +5,7 @@
       <stepTwo @validation="catchResult($event)" v-if="slides.pos == 2" :class="{animateRight : animationToggle, animateLeft : !animationToggle}" />
       <step-three @validation="catchResult($event)" v-if="slides.pos == 3" :class="{animateRight : animationToggle, animateLeft : !animationToggle}" />
       <step-four @validation="catchResult($event)" v-if="slides.pos == 4" :class="{animateRight : animationToggle, animateLeft : !animationToggle}" />
-      <step-five v-if="slides.pos == 5" :class="{animateRight : animationToggle, animateLeft : !animationToggle}" />
+      <step-five @validation="catchResult($event)" v-if="slides.pos == 5" :class="{animateRight : animationToggle, animateLeft : !animationToggle}" />
     </div>
     
     <div class="controls">
@@ -13,13 +13,12 @@
             <p 
                 v-for="i in slides.count" 
                 :key="i" 
-                @click="slides.pos=i" 
                 :style="{
-                    color: slides.pos == i ? '#fff' : '#000',
+                    color: i != slides.pos ? (i < slides.pos ? 'white' : 'gray') : 'black',
                     fontWeight: slides.pos == i ? 'bold' : 'lighter',
-                    backgroundColor: slides.pos == i ? 'red' : 'transparent',
+                    backgroundColor: i != slides.pos ? (i < slides.pos ? '#008000a8' : 'transparent') : 'transparent',
                     fontSize: '13px',
-                    border: '1px solid red',
+                    border: i != slides.pos ? (i < slides.pos ? 'none' : '1px solid gray') : '1px solid red',
                     height: '16px',
                     width: '18px',
                     textAlign: 'center',
@@ -30,8 +29,12 @@
             </p>
         </div>
         <div class="toggle" v-if="!validating">
-            <p v-if="slides.pos != 1" @click="backStep">Anterior</p>
-            <p v-if="slides.pos != slides.count" @click="nextStep">Siguiente</p>
+            <p v-if="slides.pos != 1" @click="backStep(null)">Anterior</p>
+            <p v-if="slides.pos != slides.count && letMego" @click="nextStep(null)"
+              :style="{
+
+              }"
+            >Siguiente</p>
         </div>
         <img src="../assets/spinner.png" class="spinner rotating" v-else>
     </div>
@@ -57,8 +60,9 @@ export default {
     return {
       slides: {
         count: 5,
-        pos: 4
+        pos: 5
       },
+      letMego: false,
       animationToggle: false,
       validationStatus: false,
       validating: false,
@@ -66,33 +70,53 @@ export default {
     }
   },
   methods: {
-    nextStep() {
-      this.validating = true;
-
-      if(this.validationStatus) {
-        return setTimeout(() => {
-          this.animationToggle=true;
-          this.validating = false;
-          this.slides.pos++;
-          this.validationStatus = false;
-        }, 1000);
+    nextStep(pos) {
+      if(!pos) {
+        this.validating = true;
+        if(this.validationStatus) {
+          return setTimeout(() => {
+            this.animationToggle = true;
+            this.validating = false;
+            this.validationStatus = false;
+            this.slides.pos++;
+          }, 1000);
+        }
+        this.$formulate.submit(`step_${this.slides.pos}`);
+        this.validating = false;
+      } else {
+        this.animationToggle=true;
+        this.slides.pos = pos;
       }
-      this.$formulate.submit(`step_${this.slides.pos}`);
-      this.validating = false;
     },
-    backStep() {
-      this.validationStatus = false;
-      this.animationToggle=false;
-      this.slides.pos--;
+    backStep(pos) {
+      if(!pos) {
+        this.validationStatus = false;
+        this.animationToggle=false;
+        this.slides.pos--;  
+      } else {
+        this.animationToggle=false;
+        this.slides.pos--;  
+      }
     },
     catchResult(e) {
-      console.log(e);
       if(e) {
         if(!this.data[`step_${e.pos}`]) {
           this.data[`step_${e.pos}`] = e.result;
           this.validationStatus = true;
         }
+        this.letMego = true;
+      } else {
+        delete this.data[`step_${e.pos}`];
+        this.letMego = false;
+        this.validationStatus = false;
       }
+
+      if(Object.keys(this.data).length == 5) {
+        this.finishCollection();
+      }
+    },
+    finishCollection() {
+      fetch('/api/create', {method: 'POST'})
     }
   }
 }
@@ -185,7 +209,9 @@ export default {
     }
 
     .stepsView {
-        display: flex;
+      display: flex;
+      margin-top: 15px;
+
     }
 
     .toggle {
