@@ -5,7 +5,8 @@
             class="stepfive" 
             v-model="formResult"
             name="step_5"
-            @input="validateForm($event)"
+            @failed-validation="validateForm(false)"
+            @input="enableSend($event)"
         >
             <div class="min-container" :style="{width: '85%'}">
                 <p :style="{marginBottom: '10px'}">¿A que area te gustaria pertenecer?</p>
@@ -68,25 +69,11 @@
 
                 <div type="group" class="volTypes">
 
-                    <p>
-                        <FormulateInput value="Activo" type="radio" id="vol1" name="tipoVoluntario" :style="{display: 'inline-block', marginRight: '10px'}" />
-                        <label for="vol1">Activo</label> 
+                    <p v-for="(type, index) in dictionaries.tipoVoluntarios" :key="index">
+                        <FormulateInput type="radio" :id="index" name="tipoVoluntario" :style="{display: 'inline-block', marginRight: '10px'}" />
+                        <label :for="index">{{type.tipo}}</label> 
                         <br>
-                        <span>Descripcion del voluntario.</span>
-                    </p>
-
-                    <p>
-                        <FormulateInput value="Pasivo" type="radio" id="vol2" name="tipoVoluntario" :style="{display: 'inline-block', marginRight: '10px'}" />
-                        <label for="vol2">Pasivo</label> 
-                        <br>
-                        <span>Descripcion del voluntario.</span>
-                    </p>
-                    
-                    <p>
-                        <FormulateInput value="Suspcritor" type="radio" id="vol3" name="tipoVoluntario" :style="{display: 'inline-block', marginRight: '10px'}" />
-                        <label for="vol3">Suspcritor</label> 
-                        <br>
-                        <span>Descripcion del voluntario.</span>
+                        <span>{{type.descripcion}}</span>
                     </p>
 
                 </div>
@@ -97,17 +84,23 @@
 </template>
 
 <script>
+ import Request from "../../request/instance.js";
+
 export default {
     data() {
         return {
             formResult: {},
             depRequired: false,
             tipoRequired: false,
-            ready: false
+            ready: false,
+            dictionaries: {
+                departamentos: [],
+                tipoVoluntarios: []
+            }
         }
     },
     methods: {
-        validateForm(e) {
+        validateForm() {
             this.depRequired = false;
             this.tipoRequired = false;
 
@@ -122,8 +115,6 @@ export default {
 
                 return this.$emit("validation", false);
             }
-            this.$emit("validation", {result: this.formResult, pos: 5});
-            this.enableSend(e);
         },
         formFinish() {
             this.$emit("send");
@@ -131,9 +122,25 @@ export default {
         enableSend(e) {
             if(e.tipoVoluntario && e.departamento) {
                 this.ready = true;
+                this.$emit("validation", {result: this.formResult, pos: 5});
             } else {
                 this.ready = false;
             }
+        }
+    },
+    async mounted() {
+        let requests = [
+            Request.Get.Departamentos(),
+            Request.Get.tipoVoluntarios()
+        ];
+
+        let [departamentos, tipoVoluntarios] = await Promise.all(requests);
+        
+        if(departamentos.status == 200 && tipoVoluntarios.status == 200) {
+            this.dictionaries.departamentos = departamentos.data;
+            this.dictionaries.tipoVoluntarios = tipoVoluntarios.data;
+        } else {
+            //throw error in this code block
         }
     }
 }

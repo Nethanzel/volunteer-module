@@ -48,7 +48,7 @@ import stepThree from "./inscripcionComponents/stepThree.vue";
 import stepFour from "./inscripcionComponents/stepFour.vue";
 import stepFive from "./inscripcionComponents/stepFive.vue";
  
-import * as axios from "axios"
+ import Request from "../request/instance.js";
 
 export default {
   components: {
@@ -101,7 +101,6 @@ export default {
       }
     },
     catchResult(e) {
-      console.log(e);
       if(e) {
         if(!this.data[`step_${e.pos}`]) {
           this.data[`step_${e.pos}`] = e.result;
@@ -114,8 +113,8 @@ export default {
         this.validationStatus = false;
       }
     },
-    finishCollection() {
-      axios.default.post('http://localhost:81/api/creators/voluntario', {data: this.data})
+    async finishCollection() {
+      await Request.Post.newVolunteer(this.data)
       /* fetch(, {method: 'POST', body: this.data})
       if(Object.keys(this.data).length == 5) {
         /*
