@@ -5,10 +5,8 @@
             class="stepfive" 
             v-model="formResult"
             name="step_5"
-            @submit="validateForm"
-            @input="enableSend($event)"
+            @input="validateForm($event)"
         >
-            
             <div class="min-container" :style="{width: '85%'}">
                 <p :style="{marginBottom: '10px'}">¿A que area te gustaria pertenecer?</p>
 
@@ -109,7 +107,7 @@ export default {
         }
     },
     methods: {
-        validateForm() {
+        validateForm(e) {
             this.depRequired = false;
             this.tipoRequired = false;
 
@@ -125,12 +123,12 @@ export default {
                 return this.$emit("validation", false);
             }
             this.$emit("validation", {result: this.formResult, pos: 5});
+            this.enableSend(e);
         },
         formFinish() {
-            this.$formulate.submit(`step_5`);
+            this.$emit("send");
         },
         enableSend(e) {
-            console.log(e);
             if(e.tipoVoluntario && e.departamento) {
                 this.ready = true;
             } else {

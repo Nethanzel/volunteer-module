@@ -5,7 +5,7 @@
       <stepTwo @validation="catchResult($event)" v-if="slides.pos == 2" :class="{animateRight : animationToggle, animateLeft : !animationToggle}" />
       <step-three @validation="catchResult($event)" v-if="slides.pos == 3" :class="{animateRight : animationToggle, animateLeft : !animationToggle}" />
       <step-four @validation="catchResult($event)" v-if="slides.pos == 4" :class="{animateRight : animationToggle, animateLeft : !animationToggle}" />
-      <step-five @validation="catchResult($event)" v-if="slides.pos == 5" :class="{animateRight : animationToggle, animateLeft : !animationToggle}" />
+      <step-five @validation="catchResult($event)" @send="finishCollection" v-if="slides.pos == 5" :class="{animateRight : animationToggle, animateLeft : !animationToggle}" />
     </div>
     
     <div class="controls">
@@ -48,6 +48,8 @@ import stepThree from "./inscripcionComponents/stepThree.vue";
 import stepFour from "./inscripcionComponents/stepFour.vue";
 import stepFive from "./inscripcionComponents/stepFive.vue";
  
+import * as axios from "axios"
+
 export default {
   components: {
     stepOne,
@@ -99,6 +101,7 @@ export default {
       }
     },
     catchResult(e) {
+      console.log(e);
       if(e) {
         if(!this.data[`step_${e.pos}`]) {
           this.data[`step_${e.pos}`] = e.result;
@@ -110,13 +113,13 @@ export default {
         this.letMego = false;
         this.validationStatus = false;
       }
-
-      if(Object.keys(this.data).length == 5) {
-        this.finishCollection();
-      }
     },
     finishCollection() {
-      fetch('/api/create', {method: 'POST'})
+      axios.default.post('http://localhost:81/api/creators/voluntario', {data: this.data})
+      /* fetch(, {method: 'POST', body: this.data})
+      if(Object.keys(this.data).length == 5) {
+        /*
+      } */
     }
   }
 }
