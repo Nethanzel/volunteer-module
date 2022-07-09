@@ -13,15 +13,15 @@
                 <FormulateInput @validation="validate($event)" type="text" validation-name="Cedula/Pasaporte" name="identity" label="Cedula/Pasaporte" validation="required" class="textInput"/>
                 <FormulateInput @validation="validate($event)" type="text" name="nombre" label="Nombres" validation="required" class="textInput"/>
                 <FormulateInput @validation="validate($event)" type="text" name="apellido" label="Apellidos" validation="required" class="textInput"/>
-                <FormulateInput type="text" name="nacimientolugar" label="Lugar de nacimiento" class="textInput"/>
+                <FormulateInput name="nacimientolugar" label="Lugar de nacimiento" class="textInput" type="select" :options="Prov"/>
                 <FormulateInput @validation="validate($event)" type="date" validation-name="Fecha de nacimiento" validation="required" name="nacimientofecha" label="Fecha de nacimiento" class="textInput"/>
                 <FormulateInput @validation="validate($event)" type="text" name="nacionalidad" label="Nacionalidad" validation="required" class="textInput"/>
-                <FormulateInput type="text" name="ecivil" label="Estado civil" class="textInput"/>
+                <FormulateInput type="select" :options="eCivil" name="ecivil" label="Estado civil" class="textInput"/>
             </div>
             
             <div class="min-container">
                 <h2>Direccion</h2>
-                <FormulateInput @validation="validate($event)" type="text" name="provincia" label="Provincia" validation="required" class="textInput"/>
+                <FormulateInput @validation="validate($event)" type="select" :options="Prov" name="provincia" label="Provincia" validation="required" class="textInput"/>
                 <FormulateInput @validation="validate($event)" type="text" name="sector" label="Sector" validation="required" class="textInput"/>
                 <FormulateInput type="text" name="calle" label="Calle" class="textInput"/>
                 <FormulateInput type="text" name="casa_no" label="No. de casa" class="textInput"/>
@@ -38,11 +38,28 @@
 </template>
 
 <script>
+const provincias = require("../../assets/data/provincias.json");
+
 export default {
     data() {
         return {
             formResult: {},
-            validations: {}
+            validations: {},
+            Prov: [],
+            eCivil: [
+                { 
+                    value: "Solter@",
+                    label: "Solter@" 
+                },
+                { 
+                    value: "Casad@",
+                    label: "Casad@" 
+                },
+                { 
+                    value: "Unión libre",
+                    label: "Unión libre" 
+                }
+            ]
         }
     },
     methods: {
@@ -61,6 +78,11 @@ export default {
             }
             this.$emit("validation", {result: this.formResult, pos: 2});
         }
+    },
+    mounted() {
+        provincias.forEach(pro => {
+            this.Prov.push({ value: pro.provincia_id, label: pro.provincia })
+        });
     }
 }
 </script>

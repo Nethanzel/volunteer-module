@@ -108,7 +108,10 @@ export default {
             if(this.otherLang) {
                 formResult.otherLanguage = this.otherlgn;
             }
-            this.$emit("validation", {result: formResult, pos: 3});
+
+            if(formResult.study != undefined && formResult.languages != undefined) {
+                this.$emit("validation", {result: formResult, pos: 3});
+            }
         }
     }
 }

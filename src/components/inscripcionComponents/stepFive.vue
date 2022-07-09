@@ -23,32 +23,11 @@
 
                 <div type="group" class="volTypes">
 
-                    <p>
-                        <FormulateInput value="Socorro y Gestion del Riesgo" type="radio" id="dep1" name="departamento" :style="{display: 'inline-block', marginRight: '10px'}" />
-                        <label for="dep1">Socorro y Gestion del Riesgo</label> 
+                    <p v-for="(type, index) in dictionaries.departamentos" :key="index">
+                        <input :value="type.id" :id="'dep'+index" type="radio" name="departamento" :style="{display: 'inline-block', marginRight: '10px'}" @change="Catch($event)" />
+                        <label :for="'dep'+index">{{type.departamento}}</label> 
                         <br>
-                        <span>Descripcion del area.</span>
-                    </p>
-
-                    <p>
-                        <FormulateInput value="Juventud" type="radio" id="dep2" name="departamento" :style="{display: 'inline-block', marginRight: '10px'}" />
-                        <label for="dep2">Juventud</label>
-                        <br>
-                        <span>Descripcion del area.</span>
-                    </p>
-
-                    <p>
-                        <FormulateInput value="Salud Comunitaria" type="radio" id="dep3" name="departamento" :style="{display: 'inline-block', marginRight: '10px'}" />
-                        <label for="dep3">Salud Comunitaria</label>
-                        <br>
-                        <span>Descripcion del area.</span>
-                    </p>
-
-                    <p>
-                        <FormulateInput value="Doctrina y Proteccion" type="radio" id="dep4" name="departamento" :style="{display: 'inline-block', marginRight: '10px'}" />
-                        <label for="dep4">Doctrina y Proteccion</label>
-                        <br>
-                        <span>Descripcion del area.</span>
+                        <span>{{type.descripcion}}</span>
                     </p>
 
                 </div>
@@ -70,13 +49,39 @@
                 <div type="group" class="volTypes">
 
                     <p v-for="(type, index) in dictionaries.tipoVoluntarios" :key="index">
-                        <FormulateInput type="radio" :id="index" name="tipoVoluntario" :style="{display: 'inline-block', marginRight: '10px'}" />
-                        <label :for="index">{{type.tipo}}</label> 
+                        <input type="radio" :value="type.id" :id="'tv'+index" name="tipoVoluntario" :style="{display: 'inline-block', marginRight: '10px'}" @change="Catch($event)" />
+                        <label :for="'tv'+index">{{type.tipo}}</label> 
                         <br>
                         <span>{{type.descripcion}}</span>
                     </p>
 
                 </div>
+            </div>
+
+            <div class="min-container" :style="{marginTop: '20px', width: '85%'}">
+                <p :style="{marginBottom: '10px'}">¿Tienes alguna identificación de la institución? Ya sea gorra, chaleco, polo shirt, t-shit, etc.</p>
+                
+                <div type="group" class="volTypes">
+                    <p>
+                        <input type="radio" value="No" id="id1" name="identificacion" :style="{display: 'inline-block', marginRight: '10px'}" @change="Catch($event)" />
+                        <label for="id1">No</label> 
+                    </p>
+
+                    <p>
+                        <input type="radio" value="Si" id="id2" name="identificacion" :style="{display: 'inline-block', marginRight: '10px'}" @change="Catch($event)" />
+                        <label for="id2">Si</label> 
+                    </p>
+                </div>
+                <FormulateInput 
+                    v-if="formResult.identificacion == 'Si'" 
+                    type="textarea" 
+                    name="identificacionDetails" 
+                    label="Haga una lista de las identificaciones que tiene, cada una separada por coma (,)" 
+                    validation="required"
+                    validation-name="Identificaciones"
+                    class="textInput" 
+                    v-model="formResult.identificacionDetails"
+                />
             </div>
         </FormulateForm>
         <div class="btnSend" @click="formFinish" v-if="ready" ><span>Enviar</span></div>
@@ -84,12 +89,17 @@
 </template>
 
 <script>
- import Request from "../../request/instance.js";
+import Request from "../../request/instance.js";
 
 export default {
     data() {
         return {
-            formResult: {},
+            formResult: {
+                tipoVoluntario: null,
+                departamento: null,
+                identificacion: null,
+                identificacionDetails: null
+            },
             depRequired: false,
             tipoRequired: false,
             ready: false,
@@ -120,12 +130,21 @@ export default {
             this.$emit("send");
         },
         enableSend(e) {
-            if(e.tipoVoluntario && e.departamento) {
+            if(e.tipoVoluntario && e.departamento && e.identificacion) {
+                if(e.identificacion == "Si") {
+                    if(this.formResult.identificacionDetails?.length < 5) return this.ready = false;
+                }
+
                 this.ready = true;
                 this.$emit("validation", {result: this.formResult, pos: 5});
             } else {
                 this.ready = false;
             }
+        },
+        Catch(e) {
+            this.formResult[e.target.name] = e.target.value;
+            this.enableSend(this.formResult);
+            //tipoVoluntario
         }
     },
     async mounted() {

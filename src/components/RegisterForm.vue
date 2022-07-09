@@ -62,7 +62,7 @@ export default {
     return {
       slides: {
         count: 5,
-        pos: 5
+        pos: 3
       },
       letMego: false,
       animationToggle: false,
@@ -93,19 +93,25 @@ export default {
     backStep(pos) {
       if(!pos) {
         this.validationStatus = false;
+        delete this.data[`step_${pos}`];
+        this.letMego = false;
+
         this.animationToggle=false;
         this.slides.pos--;  
       } else {
+        delete this.data[`step_${pos}`];
+        this.letMego = false;
+        this.validationStatus = false;
+
         this.animationToggle=false;
         this.slides.pos--;  
       }
     },
     catchResult(e) {
+      console.log(e);
       if(e) {
-        if(!this.data[`step_${e.pos}`]) {
-          this.data[`step_${e.pos}`] = e.result;
-          this.validationStatus = true;
-        }
+        this.data[`step_${e.pos}`] = e.result;
+        this.validationStatus = true;
         this.letMego = true;
       } else {
         delete this.data[`step_${e.pos}`];
@@ -115,9 +121,8 @@ export default {
     },
     async finishCollection() {
       await Request.Post.newVolunteer(this.data)
-      /* fetch(, {method: 'POST', body: this.data})
-      if(Object.keys(this.data).length == 5) {
-        /*
+      /* if(Object.keys(this.data).length == 5) {
+  
       } */
     }
   }

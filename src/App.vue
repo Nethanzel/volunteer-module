@@ -10,6 +10,10 @@
   padding: 0;
 }
 
+body {
+  background: rgba(0, 0, 0, 0.219);
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

@@ -10,9 +10,9 @@
             invalid-message="Completa la informacion requerida"
         >
             <div class="min-container">
-                <FormulateInput @validation="validate($event)" type="select" name="provincia" label="Provincia" validation="required" class="textInput" :options="Prov" @change="provinciaSelection($event)" />
-                <FormulateInput @validation="validate($event)" type="select" name="municipio" label="Municipio" validation="required" class="textInput" :options="Mun" />
-                <FormulateInput @validation="validate($event)" type="number" name="estacion" label="Estacion" validation="required" class="textInput" />
+<!--                 <FormulateInput @validation="validate($event)" type="select" name="provincia" label="Provincia" validation="required" class="textInput" :options="Prov" @change="provinciaSelection($event)" />
+                <FormulateInput @validation="validate($event)" type="select" name="municipio" label="Municipio" validation="required" class="textInput" :options="Mun" /> -->
+                <FormulateInput @validation="validate($event)" type="select" name="estacion" label="Estacion" validation="required" class="textInput" :options="estaciones" />
             </div>
         </FormulateForm>
     </div>
@@ -20,29 +20,19 @@
 
 <script>
 
-const provincias = require("../../assets/data/provincias.json");
-const municipios = require("../../assets/data/municipios.json");
+/* const provincias = require("../../assets/data/provincias.json");
+const municipios = require("../../assets/data/municipios.json"); */
+import Request from "../../request/instance.js";
 
 export default {
     data() {
         return {
             formResult: {},
             validations: {},
-            Prov: [],
-            Mun: []
+            estaciones: []
         }
     },
     methods: {
-        loadSelectors() {
-            provincias.forEach(pro => {
-                this.Prov.push({ value: pro.provincia_id, label: pro.provincia })
-            });
-        },
-        provinciaSelection(value) {
-            let result = municipios.filter(mun => mun.provincia_id == value.target.value);
-            this.Mun.length = 0;
-            result.forEach(mun => this.Mun.push({ value: mun.minicipio_id, label: mun.minicipio }))
-        },
         validate(e) {
             this.validations[e.name] = { validity: !(e.hasErrors) }
         },
@@ -59,8 +49,13 @@ export default {
             this.$emit("validation", {result: this.formResult, pos: 1});
         }
     },
-    mounted() {
-        this.loadSelectors();
+    async mounted() {
+        let result = await Request.Get.Estaciones();
+        if(result.status == 200) {
+            result.data.forEach(es => this.estaciones.push({ value: es.numero, label: `Estación ${es.numero} - ${es.municipio}` }) );
+        } else {
+            //Show error in this code block
+        }
     }
 }
 </script>
