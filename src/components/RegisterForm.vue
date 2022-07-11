@@ -62,7 +62,7 @@ export default {
     return {
       slides: {
         count: 5,
-        pos: 3
+        pos: 1
       },
       letMego: false,
       animationToggle: false,
