@@ -177,16 +177,17 @@ export default {
   display: flex;
   flex-wrap: wrap;
   p {
-      border: 1px solid rgb(187, 187, 187);
-      border-left: 4px solid rgb(105, 105, 105);
-      margin: 5px 10px;
-      min-width: 200px;
-      max-width: 200px;
-      padding: 5px 5px 5px 10px;
-
-      cursor: pointer;
-      font-size: 15px;
-      margin-bottom: 5px;
+    border: 1px solid rgb(187, 187, 187);
+    border-left: 4px solid rgb(105, 105, 105);
+    margin: 5px 10px;
+    min-width: 200px;
+    max-width: 200px;
+    padding: 5px 5px 5px 10px;
+    text-align: justify;
+    cursor: pointer;
+    font-size: 15px;
+    margin-bottom: 5px;
+    line-height: 20px;
 
         label  {
             margin-bottom: 10px;

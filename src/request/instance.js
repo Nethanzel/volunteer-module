@@ -23,6 +23,14 @@ const axiosRequest = {
         Estaciones: async () => {
             let estaciones = await Requester.get('api/common/estaciones');
             return estaciones;
+        },
+        Voluntarios: async (page) => {
+            let voluntarios = await Requester.get(`api/getters/voluntarios?page=${page}`);
+            return voluntarios;
+        },
+        Voluntario: async (identity) => {
+            let voluntario = await Requester.get(`api/getters/voluntario?id=${identity}`);
+            return voluntario;
         }
     },
     Delete: {

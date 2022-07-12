@@ -1,5 +1,15 @@
 <template>
   <div class="about">
-    <h1>This is an about page</h1>
+    <h1>Lista de voluntarios</h1>
+    <Volunteers />
   </div>
 </template>
+
+<script>
+import Volunteers from '../components/Volunteers.vue'
+export default {
+  components: {
+    Volunteers
+  }
+}
+</script>

@@ -108,7 +108,6 @@ export default {
       }
     },
     catchResult(e) {
-      console.log(e);
       if(e) {
         this.data[`step_${e.pos}`] = e.result;
         this.validationStatus = true;
