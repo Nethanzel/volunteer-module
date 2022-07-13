@@ -119,10 +119,10 @@ export default {
       }
     },
     async finishCollection() {
-      await Request.Post.newVolunteer(this.data)
-      /* if(Object.keys(this.data).length == 5) {
-  
-      } */
+      if(Object.keys(this.data).length == 5) {
+        let response = await Request.Post.newVolunteer(this.data).catch(e => e.response);
+        this.$router.push({ name: 'Resultado', params: { status: response.status, from: "registro" } });
+      }
     }
   }
 }

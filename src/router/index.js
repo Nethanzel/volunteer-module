@@ -1,18 +1,22 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Register from '../components/RegisterForm.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/',
+    path: '/registrarse',
     name: 'Registrarse',
-    component: Register
+    component: () => import('../components/RegisterForm.vue')
   },
   {
-    path: '/about',
-    name: 'About',
+    path: '/resultado',
+    name: 'Resultado',
+    component: () => import('../views/ActionResult.vue')
+  },
+  {
+    path: '/voluntarios',
+    name: 'Voluntarios',
     component: () => import('../views/About.vue')
   }
 ]
