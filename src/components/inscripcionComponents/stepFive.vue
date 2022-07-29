@@ -1,5 +1,5 @@
 <template>
-   <div>
+   <div class="stepcontainer">
         <h1>Areas de desarrollo de la institución</h1>
         <FormulateForm 
             class="stepfive" 
@@ -248,7 +248,6 @@ export default {
         }
   }
 }
-
 .btnSend {
     border: 1px solid gray;
     text-align: center;
@@ -263,6 +262,19 @@ export default {
 
     &:hover {
       background: #00ff0025;  
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .stepfive {
+        max-width: 100vw;
+        min-width: 95vw;
+    }
+
+    .volTypes {
+        p {
+            max-width: 280px;
+        }
     }
 }
 </style>

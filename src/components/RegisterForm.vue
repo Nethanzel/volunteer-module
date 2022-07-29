@@ -62,7 +62,7 @@ export default {
     return {
       slides: {
         count: 5,
-        pos: 1
+        pos: 5
       },
       letMego: false,
       animationToggle: false,
@@ -134,6 +134,7 @@ export default {
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  height: 100vh;
 }
 
 //slide animations

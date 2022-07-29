@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="stepcontainer">
         <h1>Datos del Comité</h1>
         <FormulateForm 
             name="step_1"
@@ -69,5 +69,12 @@ export default {
         display: flex;
         flex-direction: column;
         align-items: center;
+    }
+
+    @media only screen and (max-width: 600px) {
+        .stepone {
+            max-width: 100vw;
+            min-width: 95vw;
+        }
     }
 </style>

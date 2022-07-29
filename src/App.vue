@@ -5,15 +5,12 @@
 </template>
 
 <style lang="scss">
+
 * {
   margin: 0;
   padding: 0;
 }
 
-/* body {
-  background: rgba(0, 0, 0, 0.219);
-}
- */
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -86,9 +83,6 @@ h1 {
   margin-top: 10px;
 }
 
-
-
-
 .textInput {
   margin-top: 15px;
   min-width: 75%;
@@ -103,8 +97,6 @@ h1 {
   padding: 2px 3px;
   cursor: pointer;
 }
-
-
 
 .min-container {
   padding: 10px 5px 15px 35px;
@@ -132,6 +124,21 @@ h1 {
 
 .rowData:hover {
   background: rgb(238, 198, 198);
+}
+
+
+@media only screen and (max-width: 600px) {
+  .stepcontainer {
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .textInput {
+    margin-top: 15px;
+    min-width: 90%;
+  }
 }
 
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="stepcontainer">
         <h1>Datos de Salud</h1>
         <FormulateForm 
             class="stepfour" 
@@ -187,14 +187,21 @@ export default {
 
 <style scoped>
 
-.stepfour{
-    border: 2px solid rgb(170, 170, 170);
-    max-width: 45vw;
-    min-width: 45vw;
-    padding: 5px 0px 25px 0px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
+    .stepfour{
+        border: 2px solid rgb(170, 170, 170);
+        max-width: 45vw;
+        min-width: 45vw;
+        padding: 5px 0px 25px 0px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    @media only screen and (max-width: 600px) {
+        .stepfour {
+            max-width: 100vw;
+            min-width: 95vw;
+        }
+    }
 
 </style>

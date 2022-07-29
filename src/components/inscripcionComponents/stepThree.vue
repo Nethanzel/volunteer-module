@@ -1,5 +1,5 @@
 <template>
-   <div>
+   <div class="stepcontainer">
         <h1>Formacion Academica</h1>
         <FormulateForm 
             name="step_3"
@@ -118,11 +118,17 @@ export default {
 </script>
 
 <style scoped>
-.stepthree{
-    border: 2px solid rgb(170, 170, 170);
-    max-width: 40vw;
-    min-width: 40vw;
-    padding: 5px 0px 25px 0px;
-   
-}
+    .stepthree{
+        border: 2px solid rgb(170, 170, 170);
+        max-width: 40vw;
+        min-width: 40vw;
+        padding: 5px 0px 25px 0px;
+    }
+
+    @media only screen and (max-width: 600px) {
+        .stepthree {
+            max-width: 100vw;
+            min-width: 95vw;
+        }
+    }
 </style>
