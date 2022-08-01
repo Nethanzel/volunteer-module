@@ -139,6 +139,11 @@ h1 {
     margin-top: 15px;
     min-width: 90%;
   }
+
+  .min-container {
+    padding: 10px 5px 15px 25px;
+    margin: 10px 15px;
+  }
 }
 
 </style>

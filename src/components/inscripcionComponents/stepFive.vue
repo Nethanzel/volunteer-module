@@ -170,7 +170,6 @@ export default {
     border: 2px solid rgb(170, 170, 170);
     max-width: 40vw;
     min-width: 40vw;
-    padding: 10px;
 }
 
 .volTypes {
