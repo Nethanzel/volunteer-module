@@ -167,9 +167,16 @@ export default {
 
 <style scoped lang="scss">
 .stepfive{
-    border: 2px solid rgb(170, 170, 170);
-    max-width: 40vw;
-    min-width: 40vw;
+/*     border: 2px solid rgb(170, 170, 170);
+    max-width: 45vw;
+    min-width: 45vw; */
+        border: 2px solid rgb(170, 170, 170);
+        max-width: 45vw;
+        min-width: 45vw;
+        padding: 5px 0px 25px 0px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
 }
 
 .volTypes {
@@ -179,8 +186,8 @@ export default {
     border: 1px solid rgb(187, 187, 187);
     border-left: 4px solid rgb(105, 105, 105);
     margin: 5px 10px;
-    min-width: 200px;
-    max-width: 200px;
+    min-width: 300px;
+    max-width: 300px;
     padding: 5px 5px 5px 10px;
     text-align: justify;
     cursor: pointer;
@@ -264,15 +271,16 @@ export default {
     }
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 900px) {
     .stepfive {
-        max-width: 100vw;
+        max-width: 96vw;
         min-width: 95vw;
     }
 
     .volTypes {
         p {
-            max-width: 280px;
+            max-width: 100%;
+            min-width: 90%;
         }
     }
 }

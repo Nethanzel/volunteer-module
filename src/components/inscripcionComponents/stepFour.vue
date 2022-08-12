@@ -189,15 +189,15 @@ export default {
 
     .stepfour{
         border: 2px solid rgb(170, 170, 170);
-        max-width: 45vw;
-        min-width: 45vw;
+        max-width: 40vw;
+        min-width: 40vw;
         padding: 5px 0px 25px 0px;
         display: flex;
         flex-direction: column;
         align-items: center;
     }
 
-    @media only screen and (max-width: 600px) {
+    @media only screen and (max-width: 900px) {
         .stepfour {
             max-width: 100vw;
             min-width: 95vw;

@@ -127,7 +127,7 @@ h1 {
 }
 
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 900px) {
   .stepcontainer {
     width: 100vw;
     display: flex;
@@ -137,11 +137,11 @@ h1 {
 
   .textInput {
     margin-top: 15px;
-    min-width: 90%;
+    min-width: 110%;
   }
 
   .min-container {
-    padding: 10px 5px 15px 25px;
+    padding: 10px 5px 15px 15px;
     margin: 10px 15px;
   }
 }

@@ -120,12 +120,12 @@ export default {
 <style scoped>
     .stepthree{
         border: 2px solid rgb(170, 170, 170);
-        max-width: 40vw;
-        min-width: 40vw;
+        max-width: 35vw;
+        min-width: 35vw;
         padding: 5px 0px 25px 0px;
     }
 
-    @media only screen and (max-width: 600px) {
+    @media only screen and (max-width: 900px) {
         .stepthree {
             max-width: 100vw;
             min-width: 95vw;

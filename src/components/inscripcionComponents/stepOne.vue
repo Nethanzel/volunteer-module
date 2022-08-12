@@ -71,7 +71,7 @@ export default {
         align-items: center;
     }
 
-    @media only screen and (max-width: 600px) {
+    @media only screen and (max-width: 900px) {
         .stepone {
             max-width: 100vw;
             min-width: 95vw;

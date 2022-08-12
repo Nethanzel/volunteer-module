@@ -13,6 +13,7 @@
             <p 
                 v-for="i in slides.count" 
                 :key="i" 
+                @click="nextStep(i)"
                 :style="{
                     color: i != slides.pos ? (i < slides.pos ? 'white' : 'gray') : 'black',
                     fontWeight: slides.pos == i ? 'bold' : 'lighter',
@@ -47,8 +48,8 @@ import stepTwo from "./inscripcionComponents/stepTwo.vue";
 import stepThree from "./inscripcionComponents/stepThree.vue";
 import stepFour from "./inscripcionComponents/stepFour.vue";
 import stepFive from "./inscripcionComponents/stepFive.vue";
- 
- import Request from "../request/instance.js";
+
+import Request from "../request/instance.js";
 
 export default {
   components: {
@@ -62,7 +63,7 @@ export default {
     return {
       slides: {
         count: 5,
-        pos: 5
+        pos: 1
       },
       letMego: false,
       animationToggle: false,

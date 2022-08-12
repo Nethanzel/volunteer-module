@@ -93,15 +93,15 @@ export default {
             width: 75%;
         }
         border: 2px solid rgb(170, 170, 170);
-        max-width: 40vw;
-        min-width: 40vw;
+        max-width: 30vw;
+        min-width: 30vw;
         padding: 5px 0px 25px 0px;
         display: flex;
         flex-direction: column;
         align-items: center;
     }
 
-    @media only screen and (max-width: 600px) {
+    @media only screen and (max-width: 900px) {
         .steptwo {
             max-width: 100vw;
             min-width: 95vw;
