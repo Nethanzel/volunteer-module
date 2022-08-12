@@ -170,13 +170,13 @@ export default {
 /*     border: 2px solid rgb(170, 170, 170);
     max-width: 45vw;
     min-width: 45vw; */
-        border: 2px solid rgb(170, 170, 170);
-        max-width: 45vw;
-        min-width: 45vw;
-        padding: 5px 0px 25px 0px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+    border: 2px solid rgb(170, 170, 170);
+    max-width: 50vw;
+    min-width: 45vw;
+    padding: 5px 0px 25px 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .volTypes {
