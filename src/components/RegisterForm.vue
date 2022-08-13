@@ -13,7 +13,6 @@
             <p 
                 v-for="i in slides.count" 
                 :key="i" 
-                @click="nextStep(i)"
                 :style="{
                     color: i != slides.pos ? (i < slides.pos ? 'white' : 'gray') : 'black',
                     fontWeight: slides.pos == i ? 'bold' : 'lighter',
