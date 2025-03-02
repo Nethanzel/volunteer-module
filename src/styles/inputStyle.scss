@@ -1,0 +1,71 @@
+.formulate-input {
+    min-width: 100%;
+    overflow: hidden;
+
+}
+
+.formulate-input-element {
+    display: flex;
+    flex-direction: column;
+}
+
+.formulate-input-errors {
+    margin: 0;
+    margin-top: 5px;
+    color: rgb(255, 51, 0);
+    font-size: 13px;
+    list-style-type: none;
+    padding: 0;
+    padding-left: 15px;
+    font-weight: bold;
+}
+
+.formulate-form-errors {
+    display: none;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+textarea {
+    height: 120px;
+    resize: none;
+}
+
+input[type=text], input[type=date], input[type=number], select, textarea {
+    background: #fff;
+    border: 2px solid #b4b4b4;
+    border-radius: 3px;
+    color: #5e5e5e;
+    padding: 3px 5px;
+    font-size: 15px;
+    outline: none;
+}
+
+.formulate-input-element--checkbox {
+    display: inline;
+}
+
+button {
+    padding: 8px 15px;
+    font-size: 14px;
+    margin: 0 10px;
+    border: none;
+    background-color: #e8e8e8;
+    border: 1px solid #adadad;
+    border-bottom: 3px solid black;
+    cursor: pointer;
+    
+    &:disabled {
+        cursor: default;
+        opacity: .5;
+    }
+}

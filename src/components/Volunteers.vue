@@ -1,14 +1,20 @@
 <template>
-    <div>
-        <div class="dataview">
-            <div class="element" v-for="voluntario in Voluntarios" :key="voluntario.identity">
-                <p>{{voluntario.identity}}</p>
-                <p>{{voluntario.nombre}} {{voluntario.apellido}}</p>
-                <p>Estación {{voluntario.estacion.numero}} - {{voluntario.estacion.municipio}}</p>
-                <p>{{formatDate(voluntario.createdAt)}}</p>
+    <div class="record-list">
+        <div v-if="!isRequesting" class="dataview">
+            <div :class="{ element: true, nocheck: !voluntario.checked, deleted:voluntario.deleted }" v-for="voluntario in Voluntarios" :key="voluntario.identity" @click="$emit('details', voluntario)">
+                <div class="photo">
+                    <img v-if="showProfilePhoto(voluntario.Archivos)" :src="getProfilePhoto(voluntario.Archivos)" alt="photo">
+                    <i v-else class="icofont-warning"></i>
+                </div>
+                <div class="info">
+                    <p>{{formatIdentification(voluntario.identity)}}</p>
+                    <p>{{voluntario.nombre}} {{voluntario.apellido}}</p>
+                    <p v-if="voluntario.Estacion">Estación {{voluntario.Estacion.numero}} - {{getMunicipio(voluntario.Estacion.municipio)}}</p>
+                    <p>{{formatDate(voluntario.createdAt)}}</p>
+                </div>
             </div>
         </div>
-        <div class="pagination">
+        <div v-if="!isRequesting" class="pagination">
             <p 
                 v-for="page in pages" 
                 :key="page" 
@@ -20,39 +26,59 @@
                 }"
             >{{page}}</p>
         </div>
+
+        <img v-if="isRequesting" class="rotating await" src="../assets/spinner.png" alt="loadin">
     </div>
 </template>
 
 <script>
+import { formatIdentification, formatDate } from "../utils/inforFormat.js"
+import municipios from '../assets/data/municipios.json'
+import { bufferToBase64 } from "../utils/image.js";
 import Request from "./../request/instance.js";
+
 export default {
     data() {
         return {
+            isRequesting: false,
             Voluntarios: null,
             pages: 0,
             cPage: 0
         }
     },
     methods: {
+        formatIdentification,
         async getVolunteers(page) {
-            let requestResult = await Request.Get.Voluntarios(page ? page : 1);
-            if(requestResult.status == 200) {
+            this.isRequesting = true;
+
+            let requestResult = await Request.Get.Voluntarios(page ? page : 1)
+                .catch(() => null)
+                .finally(() => this.isRequesting = false);
+            
+            if(requestResult?.status == 200) {
                 let { rows, limit, count } = requestResult.data;
-                this.Voluntarios = rows;
                 this.pages = Math.ceil(count / limit);
                 this.cPage = page ? page : 1;
+                this.Voluntarios = rows;
             } else {
                 //show errors here
             }
         },
-        formatDate(date) {
-            if(date) {
-                let dateInstance = new Date(date);
-                let newDate = `${dateInstance.getDate()}/${dateInstance.getMonth() + 1}/${dateInstance.getFullYear()} a las 
-                ${dateInstance.getHours()}:${dateInstance.getMinutes()}:${dateInstance.getSeconds()}`;
-                return newDate;
-            }
-            return "No hay fecha"
+        bufferToBase64,
+        formatDate,
+        showProfilePhoto(files) {
+            let file = files.filter(f => f.fileName?.toLowerCase() == "profile photo")[0];
+            if (!file) return false;
+            return true;
+        },
+        getProfilePhoto(files) {
+            let file = files.filter(f => f.fileName?.toLowerCase() == "profile photo")[0];
+            if (!file) return;
+
+            return bufferToBase64(file.content.data, file.contentType)
+        },
+        getMunicipio(id) {
+            return municipios.find(x => x.municipio_id == id).municipio
         }
     },
     mounted() {
@@ -61,37 +87,101 @@ export default {
 }
 </script>
 
-<style lang="scss">
-.pagination {
-    border: 2px solid black;
+<style lang="scss" scoped>
+.record-list {
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    padding: 5px;
-    margin: 10px;
-    p {
-        border: 1px solid black;
-        border-radius: 50%;
-        width: 15px;
-        height: 15px;
-        cursor: pointer;
-        text-align: center;
-        padding: 3px;
-        margin: 0 10px;
+    flex-direction: column;
+    height: 100%;
+    .pagination {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        padding: 5px;
+        margin: 10px;
+        margin-top: auto;
+        p {
+            border: 1px solid black;
+            border-radius: 50%;
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+            padding: 5px;
+            margin: 0 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+
+    .dataview {
+        display: flex;
+        overflow: hidden;
+        flex-wrap: wrap;
+        margin: 0 auto;
+        max-width: 1035px;
+        width: 100%;
+        max-height: calc(100% - 60px);
+        overflow-y: auto;
+        justify-content: center;
+        .element {
+            display: inline-flex;
+            flex-wrap: wrap;
+            max-width: 310px;
+            min-width: 305px;
+            max-height: 100px;
+            margin: 10px 15px;
+            border-radius: 5px;
+            border: 1px solid rgb(187, 187, 187);
+            user-select: none;
+            overflow: hidden;
+            cursor: pointer;
+            .photo {
+                display: flex;
+                justify-content: center;
+                align-items: center; 
+                width: 30%;
+                max-width: 90px;
+                img {
+                    object-fit: contain;
+                    width: 100%;
+                    height: 100%;
+                }
+                i {
+                    font-size: 35px;
+                }
+            }
+            .info {
+                width: 70%;
+                max-width: 213px;
+                padding: 4px 0;
+                p {
+                    font-size: 13px;
+                    margin: 5px 10px;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    overflow: hidden;
+                }
+            }
+
+            &:hover {
+                background-color: #ebebeb;
+            }
+        }
+        .nocheck {
+            background-color: #ffb30059;
+        }
+        .deleted {
+            opacity: .5;
+        }
+    }
+
+    .await {
+        width: 50px;
+        height: 50px;
+        margin: auto;
     }
 }
 
-.dataview {
-    display: flex;
-    flex-wrap: wrap;
-    .element {
-        margin: 10px 15px;
-        max-width: 370px;
-        border: 2px solid red;
-        p {
-            margin: 5px 10px;
-        }
-    }
-}
+
 </style>

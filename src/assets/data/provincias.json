@@ -1,5 +1,21 @@
 [
 	{
+		"provincia_id" : 101,
+		"provincia" : "Distrito Nacional"
+	},
+	{
+		"provincia_id" : 102,
+		"provincia" : "Santo Domingo Este"
+	},
+	{
+		"provincia_id" : 103,
+		"provincia" : "Santo Domingo Oeste"
+	},
+	{
+		"provincia_id" : 104,
+		"provincia" : "Santo Domingo Norte"
+	},
+	{
 		"provincia_id" : 1,
 		"provincia" : "Santo Domingo"
 	},
@@ -73,7 +89,7 @@
 	},
 	{
 		"provincia_id" : 63,
-		"provincia" : "Dajabónn"
+		"provincia" : "Dajabón"
 	},
 	{
 		"provincia_id" : 64,

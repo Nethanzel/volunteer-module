@@ -1,149 +1,150 @@
 <template>
-  <div id="app">
+  <div id="app" :style="{ paddingTop: paddingTop, minHeight: `calc(100vh - ${paddingTop})` }" @click="collapseMenu()">
+
+    <MessageStack />
+
+    <aside 
+      ref="nav_cnt"
+      class="aside-hide"
+      v-if="showNavigation"
+    >
+      <NavigationMenu @ready="($event) => hideMenu = $event" /> 
+    </aside>
+
+    <header 
+      class="header" 
+      :style="{ position: 'fixed', display: navDisplay, height: '65px' }"
+    >
+      <ViewHeader/>
+    </header>
+
     <router-view/>
+
   </div>
 </template>
 
+<script>
+  import axiosRequest from './request/instance';
+  import ViewHeader from './components/ViewHeader.vue';
+  import MessageStack from './components/MessageStack.vue';
+  import NavigationMenu from './components/NavigationMenu.vue';
+
+  export default {
+    components: {
+      ViewHeader,
+      MessageStack,
+      NavigationMenu
+    },
+    data() {
+      return {
+        paddingTop: '75px',
+        navDisplay: 'flex',
+        hideMenu: () => {}
+      }
+    },
+    watch: {
+      $route(to) {
+        if (to.name == "Home") {
+          this.paddingTop = '0px';
+          this.navDisplay = 'none';
+          return;
+        }
+        this.paddingTop = '75px';
+        this.navDisplay = 'flex';
+      }
+    },
+    computed: {
+      showNavigation() {
+        if (this.$route.name == 'Home') return false;
+        if (this.$route.name == 'Login') return false;
+        
+        return true;
+      }
+    },
+    mounted() {
+      axiosRequest.Get.validateAccess()
+      .then(res => this.$store.commit('setUserData', res.data))
+      .catch(() => null)
+      .finally(() => this.$store.commit('stopValidating'));
+    },
+    methods: {
+      collapseMenu() {
+        this.hideMenu()
+      }
+    }
+  }
+</script>
+
 <style lang="scss">
+
+@import './styles/forms.scss';
+@import './styles/styleBase.scss';
+@import './styles/inputStyle.scss';
+@import './styles/infinityRotate.scss';
+@import './styles//slideAnimation.scss';
+@import './styles//circlePopAnimation.scss';
 
 * {
   margin: 0;
   padding: 0;
 }
 
+body {
+  min-height: 100vh;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  //text-align: center;
   color: #2c3e50;
+  display: flex;
+  flex-direction: column;
 }
 
-#nav {
-  padding: 30px;
+.header {
+  top: 0;
+  left: 0;
+  z-index: 100;
+  transition: .5s;
+  background-color: #fff;
+  box-shadow: 0px 1px 5px 0px;
+  padding: 5px 10px 0px 10px;
+  width: calc(100% - 20px);
+}
+
+aside {
+  box-shadow: 10px 0px 10px 0px #00000030;
+  height: calc(100vh - 80px);
+  position: fixed;
+  z-index: 50;
 
   a {
     font-weight: bold;
     color: #2c3e50;
-
+    font-size: 15px;
     &.router-link-exact-active {
-      color: #42b983;
+      background-color: #42b983;
+      padding: 10px;
+      color: #fff;
     }
   }
 }
 
-.formulate-input-errors {
-  margin: 0;
-  margin-top: 5px;
-  color: rgb(255, 51, 0);
-  font-size: 13px;
-  list-style-type: none;
-  padding: 0;
-  padding-left: 15px;
+.aside-hide {
+  transition: transform .25s;
+  transform: translateX(-120%);
 }
 
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-input[type=number] {
-  -moz-appearance: textfield;
-}
-
-textarea {
-  height: 120px;
-}
-
-input[type=text], input[type=date], input[type=number], select, textarea {
-  font-size: 15px;
-  background: rgb(226, 226, 226);
-  outline: none;
-  border: 2px solid #b4b4b4;
-  color: #5e5e5e;
-  padding: 3px 5px;
-  border-radius: 3px;
-  width: 100%;
-}
-
-input[type=text]:focus, input[type=date]:focus, input[type=number]:focus, select:focus, textarea:focus {
-  color: #000;
-  background: #fff;
-  border: #000 2px solid;
-}
-
-.formulate-input-element--checkbox {
-  display: inline;
+.aside-show {
+  transition: transform .25s;
+  transform: translateX(0%);
 }
 
 h1 {
   text-align: center;
   margin-bottom: 15px;
   margin-top: 10px;
-}
-
-.textInput {
-  margin-top: 15px;
-  min-width: 75%;
-}
-
-.stdAdd {
-  margin-top: 15px;
-  border: 1px solid black;
-  border-radius: 5px;
-  width: 75px;
-  text-align: center;
-  padding: 2px 3px;
-  cursor: pointer;
-}
-
-.min-container {
-  padding: 10px 5px 15px 35px;
-  margin: 10px 35px;
-  border-left: rgb(255, 0, 0) 3px solid;
-  width: 70%;
-
-  h2 {
-      margin-top: 0;
-  }
-  align-self: flex-start;
-}
-
-.rowData {
-  border: 1px solid gray;
-  padding: 5px 10px;
-  margin: 10px 0;
-  border-left: 4px solid gray;
-  transition: .4s;
-  cursor: pointer;
-  p {
-      margin: 4px;
-  }
-}
-
-.rowData:hover {
-  background: rgb(238, 198, 198);
-}
-
-
-@media only screen and (max-width: 900px) {
-  .stepcontainer {
-    width: 100vw;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .textInput {
-    margin-top: 15px;
-    min-width: 110%;
-  }
-
-  .min-container {
-    padding: 10px 5px 15px 15px;
-    margin: 10px 15px;
-  }
 }
 
 </style>

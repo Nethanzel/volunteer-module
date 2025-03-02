@@ -1,48 +1,54 @@
 <template>
    <div class="stepcontainer">
-        <h1>Formacion Academica</h1>
+        <h2>Formacion Academica</h2>
         <FormulateForm 
-            name="step_3"
             class="stepthree"
-            @submit="validateForm"
-            @input="validateForm"
         >
-            <div class="min-container">
+            <div class="min-container inputBreak">
                 <h2 :style="{marginBottom: '20px'}">Estudios</h2>
 
                 <div v-for="(study, index) in studies" :key="index" class="rowData" @click="removeStudy(index)">
-                    <p><b>Nivel:</b> {{study.grade}}</p>
-                    <p><b>Centro:</b> {{study.place}}</p>
-                    <p><b>Año:</b> {{study.age}}</p>
+                    <div class="head">
+                        <i class="icofont-hat-alt" :style="{ fontSize:'40px' }"></i>
+                    </div>
+                    <div class="info">
+                        <p><b>Nivel:</b> {{study.grade}}</p>
+                        <p><b>Centro:</b> {{study.place}}</p>
+                        <p><b>Año:</b> {{study.age}}</p>
+                    </div>
+
                 </div>
 
-                <div :style="{marginTop: '20px'}">
+                <div :style="{ display:'flex', flexDirection:'column', marginTop:'20px' }">
                     <FormulateInput v-model="studyModel.grade" name="stdGrado" type="select" label="Estudio" :options="options" />
-                    <FormulateInput v-model="studyModel.place" type="text" name="stdPlace" label="Centro de estudio" class="textInput" />
-                    <FormulateInput v-model="studyModel.age" type="number" name="stdAge" label="Año de graduación"  class="textInput" />
-                    <p class="stdAdd" @click="addStudy">Agregar</p>
+                    <FormulateInput v-model="studyModel.place" type="text" name="stdPlace" label="Centro de estudio" />
+                    <FormulateInput v-model="studyModel.age" type="number" name="stdAge" label="Año de graduación"  />
+                    <button @click="addStudy"><i class="icofont-plus-circle"></i> Agregar</button>
                 </div>
             </div>
 
             <div class="min-container" :style="{marginTop: '20px'}" id="languages">
                 <h2 :style="{marginBottom: '15px'}">Idiomas</h2>
-                <FormulateInput :style="{marginBottom: '5px', marginLeft: '30px'}" type="checkbox" :options="langOptions" v-model="languages" />
+                <FormulateInput :style="{marginBottom: '5px'}" type="checkbox" :options="langOptions" v-model="languages" :errors="langErr" />
 
-                <FormulateInput :style="{marginBottom: '5px', marginLeft: '30px'}" type="checkbox" label="Otros"  @change="otherLang = !otherLang" />
+                <FormulateInput :style="{marginBottom: '5px'}" type="checkbox" label="Otros"  @change="otherLang = !otherLang" />
                 <FormulateInput 
                     v-if="otherLang" 
                     type="text" 
-                    label="Escriba su otro idioma (Si son varios, separemos por coma (,))" 
+                    label="Escriba su(s) otro(s) idioma(s) (Si son varios, separemos por coma (,))" 
                     validation="required" 
-                    class="textInput"
                     v-model="otherlgn"
                 />
             </div>
+
+            <button @click="validateForm">Siguiente <i class="icofont-arrow-right"></i></button>
         </FormulateForm>
     </div>
 </template>
 
 <script>
+import { studySchema } from '../../utils/modelValidate';
+
 export default {
     data() {
         return {
@@ -64,7 +70,8 @@ export default {
             },
             studies: [],
             languages: [],
-            otherlgn: ''
+            otherlgn: '',
+            langErr: []
         }
     },
     methods: {
@@ -74,6 +81,18 @@ export default {
                 place: this.studyModel.place,
                 age: this.studyModel.age
             };
+
+            let { error } = studySchema.validate(study);
+
+            if (error) {
+                this.$throwAppMessage({
+                    message: error.details[0].message,
+                    icon: "icofont-close-circled",
+                    type: 'error',
+                }); 
+                return;
+            }
+
             this.studies.push(study);
 
             this.studyModel.grade ='';
@@ -84,17 +103,14 @@ export default {
             this.studies.splice(index, 1);
         },
         validate(e) {
-            this.validations[e.name] = { validity: !(e.hasErrors) }
+            this.validations[e.name] = e;
         },
-        validateForm(e = true) {
-            if(!e) {
-                return this.$emit("validation", false); 
-            }
+        validateForm() {
 
             let formResult = {
-                study: undefined,
-                languages: undefined,
-                otherLanguage: undefined
+                study: [],
+                languages: "",
+                otherLanguage: ""
             }
 
             if(this.studies.length > 0) {
@@ -109,20 +125,27 @@ export default {
                 formResult.otherLanguage = this.otherlgn;
             }
 
-            if(formResult.study != undefined && formResult.languages != undefined) {
-                this.$emit("validation", {result: formResult, pos: 3});
+            if(formResult.languages == undefined) {
+                this.$throwAppMessage({ 
+                    message: "Selecciona por lo menos un idioma",
+                    icon: "icofont-close-circled",
+                    type: 'error',
+                }); 
+                this.langErr = ['Selecciona por lo menos un idioma'];
+                return;
             }
+
+            this.$emit("validation", {result: formResult, pos: 3});
         }
     }
 }
 </script>
 
-<style scoped>
-    .stepthree{
-        border: 2px solid rgb(170, 170, 170);
-        max-width: 35vw;
-        min-width: 35vw;
-        padding: 5px 0px 25px 0px;
+<style lang="scss" scoped>
+    .stepthree {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
     }
 
     @media only screen and (max-width: 900px) {

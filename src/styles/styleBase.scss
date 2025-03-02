@@ -1,0 +1,30 @@
+/*  */
+.add-info {
+    width: 85px;
+    margin-left: auto;
+    margin-right: 20px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    border: 1px solid #00000080;
+    padding: 5px 10px;
+    border-radius: 5px;
+    user-select: none;
+    i {
+        font-size: 18px;
+        margin-right: 7px;
+    }
+}
+
+.blury-cnt {
+    background-color: #00000080;
+    height: calc(100% - 70px);
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 50;
+    width: 100%;
+    top: 70px;
+}

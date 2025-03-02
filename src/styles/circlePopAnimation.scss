@@ -1,0 +1,29 @@
+/* Animaciones de entrada y salida */
+/* Animaciones de entrada y salida con un efecto circular */
+.circle-blur-enter-active, .circle-blur-leave-active {
+    transition: clip-path 0.25s ease-in-out, opacity 0.3s;
+  }
+  
+  /* Estado inicial: círculo pequeño */
+  .circle-blur-enter {
+    clip-path: circle(0% at center);
+    opacity: 0;
+  }
+  
+  /* Estado final: cubre toda la pantalla */
+  .circle-blur-enter-to {
+    clip-path: circle(150% at center);
+    opacity: 1;
+  }
+  
+  /* Estado inicial al salir: cubre toda la pantalla */
+  .circle-blur-leave {
+    clip-path: circle(150% at center);
+    opacity: 1;
+  }
+  
+  /* Estado final al salir: círculo pequeño */
+  .circle-blur-leave-to {
+    clip-path: circle(0% at center);
+    opacity: 0;
+  }
