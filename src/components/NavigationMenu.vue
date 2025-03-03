@@ -6,10 +6,10 @@
 
         <div class="routes">
             <router-link :to="{ name: 'Registrar'}"><i class="icofont-duotone icofont-add-users"></i> Registro</router-link>
-            <router-link :to="{ name: 'Voluntarios'}" v-if="_allowViewAllUserPermission"><i class="icofont-duotone icofont-groups"></i> Listado de miembros</router-link>
-            <router-link :to="{ name: 'Estaciones'}"><i class="icofont-duotone icofont-cogs"></i> Estaciones</router-link>
-            <router-link :to="{ name: 'Departamentos'}"><i class="icofont-duotone icofont-cogs"></i> Departamentos</router-link>
-            <router-link :to="{ name: 'TiposVoluntario'}"><i class="icofont-duotone icofont-cogs"></i> Tipos de voluntario</router-link>
+            <router-link :to="{ name: 'Miembros'}" v-if="_allowViewAllUserPermission"><i class="icofont-duotone icofont-groups"></i> Listado de miembros</router-link>
+            <router-link :to="{ name: 'Escuelas'}"><i class="icofont-duotone icofont-cogs"></i> Escuelas</router-link>
+            <router-link :to="{ name: 'Grados'}"><i class="icofont-duotone icofont-cogs"></i> Grados</router-link>
+            <router-link :to="{ name: 'TiposMiembro'}"><i class="icofont-duotone icofont-cogs"></i> Tipos de miembro</router-link>
         </div>
     </div>
 </template>

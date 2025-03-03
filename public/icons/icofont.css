@@ -213,6 +213,11 @@ url("./fonts/icofont.woff") format("woff");
   content: "\f01c";
 }
 
+.icofont-location-pin:before
+{
+  content: "\ef79";
+}
+
 [class^="icofont-"].icofont-duotone,
 	[class*=" icofont-"].icofont-duotone
 {

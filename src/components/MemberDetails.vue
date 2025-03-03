@@ -124,14 +124,14 @@
 
 
             <h2>Informacion institucional</h2>
-            <EditableField @save="updateField" :type="'select'" :label="'Estacion'" :value="data.Estacion.id" :options="_estaciones" />
-            <EditableField @save="updateField" :type="'select'" :label="'Departamento'" :value="data.Departamento.id" :options="_departamentos" />
-            <EditableField @save="updateField" :type="'select'" :label="'Tipo voluntario'" :value="data.TipoVoluntario.id" :options="_tiposVoluntario" />
+            <EditableField @save="updateField" :type="'select'" :label="'Escuela'" :value="data.Escuela.id" :options="_escuelas" />
+            <EditableField @save="updateField" :type="'select'" :label="'Grado'" :value="data.Grado.id" :options="_grados" />
+            <EditableField @save="updateField" :type="'select'" :label="'Tipo miembro'" :value="data.TipoMiembro.id" :options="_tiposMiembro" />
             <EditableField @save="updateField" :type="'select'" :label="'Tiene identificacion'" :value="data.hasIdentification" :options="SiNoOptions" :_key="'hasIdentification'" :isYesNo="true" />
             <EditableField @save="updateField" :type="'text-area'" :label="'Identificaciones'" :value="data.idetifications" :_key="'idetifications'" v-if="data.hasIdentification" />
 
             <h2>Archivos</h2>
-            <input ref="inputFiles" @change="handleFileSelection" :style="{ display: 'none' }" type="file" multiple accept=".jpg, .jpeg, .png, .gif, .bmp, .webp, .pdf, .doc, .docx">
+            <input ref="inputFiles" @change="handleFileSelection" :style="{ display: 'none' }" type="file" multiple accept=".jpg, .jpeg, .png, .gif, .bmp, .pdf, .doc, .docx">
             <p class="add-info" @click="$refs.inputFiles.click()" v-if="_allowAddFilePermission"><i class="icofont-plus-circle"></i> Agregar</p>
             <img v-if="loadinFiles" class="rotating" src="../assets/spinner.png" alt="loading" :style="{ margin:' 20px auto 50px auto', left: 'calc(50% - 15px)', position:'relative' }">
 
@@ -304,7 +304,7 @@
             },
             async updateSpecialField(event) {
                 showFieldLoading(event.target);
-                let res = await Request.Patch.UpdateVoluntario({ id: this.data.id, field: { [event.field.key]: event.field.value } }, true).catch(() => hideFieldLoading(event.target)).finally(() => hideFieldLoading(event.target, false));
+                let res = await Request.Patch.UpdateMiembro({ id: this.data.id, field: { [event.field.key]: event.field.value } }, true).catch(() => hideFieldLoading(event.target)).finally(() => hideFieldLoading(event.target, false));
                 if (res?.status == 204) {
                     this.data[event.field.key] = event.field.value;
                     this.$throwAppMessage({ 
@@ -318,7 +318,7 @@
                 showFieldLoading(event.target);
                 let res;
                 if (event.field.key == "allowAccess") res = await Request.Patch.allowAccess({ id: this.data.id, field: { [event.field.key]: event.field.value } }).catch(() => hideFieldLoading(event.target)).finally(() => hideFieldLoading(event.target, false));
-                else res = await Request.Patch.UpdateVoluntario({ id: this.data.id, field: { [event.field.key]: event.field.value } }).catch(() => hideFieldLoading(event.target)).finally(() => hideFieldLoading(event.target, false));
+                else res = await Request.Patch.UpdateMiembro({ id: this.data.id, field: { [event.field.key]: event.field.value } }).catch(() => hideFieldLoading(event.target)).finally(() => hideFieldLoading(event.target, false));
                 
                 if (res?.status == 204) {
                     this.data[event.field.key] = event.field.value;
@@ -619,19 +619,19 @@
                 provincias?.map(p => result.push({ key: p.provincia_id, value: p.provincia }));
                 return result;
             },
-            _estaciones() {
+            _escuelas() {
                 let result = [];
-                this.dictionaries?.estaciones?.map(e => result.push({ key: e.id, value: `Estacion ${e.numero}` }));
+                this.dictionaries?.escuelas?.map(e => result.push({ key: e.id, value: `Escuela ${e.numero}` }));
                 return result;
             },
-            _departamentos() {
+            _grados() {
                 let result = [];
-                this.dictionaries?.departamentos?.map(e => result.push({ key: e.id, value: e.departamento }));
+                this.dictionaries?.grados?.map(e => result.push({ key: e.id, value: e.grado }));
                 return result;
             },
-            _tiposVoluntario() {
+            _tiposMiembro() {
                 let result = [];
-                this.dictionaries?.tipoVoluntarios?.map(e => result.push({ key: e.id, value: e.tipo }));
+                this.dictionaries?.tipoMiembros?.map(e => result.push({ key: e.id, value: e.tipo }));
                 return result;
             },
             _archivos() {

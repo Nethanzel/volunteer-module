@@ -1,12 +1,12 @@
 <template>
     <div class="stations">
-        <h1>Estaciones</h1>
+        <h1>Escuelas</h1>
         <p class="add-info" @click="showBlur = true" v-if="_allowCreateStationPermission"><i class="icofont-plus-circle"></i> Agregar</p>
 
         <img class="rotating" src="../assets/spinner.png" alt="loadin" v-if="loadin">
 
         <DynamicConfigurationManager 
-            :data="estaciones" 
+            :data="escuelas" 
             :fields="_fields"
             :saveEdited="_allowEditStationPermission"
             :allowDelete="_allowDeleteStationPermission"
@@ -23,7 +23,7 @@
                     @ready="hideCreatingLoading = $event"
                     @done="handleCreateStation($event)"
                     :fields="_fields" 
-                    :title="'Crear estación'" 
+                    :title="'Crear escuela'" 
                 />
             </div>
         </transition>
@@ -45,7 +45,7 @@
         },
         data() {
             return {
-                estaciones: [],
+                escuelas: [],
                 loadin: true,
                 provincias,
                 showBlur: false,
@@ -53,13 +53,13 @@
             }
         },
         mounted() {
-            this.getEstaciones();
+            this.getEscuelas();
         },
         methods: {
-            async getEstaciones() {
+            async getEscuelas() {
                 this.loadin = true;
-                let result = await Request.Get.Estaciones().catch(() => null).finally(() => this.loadin = false);
-                if (result.status == 200) this.estaciones = result.data;
+                let result = await Request.Get.Escuelas().catch(() => null).finally(() => this.loadin = false);
+                if (result.status == 200) this.escuelas = result.data;
             },
             async handleUpdateField(e) {
                 showFieldLoading(e.target);
@@ -71,8 +71,8 @@
                 }
                 let res = await Request.Patch.UpdateStacion(obj).catch(() => hideFieldLoading(e.target)).finally(() => hideFieldLoading(e.target))
                 if (res?.status == 204) {
-                    this.estaciones.find(x => x.id == e.id)[e.field.key] = e.field.value;
-                    if (e.field.key == 'municipio') this.estaciones.find(x => x.id == e.id)["provincia"] = obj.field.provincia;
+                    this.escuelas.find(x => x.id == e.id)[e.field.key] = e.field.value;
+                    if (e.field.key == 'municipio') this.escuelas.find(x => x.id == e.id)["provincia"] = obj.field.provincia;
 
                     this.$throwAppMessage({ 
                         message: "Informacion actualizada!",
@@ -82,23 +82,23 @@
                 }
             },
             async handleDelete(e) {
-                let res = await Request.Delete.removeEstacion(e.id).catch(() => e.stopLoadin(e.id)).finally(() => e.stopLoadin(e.id));
+                let res = await Request.Delete.removeEscuela(e.id).catch(() => e.stopLoadin(e.id)).finally(() => e.stopLoadin(e.id));
                 if (res?.status == 204) {
-                    this.estaciones.find(x => x.id == e.id).deleted = false;
-                    this.getEstaciones();
+                    this.escuelas.find(x => x.id == e.id).deleted = false;
+                    this.getEscuelas();
                     this.$throwAppMessage({ 
-                        message: "Estacion borrada!",
+                        message: "Escuela borrada!",
                         icon: "icofont-check-circled",
                         type: 'ok',
                     });
                 }
             },
             async handleRestore(e) {
-                let res = await Request.Patch.restoreEstacion(e.id).catch(() => e.stopLoadin(e.id)).finally(() => e.stopLoadin(e.id));
+                let res = await Request.Patch.restoreEscuela(e.id).catch(() => e.stopLoadin(e.id)).finally(() => e.stopLoadin(e.id));
                 if (res?.status == 204) {
-                    this.estaciones.find(x => x.id == e.id).deleted = false;
+                    this.escuelas.find(x => x.id == e.id).deleted = false;
                     this.$throwAppMessage({ 
-                        message: "Estacion restaurada!",
+                        message: "Escuela restaurada!",
                         icon: "icofont-check-circled",
                         type: 'ok',
                     });
@@ -110,7 +110,7 @@
             async handleCreateStation(e) {
                 if (!e.municipio) {
                     return this.$throwAppMessage({ 
-                        message: "Elige el municipio de la estación!",
+                        message: "Elige el municipio de la escuela!",
                         icon: "icofont-close-circled",
                         type: 'error',
                     });
@@ -121,9 +121,9 @@
                 let res = await Request.Post.newStation(e).catch(() => this.hideCreatingLoading()).finally(() => this.hideCreatingLoading());
                 if (res?.status == 201) {
                     this.handleHideBlur();
-                    this.getEstaciones();
+                    this.getEscuelas();
                     this.$throwAppMessage({ 
-                        message: "Estacion creada!",
+                        message: "Escuela creada!",
                         icon: "icofont-check-circled",
                         type: 'ok',
                     });

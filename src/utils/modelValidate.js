@@ -29,6 +29,14 @@ export const contactSchema = Joi.object({
         "string.pattern.base": "El número de teléfono no es válido",
         "string.empty": "El número de teléfono no puede estar vacío",
         "any.required": "El número de teléfono es obligatorio"
+    }),
+
+    otherPhone: Joi.string()
+    .pattern(/^(?:\+?\d{1,3})?\s?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/)
+    .optional()
+    .allow(null, '')
+    .messages({
+        "string.pattern.base": "El número de teléfono (segundo) no es válido",
     })
 });
 
@@ -69,17 +77,16 @@ export const studySchema = Joi.object({
 export const userContactSchema = Joi.object({
     telefono: Joi.string()
     .pattern(/^(?:\+?\d{1,3})?\s?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/)
-    .allow("")
+    .allow("", null)
     .messages({
         "string.pattern.base": "El número de teléfono no es válido",
     }),
 
     celular: Joi.string()
     .pattern(/^(?:\+?\d{1,3})?\s?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/)
-    .required()
+    .allow("", null)
     .messages({
         "string.pattern.base": "El número de celular no es válido",
-        "any.required": "El número de celular es obligatorio",
     })
 });
 

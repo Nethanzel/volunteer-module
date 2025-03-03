@@ -86,16 +86,16 @@ Requester.interceptors.request.use((request) => {
 
 const axiosRequest = {
     Post: {
-        newVolunteer: async (data) => {
-            let result = await Requester.post('api/creators/voluntario', data, { headers: { Authorization: "*" } });
+        newMember: async (data) => {
+            let result = await Requester.post('api/creators/miembro', data, { headers: { Authorization: "*" } });
             return result
         },
         newStation: async (data) => {
-            let result = await Requester.post('api/creators/estacion', data, { headers: { Authorization: "*" } });
+            let result = await Requester.post('api/creators/escuela', data, { headers: { Authorization: "*" } });
             return result
         },
         newDepartment: async (data) => {
-            let result = await Requester.post('api/creators/departamento', data, { headers: { Authorization: "*" } });
+            let result = await Requester.post('api/creators/grado', data, { headers: { Authorization: "*" } });
             return result
         },
         newUserType: async (data) => {
@@ -112,29 +112,33 @@ const axiosRequest = {
         }
     },
     Get: {
-        tipoVoluntarios: async () => {
-            let tipos = await Requester.get('api/common/user-types', { headers: { Authorization: "*" } });
+        tipoMiembros: async () => {
+            let tipos = await Requester.get('api/common/tipo-miembro', { headers: { Authorization: "*" } });
             return tipos;
         },
-        Departamentos: async () => {
-            let departamentos = await Requester.get('api/common/departamentos', { headers: { Authorization: "*" } });
-            return departamentos;
+        Grados: async () => {
+            let grados = await Requester.get('api/common/grados', { headers: { Authorization: "*" } });
+            return grados;
         },
-        Estaciones: async () => {
-            let estaciones = await Requester.get('api/common/estaciones', { headers: { Authorization: "*" } });
-            return estaciones;
+        Escuelas: async () => {
+            let escuelas = await Requester.get('api/common/escuelas', { headers: { Authorization: "*" } });
+            return escuelas;
+        },
+        tipoEntrenamientos: async () => {
+            let tipos = await Requester.get('api/common/tipo-entrenamiento');
+            return tipos;
         },
         Permisos: async () => {
             let permisos = await Requester.get('api/getters/permisos', { headers: { Authorization: "*" } });
             return permisos;
         },
-        Voluntarios: async (page) => {
-            let voluntarios = await Requester.get(`api/getters/voluntarios?page=${page}`, { headers: { Authorization: "*" } });
-            return voluntarios;
+        Miembros: async (page) => {
+            let miembros = await Requester.get(`api/getters/miembros?page=${page}`, { headers: { Authorization: "*" } });
+            return miembros;
         },
-        Voluntario: async (identity) => {
-            let voluntario = await Requester.get(`api/getters/voluntario?id=${identity}`, { headers: { Authorization: "*" } });
-            return voluntario;
+        Miembro: async (identity) => {
+            let miembro = await Requester.get(`api/getters/miembro?id=${identity}`, { headers: { Authorization: "*" } });
+            return miembro;
         },
         Files: async (identity) => {
             let files = await Requester.get(`api/files?id=${identity}`, { headers: { Authorization: "*" } });
@@ -149,7 +153,7 @@ const axiosRequest = {
             return result
         },
         validateIdentityExists: async (identity, email) => {
-            let result = await Requester.get(`api/common/identification-existis?identity=${identity}&email=${email}`);
+            let result = await Requester.get(`api/common/identification-existis?${identity ? `identity=${identity}` : ''}${email ? `&email=${email}` : ''}`);
             return result
         }
     },
@@ -166,12 +170,12 @@ const axiosRequest = {
             let response = await Requester.delete(`api/erase/user-type?id=${id}`, { headers: { Authorization: '*' } });
             return response;
         },
-        removeEstacion: async (id) => {
-            let response = await Requester.delete(`api/erase/estacion?id=${id}`, { headers: { Authorization: '*' } });
+        removeEscuela: async (id) => {
+            let response = await Requester.delete(`api/erase/escuela?id=${id}`, { headers: { Authorization: '*' } });
             return response;
         },
         removeDepartment: async (id) => {
-            let response = await Requester.delete(`api/erase/department?id=${id}`, { headers: { Authorization: '*' } });
+            let response = await Requester.delete(`api/erase/level?id=${id}`, { headers: { Authorization: '*' } });
             return response;
         },
         removeFile: async (data) => {
@@ -183,16 +187,16 @@ const axiosRequest = {
        
     },
     Patch: {
-        UpdateVoluntario: async (field, status = false) => {
-            let response = await Requester.patch(`api/setters/voluntario${ status ? '/status' : '' }`, field, { headers: { Authorization: "*" } });
+        UpdateMiembro: async (field, status = false) => {
+            let response = await Requester.patch(`api/setters/miembro${ status ? '/status' : '' }`, field, { headers: { Authorization: "*" } });
             return response;
         },
         UpdateDepartment: async (field) => {
-            let response = await Requester.patch('api/setters/department', field, { headers: { Authorization: "*" } });
+            let response = await Requester.patch('api/setters/level', field, { headers: { Authorization: "*" } });
             return response;
         },
         UpdateStacion: async (field) => {
-            let response = await Requester.patch('api/setters/estacion', field, { headers: { Authorization: "*" } });
+            let response = await Requester.patch('api/setters/escuela', field, { headers: { Authorization: "*" } });
             return response;
         },
         UpdateUserType: async (field) => {
@@ -223,12 +227,12 @@ const axiosRequest = {
             let response = await Requester.patch(`api/setters/restore/user-type?id=${id}`, null, { headers: { Authorization: '*' } });
             return response;
         },
-        restoreEstacion: async (id) => {
-            let response = await Requester.patch(`api/setters/restore/estacion?id=${id}`, null, { headers: { Authorization: '*' } });
+        restoreEscuela: async (id) => {
+            let response = await Requester.patch(`api/setters/restore/escuela?id=${id}`, null, { headers: { Authorization: '*' } });
             return response;
         },
         restoreDepartment: async (id) => {
-            let response = await Requester.patch(`api/setters/restore/department?id=${id}`, null, { headers: { Authorization: '*' } });
+            let response = await Requester.patch(`api/setters/restore/level?id=${id}`, null, { headers: { Authorization: '*' } });
             return response;
         },
         restoreFile: async (data) => {

@@ -5,8 +5,9 @@
             <h1>{{Action2Show.titulo}}</h1>
             <p>{{Action2Show.mensaje}}</p>
 
-            <div class="actions" v-if="from.toLowerCase() == 'registro'" :style="{ display:'flex', flexDirection:'column', alignItems:'flex-end' }">
-                <p :to="{ name: 'Registrar'}" @click="$emit('return')" >Volver a registro <i class="icofont-arrow-right"></i></p>
+            <div class="actions" v-if="from.toLowerCase() == 'registro'" :style="{ display:'flex', flexDirection:'column', alignItems:'flex-start' }">
+                <p @click="$emit('retry')" ><span :style="{ marginLeft:'6px' }">Reintentar registro</span> <i class="icofont-refresh" :style="{ fontSize:'20px' }"></i></p>
+                <p @click="$emit('return')" >Volver a registro <i class="icofont-arrow-right"></i></p>
                 <router-link :to="{ name: 'Home'}" >Ir a inicio <i class="icofont-arrow-right"></i></router-link>
 
             </div>
@@ -106,17 +107,18 @@ export default {
         .actions {
             a, p {
                 display: flex;
+                flex-direction: row-reverse;
                 text-decoration: none;
                 align-items: center;
                 cursor: pointer;
                 i {
                     font-size: 25px;
                     margin: 0 0;
-                    margin-left: 5px;
+                    margin-right: 10px;
                 }
             }
             p {
-                margin: 0 0px 5px 0px;
+                margin: 0 0px 8px 0px;
             }
         }
     }

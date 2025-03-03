@@ -17,9 +17,9 @@ const routes = [
     meta: {}
   },
   {
-    path: '/list',
-    name: 'Voluntarios',
-    component: () => import('../views/VolunteerList.vue'),
+    path: '/member-list',
+    name: 'Miembros',
+    component: () => import('../views/MemberList.vue'),
     meta: {
       requiresAuth: true,
       requiredPermission: ['QVL']
@@ -39,24 +39,24 @@ const routes = [
     component: () => import('../views/Login.vue')
   },
   {
-    path: '/stations',
-    name: 'Estaciones',
-    component: () => import('../views/Stations.vue'),
+    path: '/schools',
+    name: 'Escuelas',
+    component: () => import('../views/Schools.vue'),
     meta: {
       requiresAuth: true
     }
   },
   {
-    path: '/departments',
-    name: 'Departamentos',
-    component: () => import('../views/Departments.vue'),
+    path: '/levels',
+    name: 'Grados',
+    component: () => import('../views/Levels.vue'),
     meta: {
       requiresAuth: true
     }
   },
   {
-    path: '/types',
-    name: 'TiposVoluntario',
+    path: '/user-types',
+    name: 'TiposMiembro',
     component: () => import('../views/UserTypes.vue'),
     meta: {
       requiresAuth: true

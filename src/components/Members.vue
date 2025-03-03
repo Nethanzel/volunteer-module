@@ -1,16 +1,16 @@
 <template>
     <div class="record-list">
         <div v-if="!isRequesting" class="dataview">
-            <div :class="{ element: true, nocheck: !voluntario.checked, deleted:voluntario.deleted }" v-for="voluntario in Voluntarios" :key="voluntario.identity" @click="$emit('details', voluntario)">
+            <div :class="{ element: true, nocheck: !miembro.checked, deleted:miembro.deleted }" v-for="miembro in Miembros" :key="miembro.identity" @click="$emit('details', miembro)">
                 <div class="photo">
-                    <img v-if="showProfilePhoto(voluntario.Archivos)" :src="getProfilePhoto(voluntario.Archivos)" alt="photo">
+                    <img v-if="showProfilePhoto(miembro.Archivos)" :src="getProfilePhoto(miembro.Archivos)" alt="photo">
                     <i v-else class="icofont-warning"></i>
                 </div>
                 <div class="info">
-                    <p>{{formatIdentification(voluntario.identity)}}</p>
-                    <p>{{voluntario.nombre}} {{voluntario.apellido}}</p>
-                    <p v-if="voluntario.Estacion">Estación {{voluntario.Estacion.numero}} - {{getMunicipio(voluntario.Estacion.municipio)}}</p>
-                    <p>{{formatDate(voluntario.createdAt)}}</p>
+                    <p>{{formatIdentification(miembro.identity)}}</p>
+                    <p>{{miembro.nombre}} {{miembro.apellido}}</p>
+                    <p v-if="miembro.Escuela">Escuela {{miembro.Escuela.numero}} - {{getMunicipio(miembro.Escuela.municipio)}}</p>
+                    <p>{{formatDate(miembro.createdAt)}}</p>
                 </div>
             </div>
         </div>
@@ -18,7 +18,7 @@
             <p 
                 v-for="page in pages" 
                 :key="page" 
-                @click="getVolunteers(page)"
+                @click="getMembers(page)"
                 :style="{
                     color: page == cPage ? 'white' : 'black',
                     backgroundColor: page == cPage ? 'red' : 'transparent',
@@ -35,23 +35,23 @@
 import { formatIdentification, formatDate } from "../utils/inforFormat.js"
 import municipios from '../assets/data/municipios.json'
 import { bufferToBase64 } from "../utils/image.js";
-import Request from "./../request/instance.js";
+import Request from "../request/instance.js";
 
 export default {
     data() {
         return {
             isRequesting: false,
-            Voluntarios: null,
+            Miembros: null,
             pages: 0,
             cPage: 0
         }
     },
     methods: {
         formatIdentification,
-        async getVolunteers(page) {
+        async getMembers(page) {
             this.isRequesting = true;
 
-            let requestResult = await Request.Get.Voluntarios(page ? page : 1)
+            let requestResult = await Request.Get.Miembros(page ? page : 1)
                 .catch(() => null)
                 .finally(() => this.isRequesting = false);
             
@@ -59,7 +59,7 @@ export default {
                 let { rows, limit, count } = requestResult.data;
                 this.pages = Math.ceil(count / limit);
                 this.cPage = page ? page : 1;
-                this.Voluntarios = rows;
+                this.Miembros = rows;
             } else {
                 //show errors here
             }
@@ -82,7 +82,7 @@ export default {
         }
     },
     mounted() {
-        this.getVolunteers();
+        this.getMembers();
     }
 }
 </script>

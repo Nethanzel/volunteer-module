@@ -1,12 +1,12 @@
 <template>
     <div class="deps">
-        <h1>Departamentos</h1>
+        <h1>Grados</h1>
         <p class="add-info" @click="showBlur = true" v-if="_allowCreateDepPermission"><i class="icofont-plus-circle"></i> Agregar</p>
 
         <img class="rotating" src="../assets/spinner.png" alt="loadin" v-if="loadin">
 
         <DynamicConfigurationManager 
-            :data="departamentos" 
+            :data="grados" 
             :fields="fields"
             :saveEdited="_allowEditDepPermission"
             :allowDelete="_allowDeleteDepPermission"
@@ -23,7 +23,7 @@
                     @ready="hideCreatingLoading = $event"
                     @done="handleCreateDepartment($event)"
                     :fields="fields" 
-                    :title="'Crear departamento'" 
+                    :title="'Crear grado'" 
                 />
             </div>
         </transition>
@@ -45,11 +45,11 @@
             return {
                 showBlur: false,
                 loadin: true,
-                departamentos: [],
+                grados: [],
                 fields: [
                     {
-                        key: 'departamento',
-                        display: 'Departamento',
+                        key: 'grado',
+                        display: 'Grado',
                         type: 'text'
                     },
                     {
@@ -67,8 +67,8 @@
         methods: {
             async getDepartmentos() {
                 this.loadin = true;
-                let result = await Request.Get.Departamentos().catch(() => null).finally(() => this.loadin = false);
-                if (result.status == 200) this.departamentos = result.data;
+                let result = await Request.Get.Grados().catch(() => null).finally(() => this.loadin = false);
+                if (result.status == 200) this.grados = result.data;
             },
             async updateField(e) {
                 showFieldLoading(e.target);
@@ -76,7 +76,7 @@
                 let obj = { id: 1, field: { [e.field.key]: e.field.value } }
                 let res = await Request.Patch.UpdateDepartment(obj).catch(() => hideFieldLoading(e.target)).finally(() => hideFieldLoading(e.target))
                 if (res?.status == 204) {
-                    this.departamentos.find(x => x.id == e.id)[e.field.key] = e.field.value;
+                    this.grados.find(x => x.id == e.id)[e.field.key] = e.field.value;
                     this.$throwAppMessage({ 
                         message: "Informacion actualizada!",
                         icon: "icofont-check-circled",
@@ -87,9 +87,9 @@
             async handleDelete(e) {
                 let res = await Request.Delete.removeDepartment(e.id).catch(() => e.stopLoadin(e.id)).finally(() => e.stopLoadin(e.id));
                 if (res?.status == 204) {
-                    this.departamentos.find(x => x.id == e.id).deleted = true;
+                    this.grados.find(x => x.id == e.id).deleted = true;
                     this.$throwAppMessage({ 
-                        message: "Departamento borrado!",
+                        message: "Grado borrado!",
                         icon: "icofont-check-circled",
                         type: 'ok',
                     });
@@ -98,9 +98,9 @@
             async handleRestore(e) {
                 let res = await Request.Patch.restoreDepartment(e.id).catch(() => e.stopLoadin(e.id)).finally(() => e.stopLoadin(e.id));
                 if (res?.status == 204) {
-                    this.departamentos.find(x => x.id == e.id).deleted = false;
+                    this.grados.find(x => x.id == e.id).deleted = false;
                     this.$throwAppMessage({ 
-                        message: "Departamento restaurado!",
+                        message: "Grado restaurado!",
                         icon: "icofont-check-circled",
                         type: 'ok',
                     });
@@ -115,7 +115,7 @@
                     this.handleHideBlur();
                     this.getDepartmentos();
                     this.$throwAppMessage({ 
-                        message: "Departamento creado!",
+                        message: "Grado creado!",
                         icon: "icofont-check-circled",
                         type: 'ok',
                     });

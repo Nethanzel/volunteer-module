@@ -40,7 +40,7 @@ textarea {
     resize: none;
 }
 
-input[type=text], input[type=date], input[type=number], select, textarea {
+input[type=text], input[type=date], input[type=number], input[type=email], select, textarea {
     background: #fff;
     border: 2px solid #b4b4b4;
     border-radius: 3px;
@@ -67,5 +67,98 @@ button {
     &:disabled {
         cursor: default;
         opacity: .5;
+    }
+}
+
+.custom-radio {
+    display: flex;
+    flex-wrap: wrap;
+
+    .option-wrapper {
+        overflow: hidden;
+        overflow-y: auto;
+        max-height: 300px;
+        width: 100%;
+    }
+
+    .option {
+      outline: 1px solid rgb(215, 215, 215);
+      border-left: 4px solid rgb(105, 105, 105);
+  
+      border-top-right-radius: 5px;
+      border-bottom-right-radius: 5px;
+  
+      margin: 8px 10px;
+      padding: 5px 10px 10px 10px;
+      text-align: justify;
+      cursor: pointer;
+      font-size: 15px;
+      margin-bottom: 5px;
+      line-height: 20px;
+      width: calc(100% - (25px + 25px));
+  
+      background-color: #ffffff;
+  
+      label  {
+        margin-bottom: 5px;
+        margin-top: 5px;
+        font-weight: bold;
+        font-size: 16px;
+      }
+  
+      span, label {
+        pointer-events: none;
+      }
+  
+      [type="radio"]:checked,
+      [type="radio"]:not(:checked) {
+          position: absolute;
+          left: -9999px;
+      }
+      [type="radio"]:checked + label,
+      [type="radio"]:not(:checked) + label
+      {
+          position: relative;
+          padding-left: 25px;
+          cursor: pointer;
+          line-height: 18px;
+          display: inline-block;
+          color: rgb(0, 0, 0);
+      }
+      [type="radio"]:checked + label:before,
+      [type="radio"]:not(:checked) + label:before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 15px;
+          height: 15px;
+          border: 1px solid rgb(156, 156, 156);
+          border-radius: 100%;
+          background: #fff;
+      }
+      [type="radio"]:checked + label:after,
+      [type="radio"]:not(:checked) + label:after {
+          content: '';
+          width: 11px;
+          height: 11px;
+          background: #646464;
+          position: absolute;
+          top: 3px;
+          left: 3px;
+          border-radius: 100%;
+          -webkit-transition: all 0.2s ease;
+          transition: all 0.2s ease;
+      }
+      [type="radio"]:not(:checked) + label:after {
+          opacity: 0;
+          -webkit-transform: scale(0);
+          transform: scale(0);
+      }
+      [type="radio"]:checked + label:after {
+          opacity: 1;
+          -webkit-transform: scale(1);
+          transform: scale(1);
+      }
     }
 }

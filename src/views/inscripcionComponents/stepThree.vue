@@ -1,88 +1,168 @@
 <template>
-   <div class="stepcontainer">
-        <h2>Formacion Academica</h2>
+  <div class="stepcontainer">
+        <h2>Datos de Salud</h2>
         <FormulateForm 
             class="stepthree"
+            @validation="validate"
+            invalid-message="Completa la informacion requerida"
         >
+            <!-- <div class="min-container">
+                <FormulateInput 
+                    v-model="bloodInput"
+                    validation="required"
+                    name="blood"
+                    type="select"
+                    label="Tipo de sangre"
+                    validation-name="Tipo de sangre"
+                    :options="bloodOptions" 
+                    @validation="validate($event)" 
+                />
+            </div> -->
+
             <div class="min-container inputBreak">
-                <h2 :style="{marginBottom: '20px'}">Estudios</h2>
+                <p></p>
+                <div :style="{ display:'flex', flexDirection:'column' }">
+                    <h2>En caso de emergencia, llamar a:</h2>
+                    <p :style="{ marginLeft: '20px', fontWeight:'bold', color:'#7f7f7f' }">Agregar al menos una persona</p>
 
-                <div v-for="(study, index) in studies" :key="index" class="rowData" @click="removeStudy(index)">
-                    <div class="head">
-                        <i class="icofont-hat-alt" :style="{ fontSize:'40px' }"></i>
+                    <p
+                        v-if="familyRequired"
+                        :style="{ color: '#ff3300', marginTop: '8px', fontSize: '13px', fontWeight:'bold',
+                            marginLeft: '20px', fontFamily: 'Avenir, Helvetica, Arial, sans-serif'
+                        }"
+                    >Esta información es necesaria.</p>
+
+
+                    <div v-for="(member, index) in family" :key="index" class="rowData" @click="removeFamily(index)">
+                        <div class="head">
+                            <i class="icofont-ui-user"></i>
+                        </div>
+                        <div class="info">
+
+                            <p><b>Nombre:</b> {{member.name}}</p>
+                            <p><b>Parentezco:</b> {{member.relation}}</p>
+                            <p><b>Telefono/Celular:</b> {{member.phone}}</p>
+                        </div>
+
                     </div>
-                    <div class="info">
-                        <p><b>Nivel:</b> {{study.grade}}</p>
-                        <p><b>Centro:</b> {{study.place}}</p>
-                        <p><b>Año:</b> {{study.age}}</p>
-                    </div>
 
-                </div>
+                    <FormulateInput v-model="familyModel.name" type="text" name="Nombre" label="Nombre" />
+                    <FormulateInput v-model="familyModel.relation" type="text" name="Parentezco" label="Parentezco" />
+                    <FormulateInput v-model="familyModel.phone" type="text" name="Telefono/Celular" label="Telefono de contacto" />
 
-                <div :style="{ display:'flex', flexDirection:'column', marginTop:'20px' }">
-                    <FormulateInput v-model="studyModel.grade" name="stdGrado" type="select" label="Estudio" :options="options" />
-                    <FormulateInput v-model="studyModel.place" type="text" name="stdPlace" label="Centro de estudio" />
-                    <FormulateInput v-model="studyModel.age" type="number" name="stdAge" label="Año de graduación"  />
-                    <button @click="addStudy"><i class="icofont-plus-circle"></i> Agregar</button>
+                    <button @click="addFamily"><i class="icofont-plus-circle"></i> Agregar</button>
                 </div>
             </div>
 
-            <div class="min-container" :style="{marginTop: '20px'}" id="languages">
-                <h2 :style="{marginBottom: '15px'}">Idiomas</h2>
-                <FormulateInput :style="{marginBottom: '5px'}" type="checkbox" :options="langOptions" v-model="languages" :errors="langErr" />
+            <div class="min-container inputBreak">
+                <FormulateInput type="group" name="deseases">
+                    <FormulateInput name="sickness" type="checkbox" label="¿Sufre alguna enfermedad/condición?" @change="desease.state = !desease.state" :style="{ marginBottom:'10px' }" />
+                    <FormulateInput 
+                        v-if="desease.state" 
+                        type="textarea" 
+                        name="sicknessDetails" 
+                        label="Especifique su enfermedad/condición (seperados por coma (,)" 
+                        validation="required"
+                        validation-name="Detalle enfermedad/condición"
+                        @validation="validate($event)"
+                        v-model="desease.contents"
+                    />
+                </FormulateInput>
 
-                <FormulateInput :style="{marginBottom: '5px'}" type="checkbox" label="Otros"  @change="otherLang = !otherLang" />
-                <FormulateInput 
-                    v-if="otherLang" 
-                    type="text" 
-                    label="Escriba su(s) otro(s) idioma(s) (Si son varios, separemos por coma (,))" 
-                    validation="required" 
-                    v-model="otherlgn"
-                />
+                <FormulateInput type="group" name="medicines" >
+                    <FormulateInput name="terms" type="checkbox" label="¿Es alergico a algun medicamento?" @change="medicines.state = !medicines.state" :style="{ marginBottom:'10px' }" />
+                    <FormulateInput 
+                        v-if="medicines.state" 
+                        type="textarea" 
+                        name="allergies" 
+                        label="Especifique los medicamentos que requiere (seperados por coma (,))"
+                        validation-name="Detalle medicamentos"
+                        validation="required" 
+                        @validation="validate($event)" 
+                        v-model="medicines.contents"
+                    />
+                </FormulateInput>
+
+                <FormulateInput type="group" name="healthAsurance">
+                    <FormulateInput name="assurance" type="checkbox" label="¿Tiene seguro de salud?" @change="assurance.state = !assurance.state" :style="{ marginBottom:'10px' }" />
+                    <FormulateInput 
+                        v-if="assurance.state" 
+                        type="text" 
+                        name="assuranceCompany" 
+                        label="Proveedor (compañia)" 
+                        validation="required"
+                        validation-name="Proveedor"
+                        @validation="validate($event)"
+                        v-model="assurance.company"
+                    />
+                    <FormulateInput 
+                        v-if="assurance.state"
+                        type="text" 
+                        name="assuranceCode" 
+                        label="Código afiliado" 
+                        validation="required"
+                        validation-name="Código afiliado"
+                        @validation="validate($event)"
+                        v-model="assurance.code"
+                    />
+                </FormulateInput>
             </div>
 
             <button @click="validateForm">Siguiente <i class="icofont-arrow-right"></i></button>
+
         </FormulateForm>
     </div>
 </template>
 
 <script>
-import { studySchema } from '../../utils/modelValidate';
+import { contactSchema } from '../../utils/modelValidate';
 
 export default {
     data() {
         return {
-            studyModel: {
-                grade: '',
-                place: '',
-                age: ''                
+            familyModel: {
+                name: '',
+                relation: '',
+                phone: ''
             },
-            otherLang: false,
-            langOptions: {
-                spanish: "Español",
-                english: "Ingles",
-                french: "Frances"
+            medicines: {
+                state: false,
+                contents: ''
             },
-            options: { 
-                basica: 'Básica', 
-                secundaria: 'Secundaria (Bachiller/Highschool)', 
-                universidad: 'Universidad'
+            desease: {
+                state: false,
+                contents: ''
             },
-            studies: [],
-            languages: [],
-            otherlgn: '',
-            langErr: []
+            assurance: {
+                state: false,
+                company: '',
+                code: ''
+            },
+            /* bloodOptions: {
+                "O-": "O-",
+                "O+": "O+",
+                "A-": "A-",
+                "A+": "A+",
+                "B-": "B-",
+                "B+": "B+",
+                "AB-": "AB-",
+                "AB+": "AB+",
+            }, */
+            family: [],
+            validations: {},
+            familyRequired: false,
+            bloodInput: ''
         }
     },
     methods: {
-        addStudy() {
-            let study = {
-                grade: this.studyModel.grade,
-                place: this.studyModel.place,
-                age: this.studyModel.age
+        addFamily() {
+            let familyMember = {
+                name: this.familyModel.name,
+                relation: this.familyModel.relation,
+                phone: this.familyModel.phone
             };
 
-            let { error } = studySchema.validate(study);
+            let { error } = contactSchema.validate(familyMember);
 
             if (error) {
                 this.$throwAppMessage({
@@ -93,65 +173,97 @@ export default {
                 return;
             }
 
-            this.studies.push(study);
-
-            this.studyModel.grade ='';
-            this.studyModel.place ='';
-            this.studyModel.age = '';
+            this.family.push(familyMember);
+            this.familyRequired = false;
+            
+            this.familyModel.name = '';
+            this.familyModel.relation = '';
+            this.familyModel.phone = '';
         },
-        removeStudy(index) {
-            this.studies.splice(index, 1);
+        removeFamily(index) {
+            this.family.splice(index, 1);
         },
         validate(e) {
             this.validations[e.name] = e;
         },
         validateForm() {
+            for (var input in this.validations) {
+                if(this.validations[input].hasErrors) {
+                    this.$throwAppMessage({ 
+                        message: this.validations[input].errors[0],
+                        icon: "icofont-close-circled",
+                        type: 'error',
+                    }); 
+                    return;
+                }
+            }
+
+            if(this.family.length < 1) {
+                this.familyRequired = true;
+            }
 
             let formResult = {
-                study: [],
-                languages: "",
-                otherLanguage: ""
+                desease: {
+                    state : false
+                },
+                medicine: {
+                    state : false
+                },
+                assurance: {
+                    state: false
+                },
+                emergencyContacts: []
             }
 
-            if(this.studies.length > 0) {
-                formResult.study = this.studies;
-            }
-
-            if(this.languages.length > 0) {
-                formResult.languages = this.languages;
-            }
-
-            if(this.otherLang) {
-                formResult.otherLanguage = this.otherlgn;
-            }
-
-            if(formResult.languages == undefined) {
-                this.$throwAppMessage({ 
-                    message: "Selecciona por lo menos un idioma",
+            if(this.family.length > 0) {
+                this.familyRequired = false;
+                formResult.emergencyContacts = this.family;
+            } else {
+                this.familyRequired = true;
+                this.$throwAppMessage({
+                    message: "Debe agregar al menos un contacto",
                     icon: "icofont-close-circled",
                     type: 'error',
                 }); 
-                this.langErr = ['Selecciona por lo menos un idioma'];
                 return;
+            }
+
+            if(this.desease.state) {
+                formResult.desease.state = true;
+                formResult.desease.contents = this.desease.contents;
+            }
+
+            if(this.medicines.state) {
+                formResult.medicine.state = true;
+                formResult.medicine.contents = this.medicines.contents;
+            }
+
+            if(this.assurance.state) {
+                formResult.assurance.state = true;
+                formResult.assurance.company = this.assurance.company;
+                formResult.assurance.code = this.assurance.code;
             }
 
             this.$emit("validation", {result: formResult, pos: 3});
         }
     }
+
 }
 </script>
 
 <style lang="scss" scoped>
-    .stepthree {
+
+    .stepthree{
         display: flex;
         align-items: center;
         flex-direction: column;
     }
 
-    @media only screen and (max-width: 900px) {
+    /* @media only screen and (max-width: 900px) {
         .stepthree {
             max-width: 100vw;
             min-width: 95vw;
         }
-    }
+    } */
+
 </style>

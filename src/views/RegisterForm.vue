@@ -31,7 +31,7 @@
         </div>
     </div>
 
-    <ActionResult v-if="resultCode != null" :status="resultCode" :from="'registro'" @return="handleResultBack" />
+    <ActionResult v-if="resultCode != null" :status="resultCode" :from="'registro'" @return="handleResultBack" @retry="finishCollection" />
 
   </div>
 </template>
@@ -60,11 +60,11 @@ export default {
         count: 5,
         pos: 1
       },
-      letMego: false,
-      animationToggle: false,
-      validating: false,
       data: {},
-      resultCode: null
+      letMego: false,
+      resultCode: null,
+      validating: false,
+      animationToggle: false
     }
   },
   methods: {
@@ -88,20 +88,21 @@ export default {
         this.nextStep();
     },
     async finishCollection() {
-      if(Object.keys(this.data).length == 5) {
-        await Request.Post.newVolunteer(this.data)
-          .then(res => this.resultCode = res.status)
-          .catch(e => this.resultCode = e.response?.status ?? 503)
-          .finally(() => this.validating = false);
-      }
-      else {
-        this.$throwAppMessage({ 
-            message: "Informacion incompleta",
-            icon: "icofont-close-circled",
-            type: 'error',
-        });
-        this.slides.pos = 1;
-      }
+        this.resultCode = null;
+        if(Object.keys(this.data).length == 5) {
+            await Request.Post.newMember(this.data)
+                .then(res => this.resultCode = res.status)
+                .catch(e => this.resultCode = e.response?.status ?? 503)
+                .finally(() => this.validating = false);
+        }
+        else {
+            this.$throwAppMessage({ 
+                message: "Informacion incompleta",
+                icon: "icofont-close-circled",
+                type: 'error',
+            });
+            this.slides.pos = 1;
+        }
     },
     handleResultBack() {
         this.resultCode = null;
@@ -113,20 +114,20 @@ export default {
 
 <style lang="scss">
 .container {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  height: calc(100vh - (90px));
-  padding-bottom: 15px;
-  img {
-    max-width: 300px;
-  }
-  h1,h2 {
-    margin: 0;
-    margin-bottom: 10px;
-    text-align: center;
-    cursor: default;
-  }
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    height: calc(100vh - (90px));
+    padding-bottom: 15px;
+    img {
+        max-width: 300px;
+    }
+    h1,h2 {
+        margin: 0;
+        margin-bottom: 10px;
+        text-align: center;
+        cursor: default;
+    }
 }
 
 #viewer {
@@ -143,6 +144,51 @@ export default {
   padding-bottom: 15px;
   overflow: hidden;
   
+  .info-message {
+    display: flex;
+    padding: 0px 20px 0px 10px;
+    max-width: 450px;
+    margin: 15px auto;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    user-select: none;
+    .content {
+        p {
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        .title {
+            font-weight: bold;
+            font-size: 15px;
+        }
+    }
+
+    .icon {
+        display: flex;
+        justify-content: center;
+        margin-right: 15px;
+        padding-top: 10px;
+        i {
+            font-size: 30px;
+        }
+    }
+
+    background-color: #00000029;
+  }
+  .warn {
+    background-color: #ffc8004e;
+    outline: 1px solid #ffc800;
+    border-left: 5px solid #ffc800;
+    /* .content {
+        .title {
+        }
+    }
+
+    .icon {
+        i {
+        }
+    } */
+  }
 }
 
 .stepfive, .stepfour, .stepthree, .steptwo, .stepone {
@@ -157,7 +203,10 @@ export default {
     border-bottom-right-radius: 10px;
 
     max-width: 600px;
+    min-width: 320px;
     margin: 0 auto;
+
+    width: 100%;
 
     button {
         width: auto;
@@ -181,11 +230,15 @@ export default {
         height: 25px;
         width: 25px;
     }
+
+    h2 {
+        font-size: 21px;
+    }
 }
 
 .min-container {
   margin: 20px auto;
-  padding: 10px 5px 10px 25px;
+  padding: 10px 5px 10px 15px;
   border-left: rgb(75, 226, 0) 5px solid;
   min-width: calc(100% - 100px);
   width: calc(100% - (30px + 70px));
@@ -212,7 +265,7 @@ export default {
 
 .inputBreak {
   .formulate-input {
-    margin: 10px 0;
+    margin: 5px 0;
   }
 }
 
@@ -264,21 +317,6 @@ export default {
     }
 }
 
-@media only screen and (max-width: 900px) {
-  .stepcontainer {
-    width: 100vw;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .min-container {
-    padding: 10px 5px 15px 15px;
-    margin: 10px 15px;
-    width: calc(100% - (30px + 20px));
-  }
-}
-
 .controls {
     display: flex;
     align-items: center;
@@ -321,7 +359,55 @@ export default {
   width: 40px;
 }
 
+@media only screen and (max-width: 900px) {
+    .stepcontainer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        .info-message {
+            max-width: calc(100% - 85px);
+        }
+    }
+
+    .stepfive, .stepfour, .stepthree, .steptwo, .stepone {
+        width: calc(100% - 10px);
+    }
+
+    .formulate-input-wrapper {
+        padding-right: 15px;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    .min-container {
+        margin: 10px 0px 10px 15px;
+        padding: 10px 5px 15px 10px;
+        width: calc(100% - (20px));
+        button {
+            margin-right: 15px;
+        }
+    }
+}
+
 @media only screen and (max-width: 400px) {
+    .container {
+        h1 {
+            font-size: 26.5px;
+        }
+    }
+
+    .min-container {
+        margin: 10px 0px 10px 10px;
+        padding: 10px 5px 15px 10px;
+        width: calc(100% - (20px));
+    }
+
+    .stepcontainer {
+        .info-message {
+            max-width: calc(100% - 50px);
+        }
+    }
+
   .controls {
     p {
       margin: 10px 20px;

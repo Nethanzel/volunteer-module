@@ -1,12 +1,12 @@
 <template>
   <div class="list-all">
-    <h1>Lista de voluntarios</h1>
+    <h1>Lista de miembros</h1>
 
-    <Volunteers v-if="!loading" @details="showDetails($event)" />
+    <Members v-if="!loading" @details="showDetails($event)" />
 
     <transition name="circle-blur">
       <div class="blury-cnt" @click="handleHideBlur()" v-if="showBlur">
-        <VolunteerDetails 
+        <MemberDetails 
           :dictionaries="dictionaries" 
           :data="details" 
           @addEmergencyContact="showAddEmergencyContact = true"
@@ -39,14 +39,14 @@
   
 <script>
   import Request from '../request/instance.js';
-  import Volunteers from '../components/Volunteers.vue';
-  import VolunteerDetails from '../components/VolunteerDetails.vue';
+  import Members from '../components/Members.vue';
+  import MemberDetails from '../components/MemberDetails.vue';
   import DynamicModelCreator from '../components/DynamicModelCreator.vue';
 
   export default {
     components: {
-      Volunteers,
-      VolunteerDetails,
+      Members,
+      MemberDetails,
       DynamicModelCreator
     },
     data() {
@@ -116,12 +116,12 @@
         this.showBlur = true
       },
       async loadDictionaries() {
-        let requests = [ Request.Get.Departamentos(), Request.Get.tipoVoluntarios(), Request.Get.Estaciones(), Request.Get.Permisos() ];
-        let [departamentos, tipoVoluntarios, estaciones, permisos] = await Promise.all(requests).catch(e => e).finally(() => this.loading = false);
+        let requests = [ Request.Get.Grados(), Request.Get.tipoMiembros(), Request.Get.Escuelas(), Request.Get.Permisos() ];
+        let [grados, tipoMiembros, escuelas, permisos] = await Promise.all(requests).catch(e => e).finally(() => this.loading = false);
         
-        if (tipoVoluntarios.status == 200) this.dictionaries.tipoVoluntarios = tipoVoluntarios.data;
-        if (departamentos.status == 200) this.dictionaries.departamentos = departamentos.data;
-        if (estaciones.status == 200) this.dictionaries.estaciones = estaciones.data;
+        if (tipoMiembros.status == 200) this.dictionaries.tipoMiembros = tipoMiembros.data;
+        if (grados.status == 200) this.dictionaries.grados = grados.data;
+        if (escuelas.status == 200) this.dictionaries.escuelas = escuelas.data;
         if (permisos.status == 200) this.dictionaries.permisos = permisos.data;
       },
       handleHideBlur() {

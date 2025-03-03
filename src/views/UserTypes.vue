@@ -1,6 +1,6 @@
 <template>
     <div class="tipos">
-        <h1>Tipos de voluntario</h1>
+        <h1>Tipos de miembro</h1>
         <p class="add-info" @click="showBlur = true" v-if="_allowCreateUserTypePermission"><i class="icofont-plus-circle"></i> Agregar</p>
 
         <img class="rotating" src="../assets/spinner.png" alt="loadin" v-if="loadin">
@@ -22,7 +22,7 @@
                     @hide="showBlur = false"
                     @ready="hideCreatingLoading = $event"
                     @done="handleCreateUserType($event)"
-                    :title="'Crear tipo voluntario'" 
+                    :title="'Crear tipo miembro'" 
                     :fields="fields" 
                 />
             </div>
@@ -68,7 +68,7 @@
         methods: {
             async getTipos() {
                 this.loadin = true;
-                let result = await Request.Get.tipoVoluntarios().catch(() => null).finally(() => this.loadin = false);
+                let result = await Request.Get.tipoMiembros().catch(() => null).finally(() => this.loadin = false);
                 if (result.status == 200) this.tipos = result.data;
             },
             async updateField(e) {
