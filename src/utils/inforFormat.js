@@ -18,10 +18,11 @@ export function formatPhoneNumber(input) {
     return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
 }
 
-export function formatDate(date) {
-    if(date) {
+export function formatDate(date, onlyDate = false) {
+    if(date != undefined && date != null) {
+        date = date.toString().trim();
         let dateInstance = new Date(date);
-        
+
         let month = `${dateInstance.getMonth() + 1}`.padStart(2,"0");
         let day = `${dateInstance.getDate()}`.padStart(2,"0");
         let year = `${dateInstance.getFullYear()}`;
@@ -30,8 +31,32 @@ export function formatDate(date) {
         let minutes = `${dateInstance.getMinutes()}`.padStart(2,"0");
         let seconds = `${dateInstance.getSeconds()}`.padStart(2,"0");
 
-        let newDate = `${day}/${month}/${year} a las ${hour}:${minutes}:${seconds}`;
-        return newDate;
+        let resultDate = `${day}/${month}/${year}`;
+
+        if (onlyDate) return resultDate;
+
+        return `${resultDate} a las ${hour}:${minutes}:${seconds}`;
     }
     return "No hay fecha"
+}
+
+export function calcularEdad(fechaNacimiento) {
+    const fechaNac = new Date(fechaNacimiento);
+    const hoy = new Date();
+
+    let edad = hoy.getFullYear() - fechaNac.getFullYear();
+    const mes = hoy.getMonth() - fechaNac.getMonth();
+    const dia = hoy.getDate() - fechaNac.getDate();
+
+    if (mes < 0 || (mes === 0 && dia < 0)) edad--;
+
+    return edad;
+}
+
+export function titleCase(texto) {
+    return texto
+        .toLowerCase() // Convertimos todo a minúsculas
+        .split(" ") // Dividimos en palabras
+        .map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1)) // Capitalizamos cada palabra
+        .join(" "); // Unimos nuevamente
 }

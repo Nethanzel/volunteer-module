@@ -74,7 +74,7 @@
             async updateField(e) {
                 showFieldLoading(e.target);
 
-                let obj = { id: 1, field: { [e.field.key]: e.field.value } }
+                let obj = { id: e.id, field: { [e.field.key]: e.field.value } }
                 let res = await Request.Patch.UpdateUserType(obj).catch(() => hideFieldLoading(e.target)).finally(() => hideFieldLoading(e.target))
                 if (res?.status == 204) {
                     this.tipos.find(x => x.id == e.id)[e.field.key] = e.field.value;

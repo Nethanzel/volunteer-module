@@ -56,7 +56,17 @@
                         key: 'descripcion',
                         display: 'Descripcion',
                         type: 'text-area'
-                    }
+                    },
+                    {
+                        key: 'color',
+                        display: 'Color',
+                        type: 'text'
+                    },
+                    {
+                        key: 'prefix',
+                        display: 'Prefijo',
+                        type: 'text'
+                    },
                 ],
                 hideCreatingLoading: () => {}
             }
@@ -73,7 +83,7 @@
             async updateField(e) {
                 showFieldLoading(e.target);
 
-                let obj = { id: 1, field: { [e.field.key]: e.field.value } }
+                let obj = { id: e.id, field: { [e.field.key]: e.field.value } }
                 let res = await Request.Patch.UpdateDepartment(obj).catch(() => hideFieldLoading(e.target)).finally(() => hideFieldLoading(e.target))
                 if (res?.status == 204) {
                     this.grados.find(x => x.id == e.id)[e.field.key] = e.field.value;

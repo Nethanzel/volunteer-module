@@ -13,20 +13,19 @@
                 <FormulateInput name="nacimientolugar" label="Lugar de nacimiento" type="select" :options="Prov"/>
                 <FormulateInput type="date" validation-name="Fecha de nacimiento" validation="required" name="nacimientofecha" label="Fecha de nacimiento" @change="birthDateChanged"/>
                 <FormulateInput type="text" validation-name="Cédula" name="identity" label="Cédula" :errors="identityErr" />
-                <!-- <FormulateInput type="text" name="nacionalidad" label="Nacionalidad" validation="required"/> 
-                <FormulateInput type="select" :options="eCivil" name="ecivil" label="Estado civil"/>-->
-                <FormulateInput type="text" name="ocupacion" label="Ocupación" />
+                <FormulateInput type="text" name="ocupacion" label="Ocupación (opcional)" />
                 <FormulateInput type="text" name="peso" label="Peso (en libras)" placeholder="Ejemplo: 125" />
                 <FormulateInput type="text" name="estatura" label="Estatura (en pies)" placeholder="Ejemplo 5.8" />
             </div>
 
             <div class="min-container inputBreak">
                 <h2>¿Donde vives?</h2>
-                <FormulateInput type="select" :options="Mun" name="municipio" label="Municipio" validation="required" />
+                <FormulateInput label="Provincia" type="select" :options="Prov" v-model="selectedProv" />
+                <FormulateInput type="select" :options="_municipios" name="municipio" label="Municipio (primero elegir provincia)" validation="required" />
                 <FormulateInput type="text" name="sector" label="Sector" validation="required" />
                 <FormulateInput type="text" name="calle" label="Calle" validation="required" />
                 <FormulateInput type="text" name="casa_no" label="Casa/Edificio" />
-                <FormulateInput type="text" name="apartamento" label="Apartamento" />
+                <FormulateInput type="text" name="apartamento" label="Apartamento (opcional)" />
             </div>
             
             <div class="min-container inputBreak">
@@ -101,9 +100,10 @@
 </template>
 
 <script>
+import { contactSchema, userContactSchema } from "../../utils/modelValidate";
+import { calcularEdad, titleCase } from "../../utils/inforFormat";
 const provincias = require("../../assets/data/provincias.json");
 const municipios = require("../../assets/data/municipios.json");
-import { contactSchema, userContactSchema } from "../../utils/modelValidate";
 import axiosRequest from "../../request/instance";
 
 export default {
@@ -112,7 +112,6 @@ export default {
             formResult: {},
             validations: {},
             Prov: [],
-            Mun: [],
             eCivil: [
                 { 
                     value: "Solter@",
@@ -140,15 +139,18 @@ export default {
                 otherPhone: ''
             },
             family: [],
-            familyRequired: false
+            familyRequired: false,
+            selectedProv: null
         }
     },
     methods: {
+        calcularEdad,
         validate(e) {
             this.validations[e.name] = e;
         },
         validateForm() {
             delete this.formResult.Nombre;
+            delete this.formResult.select_9;
             delete this.formResult.Telefono;
             delete this.formResult.Parentezco;
             delete this.formResult['Telefono/Celular'];
@@ -235,18 +237,6 @@ export default {
             let edad = this.calcularEdad(e.target.value);
             this.isMinor = edad > 17 ? false : true;
         },
-        calcularEdad(fechaNacimiento) {
-            const fechaNac = new Date(fechaNacimiento);
-            const hoy = new Date();
-
-            let edad = hoy.getFullYear() - fechaNac.getFullYear();
-            const mes = hoy.getMonth() - fechaNac.getMonth();
-            const dia = hoy.getDate() - fechaNac.getDate();
-
-            if (mes < 0 || (mes === 0 && dia < 0)) edad--;
-
-            return edad;
-        },
         addFamily() {
             let familyMember = {
                 name: this.familyModel.name,
@@ -279,12 +269,16 @@ export default {
         },
     },
     mounted() {
-        provincias.forEach(pro => {
-            this.Prov.push({ value: pro.provincia_id, label: pro.provincia })
-        });
-        municipios.forEach(m => {
-            this.Mun.push({ value: m.municipio_id, label: m.municipio })
-        });
+        provincias.forEach(pro => this.Prov.push({ value: pro.provincia_id, label: pro.provincia }));
+    },
+    computed: {
+        _municipios() {
+            if (!this.selectedProv) return [];
+            let result = [];
+            let selected = municipios.filter(x => x.provincia_id == this.selectedProv);
+            selected.forEach(m => result.push({ value: m.municipio_id, label: titleCase(m.municipio) }));
+            return result;
+        }
     }
 }
 </script>

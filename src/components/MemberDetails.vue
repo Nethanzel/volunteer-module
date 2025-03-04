@@ -49,6 +49,42 @@
         </div>
         <div class="cntent">
 
+            <!--  -->
+            <template v-if="isMinorAged && !data.checked">
+                <div class="info-message warn">
+                    <div class="icon">
+                        <i class="icofont-warning"></i>
+                    </div>
+                    <div class="content">
+                        <p class="title">
+                            Según la fecha de nacimiento, este miembro es menor de edad!
+                        </p>
+                        <p>
+                            Antes de confirmar el registro se debe comunicar con su(s) tutor(es).
+                        </p>
+                    </div>
+                </div>
+
+                <h2>Contactos con los tutores</h2>
+
+                <div class="detail-card" v-for="(contact, i) in data.tutorInfo" :key="`tc-${i}`">
+                    <div class="icn">
+                        <i class="icofont-ui-user"></i>
+                    </div>
+                    <div class="cnt">
+                        <p>{{ contact.relation }}</p>
+                        <p>{{ contact.name }}</p>
+                        <p>{{ formatPhoneNumber(contact.phone) }}</p>
+                        <p v-if="contact.otherPhone">{{ formatPhoneNumber(contact.otherPhone) }}</p>
+                    </div>
+                    <div class="call" :style="{ flexDirection:'column' }">
+                        <i class="icofont-duotone icofont-phone" :style="{ fontSize:'20px', marginBottom:'13px' }"></i>
+                        <i class="icofont-brand-whatsapp" :style="{ fontSize:'18px' }"></i>
+                    </div>
+                </div>
+            </template>
+            <!--  -->
+
             <h2>Contactos de emergencia</h2>
             <p class="add-info" @click="$emit('addEmergencyContact')" v-if="_allowCreateContactPermission"><i class="icofont-plus-circle"></i> Agregar</p>
             
@@ -72,33 +108,39 @@
 
 
             <h2>Datos de salud</h2>
-            <EditableField @save="updateField" :type="'select'" :label="'Tipo sangre'" :value="data.sangre" :options="bloodOptions" :_key="'sangre'" />
             <EditableField @save="updateField" :type="'select'" :label="'Alguna enfermedad'" :value="data.enfermedad" :options="SiNoOptions" :_key="'enfermedad'" :isYesNo="true" />
             <EditableField @save="updateField" :type="'text-area'" :label="'Enfermedades'" :value="data.enfermedadDetalles" :_key="'enfermedadDetalles'" v-if="data.enfermedad" />
             <EditableField @save="updateField" :type="'select'" :label="'Alguna alergia'" :value="data.alergia" :options="SiNoOptions" :_key="'alergia'" :isYesNo="true" />
             <EditableField @save="updateField" :type="'text-area'" :label="'Alergias'" :value="data.alergiaDetalles" :_key="'alergiaDetalles'" v-if="data.alergia" />
+            <EditableField @save="updateField" :type="'select'" :label="'Seguro de salud'" :value="data.assurance" :options="SiNoOptions" :_key="'assurance'" :isYesNo="true" />
+            <EditableField @save="updateField" :type="'text'" :label="'Proveedor de segruo'" :value="data.assuranceCompany" :_key="'assuranceCompany'" v-if="data.assurance" />
+            <EditableField @save="updateField" :type="'text'" :label="'Código afiliado'" :value="data.assuranceCode" :_key="'assuranceCode'" v-if="data.assurance" />
+
 
             <h2>Informacion personal</h2>
             <EditableField @save="updateField" :type="'text'" :label="'Cédula'" :value="data.identity" :_key="'identity'" />
             <EditableField @save="updateField" :type="'text'" :label="'Nombre'" :value="data.nombre" />
             <EditableField @save="updateField" :type="'text'" :label="'Apellido'" :value="data.apellido" />
-            <EditableField @save="updateField" :type="'text'" :label="'Nacionalidad'" :value="data.nacionalidad" />
-            <EditableField @save="updateField" :type="'select'" :label="'Estado Civil'" :value="data.estadoCivil" :options="estadosCivil" />
+            <EditableField @save="updateField" :type="'text'" :label="'Ocupación'" :value="data.ocupacion" :_key="'ocupacion'" />
             <EditableField @save="updateField" :type="'select'" :label="'Lugar nacimiento'" :value="data.lugarNacimiento" :options="_provincias" />
             <EditableField @save="updateField" :type="'date'" :label="'Fecha nacimiento'" :value="data.nacimiento.split('T')[0]" :_key="'nacimiento'" />
-            
+            <EditableField @save="updateField" :type="'text'" :label="'Peso'" :value="data.peso" />
+            <EditableField @save="updateField" :type="'text'" :label="'Altura'" :value="data.altura" />
+
             <h2>Direccion</h2>
-            <EditableField @save="updateField" :type="'select'" :label="'Provincia'" :value="data.provincia" :options="_provincias" />
+            <EditableField @save="updateField" :type="'select'" :label="'Municipio'" :value="data.municipio" :options="_municipios" />
             <EditableField @save="updateField" :type="'text'" :label="'Sector'" :value="data.sector" />
             <EditableField @save="updateField" :type="'text'" :label="'Calle'" :value="data.calle" />
             <EditableField @save="updateField" :type="'text'" :label="'Casa'" :value="data.casa" />
+            <EditableField @save="updateField" :type="'text'" :label="'Apartamento'" :value="data.apartamento" />
+
 
             <h2>Contacto</h2>
             <EditableField @save="updateField" :type="'text'" :label="'Correo'" :value="data.correo" />
             <EditableField @save="updateField" :type="'text'" :label="'Celular'" :value="data.celular" />
             <EditableField @save="updateField" :type="'text'" :label="'Telefono fijo'" :value="data.telefonoFijo" />
 
-            <h2>Formacion academica</h2>
+            <!-- <h2>Formacion academica</h2>
             <EditableField @save="updateField" :type="'text'" :label="'Idiomas'" :value="data.idiomas" />
             <EditableField @save="updateField" :type="'text'" :label="'Otros idiomas'" :value="data.otherLanguaje" :_key="'otherLanguaje'" />
             
@@ -120,15 +162,18 @@
                     </div>
                 </div>
             </template>
-            <p v-else :style="{ textAlign: 'center', margin:' 20px 0 50px 0', color: '#848484a2' }">No hay estudios</p>
-
+            <p v-else :style="{ textAlign: 'center', margin:' 20px 0 50px 0', color: '#848484a2' }">No hay estudios</p> -->
 
             <h2>Informacion institucional</h2>
-            <EditableField @save="updateField" :type="'select'" :label="'Escuela'" :value="data.Escuela.id" :options="_escuelas" />
-            <EditableField @save="updateField" :type="'select'" :label="'Grado'" :value="data.Grado.id" :options="_grados" />
-            <EditableField @save="updateField" :type="'select'" :label="'Tipo miembro'" :value="data.TipoMiembro.id" :options="_tiposMiembro" />
+            <EditableField @save="updateField" :type="'select'" :label="'Escuela'" :value="data.escuela.id" :options="_escuelas" :_key="'escuelaId'" />
+            <EditableField @save="updateField" :type="'select'" :label="'Grado'" :value="data.Grado.id" :options="_grados" :_key="'GradoId'" />
+            <EditableField @save="updateField" :type="'select'" :label="'Tipo miembro'" :value="data.TipoMiembro.id" :options="_tiposMiembro" :_key="'TipoMiembroId'" />
+            <EditableField @save="updateField" :type="'select'" :label="'Interes'" :value="data.interested" :options="_tipoEntrenamiento" :_key="'interested'" />
             <EditableField @save="updateField" :type="'select'" :label="'Tiene identificacion'" :value="data.hasIdentification" :options="SiNoOptions" :_key="'hasIdentification'" :isYesNo="true" />
+            <EditableField @save="updateField" :type="'select'" :label="'Otro estilo'" :value="data.otherMartialArt" :options="SiNoOptions" :_key="'otherMartialArt'" :isYesNo="true" />
             <EditableField @save="updateField" :type="'text-area'" :label="'Identificaciones'" :value="data.idetifications" :_key="'idetifications'" v-if="data.hasIdentification" />
+            <EditableField @save="updateField" :type="'text-area'" :label="'Detalles otro estilo'" :value="data.otherMartialArtDetails" :_key="'otherMartialArtDetails'" v-if="data.otherMartialArt" />
+            <EditableField @save="updateField" :type="'text-area'" :label="'Desea prácticar porque...'" :value="data.desire" :_key="'desire'" />
 
             <h2>Archivos</h2>
             <input ref="inputFiles" @change="handleFileSelection" :style="{ display: 'none' }" type="file" multiple accept=".jpg, .jpeg, .png, .gif, .bmp, .pdf, .doc, .docx">
@@ -201,7 +246,6 @@
                             </template>
                         </div>
                     </template>
-
                 </template>
             </template>
         </div>
@@ -210,8 +254,9 @@
 
 <script>
     import { showFieldLoading, hideFieldLoading } from "../utils/handleEditableField.js";
-    import { formatIdentification, formatPhoneNumber } from "../utils/inforFormat.js"
+    import { calcularEdad, formatIdentification, formatPhoneNumber, titleCase } from "../utils/inforFormat.js"
     const provincias = require("../assets/data/provincias.json");
+    const municipios = require("../assets/data/municipios.json");
     import { blobToFile } from "../utils/downloadFile.js";
     import { bufferToBase64 } from "../utils/image.js";
     import EditableField from "./EditableField.vue";
@@ -284,7 +329,7 @@
                 ],
                 showProflePhoto: false,
                 profilePhoto: null,
-                loadinFiles: false
+                loadinFiles: false,
             }
         },
         components: {
@@ -614,14 +659,22 @@
             this.getProfilePhoto();
         },
         computed: {
+            isMinorAged() {
+                return calcularEdad(this.data.nacimiento) > 17 ? false : true;
+            },
             _provincias() {
                 let result = [];
                 provincias?.map(p => result.push({ key: p.provincia_id, value: p.provincia }));
                 return result;
             },
+            _municipios() {
+                let result = [];
+                municipios?.map(m => result.push({ key: m.municipio_id, value: titleCase(m.municipio) }));
+                return result;
+            },
             _escuelas() {
                 let result = [];
-                this.dictionaries?.escuelas?.map(e => result.push({ key: e.id, value: `Escuela ${e.numero}` }));
+                this.dictionaries?.escuelas?.map(e => result.push({ key: e.id, value: `Escuela ${e.nombre}` }));
                 return result;
             },
             _grados() {
@@ -632,6 +685,11 @@
             _tiposMiembro() {
                 let result = [];
                 this.dictionaries?.tipoMiembros?.map(e => result.push({ key: e.id, value: e.tipo }));
+                return result;
+            },
+            _tipoEntrenamiento() {
+                let result = [];
+                this.dictionaries?.tipoEntrenamiento?.map(e => result.push({ key: e.id, value: e.name }));
                 return result;
             },
             _archivos() {

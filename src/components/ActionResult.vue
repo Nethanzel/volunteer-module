@@ -5,11 +5,17 @@
             <h1>{{Action2Show.titulo}}</h1>
             <p>{{Action2Show.mensaje}}</p>
 
+            <h3 
+                v-if="from.toLowerCase() == 'registro' && status == 201 && userCode" 
+                class="registerCode"
+            >
+                <i class="icofont-star"></i> Código de registro: {{ userCode }}
+            </h3>
+
             <div class="actions" v-if="from.toLowerCase() == 'registro'" :style="{ display:'flex', flexDirection:'column', alignItems:'flex-start' }">
-                <p @click="$emit('retry')" ><span :style="{ marginLeft:'6px' }">Reintentar registro</span> <i class="icofont-refresh" :style="{ fontSize:'20px' }"></i></p>
+                <p v-if="status == 503 || status == 400" @click="$emit('retry')" ><span :style="{ marginLeft:'6px' }">Reintentar registro</span> <i class="icofont-refresh" :style="{ fontSize:'20px' }"></i></p>
                 <p @click="$emit('return')" >Volver a registro <i class="icofont-arrow-right"></i></p>
                 <router-link :to="{ name: 'Home'}" >Ir a inicio <i class="icofont-arrow-right"></i></router-link>
-
             </div>
 
             <div class="actions" v-if="from.toLowerCase() == 'notfound'">
@@ -23,7 +29,8 @@
 export default {
     props: {
         status: Number,
-        from: String
+        from: String,
+        userCode: String
     },
     data() {
         return {
@@ -35,8 +42,8 @@ export default {
                         icon: "icofont-confused"
                     },
                     201: {
-                        titulo: "Su información fue guardada!",
-                        mensaje: "Tu información fue enviada para ser revisada por el encargado de voluntariado. Recibiras un correo electronico con la confirmación.",
+                        titulo: "Registro completado!",
+                        mensaje: "Tu información fue enviada para ser revisada.",
                         icon: "icofont-smirk"
                     },
                     400: {
@@ -119,6 +126,24 @@ export default {
             }
             p {
                 margin: 0 0px 8px 0px;
+            }
+        }
+        .registerCode {
+            padding: 5px 15px;
+            margin: 10px 0 25px 0;
+            background-color: #00ff224e;
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
+
+            cursor: default;
+
+            border-left: 5px solid #008000;
+            display: flex;
+            align-items: center;
+            i {
+                font-size: 27px;
+                margin-bottom: 0;
+                margin-right: 10px;
             }
         }
     }

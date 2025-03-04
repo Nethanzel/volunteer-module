@@ -7,24 +7,56 @@
                     <i v-else class="icofont-warning"></i>
                 </div>
                 <div class="info">
-                    <p>{{formatIdentification(miembro.identity)}}</p>
-                    <p>{{miembro.nombre}} {{miembro.apellido}}</p>
-                    <p v-if="miembro.Escuela">Escuela {{miembro.Escuela.numero}} - {{getMunicipio(miembro.Escuela.municipio)}}</p>
-                    <p>{{formatDate(miembro.createdAt)}}</p>
+                    <p v-if="miembro.identity">{{formatIdentification(miembro.identity)}}</p>
+                    <p :style="{ fontWeight:'bold', fontSize: '16px' }">{{miembro.nombre}} {{miembro.apellido}}</p>
+                    <p>{{ formatDate(miembro.nacimiento, true) }} <span>({{ calcularEdad(miembro.nacimiento) }} años)</span></p>
+                    <p v-if="miembro.municipio">De {{getMunicipio(miembro.municipio, true)}}</p>
+                    <p 
+                        :style="{ marginBottom:'5px' }" 
+                        v-if="miembro.escuela"
+                    >
+                        Escuela {{miembro.escuela.nombre}} - {{getMunicipio(miembro.escuela.municipio)}}
+                    </p>
+                    
+                    <div 
+                        class="level" 
+                        v-if="miembro.Grado" 
+                        :style="{ outline: `1px solid #${miembro.Grado.color}`, borderLeft:`5px solid #${miembro.Grado.color}` }"
+                    >
+                        <div class="icon">
+                            <img 
+                                v-if="miembro.Grado.color != '00000000'"
+                                src="../assets/grade-rep.png" alt="level-icon" 
+                                :style="{ backgroundColor:`#${miembro.Grado.color}`, outline:`1px solid #${miembro.Grado.color}` }"
+                            >
+                            <i
+                                class="icofont-baby"
+                                v-else
+                            >
+                            </i>
+                        </div>
+                        <div class="cntnt">
+                            <p :style="{ marginBottom:'0px' }"><span>{{ miembro.Grado.prefix }} </span>{{ miembro.Grado.grado }}</p>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
-        <div v-if="!isRequesting" class="pagination">
-            <p 
-                v-for="page in pages" 
-                :key="page" 
-                @click="getMembers(page)"
-                :style="{
-                    color: page == cPage ? 'white' : 'black',
-                    backgroundColor: page == cPage ? 'red' : 'transparent',
-                    border: page == cPage ? '1px solid gray' : '1px solid black',
-                }"
-            >{{page}}</p>
+        <div v-if="!isRequesting" class="steps">
+            <p class="resume">Visualizando {{ resume.currentX  }} a {{ resume.currentN }} de {{ resume.total }} miembros</p>
+            <div class="stepsView">
+                <p 
+                    v-for="page in pages" 
+                    :key="page" 
+                    @click="getMembers(page)"
+                    :style="{
+                        color: page == cPage ? 'white' : 'black',
+                        backgroundColor: page == cPage ? '#008000a8' : 'transparent',
+                        border: page == cPage ? '1px solid gray' : '1px solid black',
+                    }"
+                >{{page}}</p>
+            </div>
         </div>
 
         <img v-if="isRequesting" class="rotating await" src="../assets/spinner.png" alt="loadin">
@@ -32,8 +64,9 @@
 </template>
 
 <script>
-import { formatIdentification, formatDate } from "../utils/inforFormat.js"
-import municipios from '../assets/data/municipios.json'
+import { formatIdentification, formatDate, calcularEdad, titleCase } from "../utils/inforFormat.js"
+import municipios from '../assets/data/municipios.json';
+import provincias from '../assets/data/provincias.json';
 import { bufferToBase64 } from "../utils/image.js";
 import Request from "../request/instance.js";
 
@@ -43,10 +76,16 @@ export default {
             isRequesting: false,
             Miembros: null,
             pages: 0,
-            cPage: 0
+            cPage: 0,
+            resume: {
+                total: 0,
+                currentX: 0,
+                currentN: 0
+            }
         }
     },
     methods: {
+        titleCase,
         formatIdentification,
         async getMembers(page) {
             this.isRequesting = true;
@@ -60,12 +99,13 @@ export default {
                 this.pages = Math.ceil(count / limit);
                 this.cPage = page ? page : 1;
                 this.Miembros = rows;
-            } else {
-                //show errors here
+
+                this.updateResume({ limit, count, page: this.cPage });
             }
         },
         bufferToBase64,
         formatDate,
+        calcularEdad,
         showProfilePhoto(files) {
             let file = files.filter(f => f.fileName?.toLowerCase() == "profile photo")[0];
             if (!file) return false;
@@ -77,8 +117,21 @@ export default {
 
             return bufferToBase64(file.content.data, file.contentType)
         },
-        getMunicipio(id) {
-            return municipios.find(x => x.municipio_id == id).municipio
+        getMunicipio(id, includeProvince = false) {
+            if (!includeProvince) return this.titleCase(municipios.find(x => x.municipio_id == id).municipio);
+            
+            const municipio = municipios.find(x => x.municipio_id == id);
+            const provincia = provincias.find(p => p.provincia_id == municipio.provincia_id);
+
+            let municipio_ = this.titleCase(municipio.municipio);
+
+            return `${municipio_} (${provincia.provincia})`;
+        },
+        updateResume(e) {
+            let lastElement = e.page * e.limit;
+            this.resume.currentN = lastElement > e.count ? e.count : lastElement;
+            this.resume.currentX = ((e.page * e.limit) - e.limit) + 1;
+            this.resume.total = e.count
         }
     },
     mounted() {
@@ -92,25 +145,12 @@ export default {
     display: flex;
     flex-direction: column;
     height: 100%;
-    .pagination {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-        padding: 5px;
-        margin: 10px;
-        margin-top: auto;
-        p {
-            border: 1px solid black;
-            border-radius: 50%;
-            width: 15px;
-            height: 15px;
-            cursor: pointer;
-            padding: 5px;
-            margin: 0 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+    .steps {
+        .resume {
+            margin-bottom: -5px;
+            text-align: center;
+            font-size: 14px;
+            cursor: default;
         }
     }
 
@@ -119,7 +159,7 @@ export default {
         overflow: hidden;
         flex-wrap: wrap;
         margin: 0 auto;
-        max-width: 1035px;
+        max-width: 1235px;
         width: 100%;
         max-height: calc(100% - 60px);
         overflow-y: auto;
@@ -127,9 +167,8 @@ export default {
         .element {
             display: inline-flex;
             flex-wrap: wrap;
-            max-width: 310px;
-            min-width: 305px;
-            max-height: 100px;
+            max-width: 330px;
+            min-width: 315px;
             margin: 10px 15px;
             border-radius: 5px;
             border: 1px solid rgb(187, 187, 187);
@@ -140,10 +179,9 @@ export default {
                 display: flex;
                 justify-content: center;
                 align-items: center; 
-                width: 30%;
-                max-width: 90px;
+                width: 35%;
                 img {
-                    object-fit: contain;
+                    object-fit: cover;
                     width: 100%;
                     height: 100%;
                 }
@@ -152,12 +190,13 @@ export default {
                 }
             }
             .info {
-                width: 70%;
-                max-width: 213px;
-                padding: 4px 0;
+                width: 65%;
+                padding: 8px 0 8px 0;
+                display: flex;
+                flex-direction: column;
                 p {
                     font-size: 13px;
-                    margin: 5px 10px;
+                    margin: 0px 0px 3px 10px;
                     text-overflow: ellipsis;
                     white-space: nowrap;
                     overflow: hidden;
@@ -180,6 +219,19 @@ export default {
         width: 50px;
         height: 50px;
         margin: auto;
+    }
+
+    @media only screen and (max-width: 400px) {
+        .dataview {
+            .element {
+                .photo {
+                    width: 30%;
+                }
+                .info {
+                    width: 70%;
+                }
+            }
+        }
     }
 }
 

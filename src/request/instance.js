@@ -4,8 +4,7 @@ import store from "../store";
 import router from "../router";
 
 const Requester = axios.create({
-    baseURL: "http://127.0.0.1:81/"
-    //baseURL: "https://volunteer-module.herokuapp.com/"
+    baseURL: process.env.NODE_ENV === "production" ? window.location.origin : "http://127.0.0.1:81"
 });
 
 Requester.interceptors.response.use((response) => response, (err) => {
@@ -134,6 +133,10 @@ const axiosRequest = {
         },
         Miembros: async (page) => {
             let miembros = await Requester.get(`api/getters/miembros?page=${page}`, { headers: { Authorization: "*" } });
+            return miembros;
+        },
+        NombreMiembros: async () => {
+            let miembros = await Requester.get(`api/getters/miembros/nombres`, { headers: { Authorization: "*" } });
             return miembros;
         },
         Miembro: async (identity) => {

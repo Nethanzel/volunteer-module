@@ -5,10 +5,23 @@
             class="stepfive"
         >
             <div class="min-container">
-                <h3>Agrega una foto (opcional)</h3>
+                <h3>Agrega una foto</h3>
+                
+                <p v-if="rquired" class="imgRequired">La foto es obligatoria</p>
+
+                <div class="info-message warn">
+                    <div class="icon">
+                        <i class="icofont-warning"></i>
+                    </div>
+                    <div class="content">
+                        <p class="title">
+                            El objetivo de la foto es identificar quien eres! Por favor, elige una foto donde se vea claramente la cara de la persona.
+                        </p>
+                    </div>
+                </div>
 
                 <img v-if="imageLoaded" :src="imageData" alt="record image">
-                <p v-else><i class="icofont-duotone icofont-user"></i></p>
+                <p v-else :style="{ margin:'0 auto' }"><i class="icofont-duotone icofont-user"></i></p>
                 <input ref="inputImage" @change="handleFileSelection" :style="{ display: 'none' }" type="file" accept=".jpg, .jpeg, .png, .gif, .bmp">
                 
                 <div :style="{ display:'flex', marginTop:'15px' }">
@@ -24,7 +37,7 @@
                 </div>
             </div>
 
-            <button @click="validateForm"><i class="icofont-check" :style="{ marginLeft:'0px', marginRight:'5px' }"></i> Terminar registro</button>
+            <button @click="validateForm">Siguiente <i class="icofont-arrow-right"></i></button>
 
         </FormulateForm>
     </div>
@@ -36,11 +49,21 @@ export default {
         return {
             imageLoaded: false,
             imageData: null,
-            imageInfo: null
+            imageInfo: null,
+            rquired: false
         }
     },
     methods: {
         validateForm() {
+            if (!this.imageLoaded) {
+                this.$throwAppMessage({ 
+                    message: "No ha seleccionado una foto",
+                    icon: "icofont-close-circled",
+                    type: 'error',
+                });
+                this.rquired = true;
+                return;
+            }
             this.$emit("validation", {result: { image: this.imageInfo }, pos: 5});
         },
         handleFileSelection(e) {
@@ -79,6 +102,7 @@ export default {
             this.imageLoaded = false;
             this.imageData = null;
             this.imageInfo = null;
+            this.rquired = true;
         }
     }
 }
@@ -95,13 +119,11 @@ export default {
             flex-direction: column;
             h3 {
                 text-align: center;
-                margin-bottom: 20px;
             }
-            p, img {
+            img {
                 margin: 0 auto;
             }
             p {
-                text-align: center;
                 i {
                     font-size: 175px;
                 }
@@ -112,6 +134,14 @@ export default {
                 object-fit: cover;
                 border-radius: 50%;
                 box-shadow: 5px 5px 5px 0px #000;
+            }
+            .imgRequired {
+                color: rgb(255, 51, 0);
+                margin-top: 8px;
+                font-size: 13px;
+                font-weight: bold;
+                margin-left: 20px;
+                font-family: Avenir, Helvetica, Arial, sans-serif;
             }
         }
     }

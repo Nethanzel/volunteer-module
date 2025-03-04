@@ -218,6 +218,11 @@ url("./fonts/icofont.woff") format("woff");
   content: "\ef79";
 }
 
+.icofont-baby:before
+{
+  content: "\eba1";
+}
+
 [class^="icofont-"].icofont-duotone,
 	[class*=" icofont-"].icofont-duotone
 {

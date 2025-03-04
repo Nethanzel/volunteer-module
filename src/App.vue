@@ -24,6 +24,7 @@
 </template>
 
 <script>
+  import loadErr from "./assets/500.png";
   import axiosRequest from './request/instance';
   import ViewHeader from './components/ViewHeader.vue';
   import MessageStack from './components/MessageStack.vue';
@@ -63,9 +64,19 @@
     },
     mounted() {
       axiosRequest.Get.validateAccess()
-      .then(res => this.$store.commit('setUserData', res.data))
-      .catch(() => null)
-      .finally(() => this.$store.commit('stopValidating'));
+        .then(res => this.$store.commit('setUserData', res.data))
+        .catch(() => null)
+        .finally(() => this.$store.commit('stopValidating'));
+      
+        document.addEventListener('error', (e) => {
+            if (!e.target) return;
+
+            const errorTarget = e.target
+            const imageErrorSource = errorTarget instanceof HTMLImageElement
+
+            if (!imageErrorSource) return;
+            errorTarget.src = loadErr;
+        }, true);
     },
     methods: {
       collapseMenu() {

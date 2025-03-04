@@ -30,7 +30,10 @@
                             <label>{{school.nombre}}</label> 
                             <br>
                             <span :style="{ display:'block', marginLeft:'20px' }"><i class="icofont-location-pin" :style="{ marginRight:'2px' }"></i> {{school.municipio}}</span>
-                            <span :style="{ display:'block', marginLeft:'20px' }"><i class="icofont-star" :style="{ marginRight:'2px' }"></i> Nombre del sifu </span>
+                            <span :style="{ display:'block', marginLeft:'20px' }">
+                                <i class="icofont-star" :style="{ marginRight:'2px' }"></i> 
+                                Profesor {{`${school.lider.nombre} ${school.lider.apellido}`}}
+                            </span>
                         </div>
                     </div>
 
@@ -40,7 +43,6 @@
             <img v-if="loadingOptions" src="../../assets/spinner.png" class="_spinner rotating">
             <button v-else @click="validateForm">Siguiente <i class="icofont-arrow-right"></i></button>
         </FormulateForm>
-
     </div>
 </template>
 

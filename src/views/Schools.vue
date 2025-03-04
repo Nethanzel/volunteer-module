@@ -46,6 +46,7 @@
         data() {
             return {
                 escuelas: [],
+                nombres: [],
                 loadin: true,
                 provincias,
                 showBlur: false,
@@ -58,13 +59,18 @@
         methods: {
             async getEscuelas() {
                 this.loadin = true;
-                let result = await Request.Get.Escuelas().catch(() => null).finally(() => this.loadin = false);
-                if (result.status == 200) this.escuelas = result.data;
+                
+                let requests = [ Request.Get.Escuelas(), Request.Get.NombreMiembros() ];
+                let [escuelas, nombres] = await Promise.all(requests).catch(() => null).finally(() => this.loadin = false);
+
+                if (escuelas?.status == 200) this.escuelas = escuelas.data;
+                if (nombres?.status == 200) this.nombres = nombres.data.rows;
+
             },
             async handleUpdateField(e) {
                 showFieldLoading(e.target);
 
-                let obj = { id: 1, field: { [e.field.key]: e.field.value } }
+                let obj = { id: e.id, field: { [e.field.key]: e.field.value } }
                 if (e.field.key == 'municipio') {
                     let mun = municipios.find(m => m.municipio_id == e.field.value);
                     obj.field.provincia = mun.provincia_id;
@@ -117,7 +123,10 @@
                 }
 
                 e.provincia = municipios.find(m => m.municipio_id == e.municipio).provincia_id;
-                
+
+                e.lat = e.lat ? Number(e.lat) : null; 
+                e.lng = e.lng ? Number(e.lng) : null;
+
                 let res = await Request.Post.newStation(e).catch(() => this.hideCreatingLoading()).finally(() => this.hideCreatingLoading());
                 if (res?.status == 201) {
                     this.handleHideBlur();
@@ -136,19 +145,40 @@
                 municipios?.map(p => result.push({ key: p.municipio_id, value: p.municipio }));
                 return result;
             },
+            _nombres() {
+                let result = [];
+                this.nombres?.map(n => result.push({ key: n.id, value: `${n.nombre} ${n.apellido}` }));
+                return result;
+            },
             _fields() {
                 return [
                     {
-                        key: 'numero',
-                        display: 'Número',
-                        type: 'number'
+                        key: 'nombre',
+                        display: 'Nombre',
+                        type: 'text'
+                    },
+                    {
+                        key: 'lat',
+                        display: 'Latitud',
+                        type: 'text'
+                    },
+                    {
+                        key: 'lng',
+                        display: 'Longitud',
+                        type: 'text'
                     },
                     {
                         key: 'municipio',
                         display: 'Municipio',
                         type: 'select',
                         options: this._municipios
-                    }
+                    },
+                    {
+                        key: 'liderId',
+                        display: 'Sifu a cargo',
+                        type: 'select',
+                        options: this._nombres
+                    },
                 ]
             },
             _allowCreateStationPermission() {

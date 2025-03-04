@@ -106,7 +106,7 @@
         ],
         academicPrep: false,
         hideAcademicPrepLoading: () => {},
-        hideEmergencyContactLoading: () => {},
+        hideEmergencyContactLoading: () => {}
       }
     },
     methods: {
@@ -116,13 +116,14 @@
         this.showBlur = true
       },
       async loadDictionaries() {
-        let requests = [ Request.Get.Grados(), Request.Get.tipoMiembros(), Request.Get.Escuelas(), Request.Get.Permisos() ];
-        let [grados, tipoMiembros, escuelas, permisos] = await Promise.all(requests).catch(e => e).finally(() => this.loading = false);
+        let requests = [ Request.Get.Grados(), Request.Get.tipoMiembros(), Request.Get.Escuelas(), Request.Get.Permisos(), Request.Get.tipoEntrenamientos() ];
+        let [grados, tipoMiembros, escuelas, permisos, tipoEntrenamiento] = await Promise.all(requests).catch(e => e).finally(() => this.loading = false);
         
         if (tipoMiembros.status == 200) this.dictionaries.tipoMiembros = tipoMiembros.data;
         if (grados.status == 200) this.dictionaries.grados = grados.data;
         if (escuelas.status == 200) this.dictionaries.escuelas = escuelas.data;
         if (permisos.status == 200) this.dictionaries.permisos = permisos.data;
+        if (tipoEntrenamiento.status == 200) this.dictionaries.tipoEntrenamiento = tipoEntrenamiento.data;
       },
       handleHideBlur() {
         this.showBlur = false;
@@ -152,7 +153,7 @@
             type: 'ok',
           });
         }
-      }
+      },
     },
     mounted() {
       this.loadDictionaries();
@@ -165,11 +166,14 @@
   }
   </script>
 
-<style>
-.list-all {
-  height: calc(100vh - 80px);
-  display: flex;
-  flex-direction: column;
-}
+<style lang="scss">
+  .list-all {
+    height: calc(100vh - 150px);
+    display: flex;
+    flex-direction: column;
+    h1 {
+      cursor: default;
+    }
+  }
 </style>
   

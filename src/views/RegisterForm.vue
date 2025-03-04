@@ -8,14 +8,15 @@
       <step-three @validation="catchResult($event)" v-if="slides.pos == 3" :class="{animateRight : animationToggle, animateLeft : !animationToggle}" />
       <step-four @validation="catchResult($event)" v-if="slides.pos == 4" :class="{animateRight : animationToggle, animateLeft : !animationToggle}" />
       <step-five @validation="catchResult($event)" v-if="slides.pos == 5" :class="{animateRight : animationToggle, animateLeft : !animationToggle}" />
+      <step-six @accepted="catchResult($event)" v-if="slides.pos == 6" :class="{animateRight : animationToggle, animateLeft : !animationToggle}" />
     
-      <div v-if="slides.pos == 6" class="await">
+      <div v-if="slides.pos == 7" class="await">
         <img src="../assets/spinner.png" class="rotating">
         <h2>Guardando registro...</h2>
       </div>
     </div>
 
-    <div class="controls" v-if="!resultCode">
+    <div class="steps" v-if="!resultCode">
         <img v-if="validating" src="../assets/spinner.png" class="_spinner rotating">
         <div v-else class="stepsView">
           <p 
@@ -31,7 +32,7 @@
         </div>
     </div>
 
-    <ActionResult v-if="resultCode != null" :status="resultCode" :from="'registro'" @return="handleResultBack" @retry="finishCollection" />
+    <ActionResult v-if="resultCode != null" :status="resultCode" :from="'registro'" :userCode="resultUserCode" @return="handleResultBack" @retry="finishCollection" />
 
   </div>
 </template>
@@ -42,6 +43,7 @@ import stepTwo from "./inscripcionComponents/stepTwo.vue";
 import stepThree from "./inscripcionComponents/stepThree.vue";
 import stepFour from "./inscripcionComponents/stepFour.vue";
 import stepFive from "./inscripcionComponents/stepFive.vue";
+import stepSix from "./inscripcionComponents/stepSix.vue";
 import ActionResult from "../components/ActionResult.vue";
 import Request from "../request/instance.js";
 
@@ -52,6 +54,7 @@ export default {
     stepThree,
     stepFour,
     stepFive,
+    stepSix,
     ActionResult
   },
   data() {
@@ -63,6 +66,7 @@ export default {
       data: {},
       letMego: false,
       resultCode: null,
+      resultUserCode: null,
       validating: false,
       animationToggle: false
     }
@@ -70,10 +74,10 @@ export default {
   methods: {
     nextStep(pos) {
         if(!pos) {
-            this.animationToggle = true;
             this.validating = false;
+            this.animationToggle = true;
             this.slides.pos++;
-            if (this.slides.pos > 5) setTimeout(() => this.finishCollection(), 500);
+            if (this.slides.pos > 6) setTimeout(() => this.finishCollection(), 500);
             this.$refs.viewer.scrollTo(0, 0);
         }
         else {
@@ -82,6 +86,11 @@ export default {
         }
     },
     catchResult(e) {
+        if (e.pos > 5) {
+            this.nextStep();
+            return;
+        }
+
         this.data[`step_${e.pos}`] = e.result;
         this.validationStatus = true;
         this.letMego = true;
@@ -89,10 +98,13 @@ export default {
     },
     async finishCollection() {
         this.resultCode = null;
-        if(Object.keys(this.data).length == 5) {
+        if(Object.keys(this.data).length >= 0) {
             await Request.Post.newMember(this.data)
-                .then(res => this.resultCode = res.status)
-                .catch(e => this.resultCode = e.response?.status ?? 503)
+                .then(res => {
+                  if (res.status == 201) this.resultUserCode = res.data?.userCode ?? null;
+                  this.resultCode = res.status;
+                })
+                .catch(e => this.resultCode = e.response?.status > 0 ? e.response?.status : 503)
                 .finally(() => this.validating = false);
         }
         else {
@@ -101,7 +113,7 @@ export default {
                 icon: "icofont-close-circled",
                 type: 'error',
             });
-            this.slides.pos = 1;
+            //this.slides.pos = 1;
         }
     },
     handleResultBack() {
@@ -143,55 +155,9 @@ export default {
   padding-top: 15px;
   padding-bottom: 15px;
   overflow: hidden;
-  
-  .info-message {
-    display: flex;
-    padding: 0px 20px 0px 10px;
-    max-width: 450px;
-    margin: 15px auto;
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
-    user-select: none;
-    .content {
-        p {
-            margin: 10px 0;
-            font-size: 14px;
-        }
-        .title {
-            font-weight: bold;
-            font-size: 15px;
-        }
-    }
-
-    .icon {
-        display: flex;
-        justify-content: center;
-        margin-right: 15px;
-        padding-top: 10px;
-        i {
-            font-size: 30px;
-        }
-    }
-
-    background-color: #00000029;
-  }
-  .warn {
-    background-color: #ffc8004e;
-    outline: 1px solid #ffc800;
-    border-left: 5px solid #ffc800;
-    /* .content {
-        .title {
-        }
-    }
-
-    .icon {
-        i {
-        }
-    } */
-  }
 }
 
-.stepfive, .stepfour, .stepthree, .steptwo, .stepone {
+.stepsix, .stepfive, .stepfour, .stepthree, .steptwo, .stepone {
     border: 2px solid #aaaaaa5e;
     padding: 15px 0px 15px 0px;
 
@@ -317,42 +283,6 @@ export default {
     }
 }
 
-.controls {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    overflow: hidden;
-    width: 100%;
-    min-height: 85px;
-    p {
-      user-select: none;
-      display: inline-block;
-      margin: 10px 25px;
-    }
-
-    .stepsView {
-      display: flex;
-      margin: auto;
-      overflow-y: auto;
-      flex-wrap: nowrap;
-      min-width: 300px;
-      height: auto;
-      p {
-        display: inline-flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 15px;
-        height: 25px;
-        width: 25px;
-        min-width: 25px;
-        min-height: 25px;
-        text-align: center;
-        border-radius: 50%;
-        font-weight: bold;
-      }
-    }
-}
-
 ._spinner {
   margin: 15px auto 0 auto;
   height: 40px;
@@ -364,12 +294,9 @@ export default {
         display: flex;
         flex-direction: column;
         align-items: center;
-        .info-message {
-            max-width: calc(100% - 85px);
-        }
     }
 
-    .stepfive, .stepfour, .stepthree, .steptwo, .stepone {
+    .stepsix, .stepfive, .stepfour, .stepthree, .steptwo, .stepone {
         width: calc(100% - 10px);
     }
 
@@ -378,7 +305,7 @@ export default {
     }
 }
 
-@media only screen and (max-width: 500px) {
+@media only screen and (max-width: 600px) {
     .min-container {
         margin: 10px 0px 10px 15px;
         padding: 10px 5px 15px 10px;
@@ -401,18 +328,6 @@ export default {
         padding: 10px 5px 15px 10px;
         width: calc(100% - (20px));
     }
-
-    .stepcontainer {
-        .info-message {
-            max-width: calc(100% - 50px);
-        }
-    }
-
-  .controls {
-    p {
-      margin: 10px 20px;
-    }
-  }
 }
 
 </style>

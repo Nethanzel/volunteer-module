@@ -1,6 +1,6 @@
 <template>
   <div class="stepcontainer">
-        <h2>Datos de Salud</h2>
+        <h2>Datos Importantes</h2>
         <FormulateForm 
             class="stepthree"
             @validation="validate"
@@ -32,7 +32,6 @@
                         }"
                     >Esta información es necesaria.</p>
 
-
                     <div v-for="(member, index) in family" :key="index" class="rowData" @click="removeFamily(index)">
                         <div class="head">
                             <i class="icofont-ui-user"></i>
@@ -62,7 +61,6 @@
                         type="textarea" 
                         name="sicknessDetails" 
                         label="Especifique su enfermedad/condición (seperados por coma (,)" 
-                        validation="required"
                         validation-name="Detalle enfermedad/condición"
                         @validation="validate($event)"
                         v-model="desease.contents"
@@ -74,10 +72,8 @@
                     <FormulateInput 
                         v-if="medicines.state" 
                         type="textarea" 
-                        name="allergies" 
+                        name="alergies" 
                         label="Especifique los medicamentos que requiere (seperados por coma (,))"
-                        validation-name="Detalle medicamentos"
-                        validation="required" 
                         @validation="validate($event)" 
                         v-model="medicines.contents"
                     />
@@ -90,7 +86,6 @@
                         type="text" 
                         name="assuranceCompany" 
                         label="Proveedor (compañia)" 
-                        validation="required"
                         validation-name="Proveedor"
                         @validation="validate($event)"
                         v-model="assurance.company"
@@ -100,7 +95,6 @@
                         type="text" 
                         name="assuranceCode" 
                         label="Código afiliado" 
-                        validation="required"
                         validation-name="Código afiliado"
                         @validation="validate($event)"
                         v-model="assurance.code"
@@ -230,16 +224,40 @@ export default {
 
             if(this.desease.state) {
                 formResult.desease.state = true;
+                if(!this.desease.contents) {
+                    this.$throwAppMessage({
+                        message: "Debe especificar las condicones de salud que tiene",
+                        icon: "icofont-close-circled",
+                        type: 'error',
+                    }); 
+                    return;
+                }
                 formResult.desease.contents = this.desease.contents;
             }
 
             if(this.medicines.state) {
                 formResult.medicine.state = true;
+                if(!this.medicines.contents) {
+                    this.$throwAppMessage({
+                        message: "Debe especificar los medicamentos que le causan alergia",
+                        icon: "icofont-close-circled",
+                        type: 'error',
+                    }); 
+                    return;
+                }
                 formResult.medicine.contents = this.medicines.contents;
             }
 
             if(this.assurance.state) {
                 formResult.assurance.state = true;
+                if (!this.assurance.company || !this.assurance.code) {
+                    this.$throwAppMessage({
+                        message: "Debe completar la información de se seguro de salud",
+                        icon: "icofont-close-circled",
+                        type: 'error',
+                    });
+                    return;
+                }
                 formResult.assurance.company = this.assurance.company;
                 formResult.assurance.code = this.assurance.code;
             }

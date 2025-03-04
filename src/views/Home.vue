@@ -5,15 +5,15 @@
       <Navigation />
     </header>
 
-    <section id="sec-1">
+    <section id="sec-1" v-if="devReady">
       <RecentEvents />
     </section>
 
-    <section id="sec-2" :style="{ backgroundColor: '#ff5b5b' }">
+    <section id="sec-2" :style="{ backgroundColor: '#ff5b5b' }" v-if="devReady">
       <h1>Calendario de Actividades recientes (brief)</h1>
     </section>
 
-    <section id="sec-3">
+    <section id="sec-3" v-if="devReady">
       <h1>Escuelas y horarios de practica</h1>
     </section>
   </div>
@@ -31,6 +31,7 @@
     },
     data() {
       return {
+        devReady: false
       }
     },
     mounted() {

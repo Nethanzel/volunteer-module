@@ -120,7 +120,7 @@
             </div>
 
             <div class="min-container" :style="{marginTop: '0px'}">
-                <p :style="{marginBottom: '10px'}">¿Tienes alguna identificación o uniforme para las prácticas?</p>
+                <p :style="{marginBottom: '10px'}">¿Tiene su uniforme para las prácticas?</p>
                 <p
                     v-if="identificationRequired"
                     :style="{ color: '#ff3300', marginTop: '0px', fontSize: '13px', fontWeight:'bold',
@@ -217,6 +217,24 @@ export default {
                 if(!this.formResult.interested) {
                     this.interestRequired = true;
                 }
+                return;
+            }
+
+            if (JSON.parse(this.formResult.otherMartialArt) && !this.formResult.otherMartialArtDetails) {
+                this.$throwAppMessage({
+                    message: "Especifica que otras artes marciales has prácticado",
+                    icon: "icofont-close-circled",
+                    type: 'error',
+                });
+                return;
+            }
+
+            if (JSON.parse(this.formResult.identificacion) && !this.formResult.identificacionDetails) {
+                this.$throwAppMessage({
+                    message: "Especificar qué uniforme(s) tiene",
+                    icon: "icofont-close-circled",
+                    type: 'error',
+                });
                 return;
             }
             
