@@ -75,23 +75,20 @@
 
                 <div type="group" class="custom-radio" :style="{marginTop: '10px'}">
                     <img v-if="loadingDepartments" :src="loadingIcon" class="_spinner rotating">
-                    <div class="option-wrapper">
-                        <div 
-                            class="option"
-                            v-for="(type, index) in dictionaries.grados" 
-                            :key="index"
-                            :style="{
-                                borderLeft: type.color ? `10px solid #${type.color}` : `10px solid transparent`
-                            }"
-                            @click="selectOption($event, 'dep'+index, 'grado', type.id)"
-                        >
-                            <input :value="type.id" :id="'dep'+index" type="radio" name="grado" :style="{display: 'inline-block', marginRight: '10px'}" />
-                            <label>{{type.grado}}</label> 
-                            <br>
-                            <span>{{type.descripcion}}</span>
-                        </div>
+                    <div 
+                        class="option"
+                        v-for="(type, index) in dictionaries.grados" 
+                        :key="index"
+                        :style="{
+                            borderLeft: type.color ? `10px solid #${type.color}` : `10px solid transparent`
+                        }"
+                        @click="selectOption($event, 'dep'+index, 'grado', type.id)"
+                    >
+                        <input :value="type.id" :id="'dep'+index" type="radio" name="grado" :style="{display: 'inline-block', marginRight: '10px'}" />
+                        <label>{{type.grado}}</label> 
+                        <br>
+                        <span>{{type.descripcion}}</span>
                     </div>
-
                 </div>
             </div>
 
