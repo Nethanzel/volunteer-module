@@ -258,8 +258,8 @@ export default {
                     });
                     return;
                 }
-                formResult.assurance.company = this.assurance.company;
-                formResult.assurance.code = this.assurance.code;
+                formResult.assurance.assuranceCompany = this.assurance.company;
+                formResult.assurance.assuranceCode = this.assurance.code;
             }
 
             this.$emit("validation", {result: formResult, pos: 3});

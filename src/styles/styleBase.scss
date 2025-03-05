@@ -19,8 +19,8 @@
 
 .blury-cnt {
     background-color: #00000080;
-    height: calc(100% - 70px);
-    position: absolute;
+    height: calc(100dvh - 70px);
+    position: fixed;
     display: flex;
     justify-content: center;
     align-items: center;

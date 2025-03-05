@@ -1,5 +1,5 @@
 <template>
-  <div id="app" :style="{ paddingTop: paddingTop, minHeight: `calc(100vh - ${paddingTop})` }" @click="collapseMenu()">
+  <div id="app" :style="{ paddingTop: paddingTop, minHeight: `calc(100dvh - ${paddingTop})` }" @click="collapseMenu()">
 
     <MessageStack />
 
@@ -101,7 +101,7 @@
 }
 
 body {
-  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 #app {
@@ -126,7 +126,7 @@ body {
 
 aside {
   box-shadow: 10px 0px 10px 0px #00000030;
-  height: calc(100vh - 80px);
+  height: calc(100dvh - 80px);
   position: fixed;
   z-index: 50;
 

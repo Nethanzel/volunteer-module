@@ -6,43 +6,46 @@
                 <i class="icofont-warning" :style="{ fontSize:'35px' }"></i>
             </div>
             <div class="info">
-                <h2>{{ data.nombre }} {{ data.apellido }}</h2>
-                <p>{{ formatIdentification(data.identity) }}</p>
-                <p>
-                    {{ formatPhoneNumber(data.celular) }} 
-                    <i class="icofont-duotone icofont-phone" :style="{ fontSize:'20px' }"></i>
-                    <i class="icofont-brand-whatsapp"></i>
-                </p>
-                <p v-if="data.telefonoFijo">
-                    {{ formatPhoneNumber(data.telefonoFijo) }} 
-                    <i class="icofont-duotone icofont-phone" :style="{ fontSize:'20px' }"></i> 
-                    <i class="icofont-brand-whatsapp"></i>
-                </p>
-            </div>
-            <div class="actions">
-
-                <div v-if="!data.deleted && _allowDeleteUserPermission">
-                    <p @click="updateSpecialField({ field: { key:'deleted', value:true }, target: $event.target })">
-                        <i class="icofont-ui-delete"></i>
-                        Eliminar
+                <div class="_details">
+                    <h2>{{ data.nombre }} {{ data.apellido }}</h2>
+                    <p>{{ formatIdentification(data.identity) }}</p>
+                    <p v-if="data.celular">
+                        {{ formatPhoneNumber(data.celular) }} 
+                        <i class="icofont-duotone icofont-phone" :style="{ fontSize:'20px' }"></i>
+                        <i class="icofont-brand-whatsapp"></i>
                     </p>
-                    <img class="rotating" src="../assets/spinner.png" alt="loading">
+                    <p v-if="data.telefonoFijo">
+                        {{ formatPhoneNumber(data.telefonoFijo) }} 
+                        <i class="icofont-duotone icofont-phone" :style="{ fontSize:'20px' }"></i> 
+                        <i class="icofont-brand-whatsapp"></i>
+                    </p>
                 </div>
+                <div class="actions">
 
-                <div v-if="data.deleted && _allowRestoreUserPermission">
-                    <p @click="updateSpecialField({ field: { key:'deleted', value:false }, target: $event.target })">
-                        <i class="icofont-refresh"></i>
-                        Restaurar
-                    </p>
-                    <img class="rotating" src="../assets/spinner.png" alt="loading">
-                </div>
-                
-                <div v-if="!data.checked && _allowConfirmUserPermission">
-                    <p @click="updateSpecialField({ field: { key:'checked',value:true }, target: $event.target })">
-                        <i class="icofont-check-circled"></i>
-                        Confirmar
-                    </p>
-                    <img class="rotating" src="../assets/spinner.png" alt="loading">
+                    <div v-if="!data.deleted && _allowDeleteUserPermission">
+                        <p @click="updateSpecialField({ field: { key:'deleted', value:true }, target: $event.target })">
+                            <i class="icofont-ui-delete"></i>
+                            Eliminar
+                        </p>
+                        <img class="rotating" src="../assets/spinner.png" alt="loading">
+                    </div>
+
+                    <div v-if="data.deleted && _allowRestoreUserPermission">
+                        <p @click="updateSpecialField({ field: { key:'deleted', value:false }, target: $event.target })">
+                            <i class="icofont-refresh"></i>
+                            Restaurar
+                        </p>
+                        <img class="rotating" src="../assets/spinner.png" alt="loading">
+                    </div>
+
+                    <div v-if="!data.checked && _allowConfirmUserPermission">
+                        <p @click="updateSpecialField({ field: { key:'checked',value:true }, target: $event.target })">
+                            <i class="icofont-check-circled"></i>
+                            Confirmar
+                        </p>
+                        <img class="rotating" src="../assets/spinner.png" alt="loading">
+                    </div>
+
                 </div>
 
             </div>
@@ -106,8 +109,7 @@
             </template>
             <p v-else :style="{ textAlign: 'center', margin:' 20px 0 50px 0', color: '#848484a2' }">Sin contactos</p>
 
-
-            <h2>Datos de salud</h2>
+            <h2>Datos Importantes</h2>
             <EditableField @save="updateField" :type="'select'" :label="'Alguna enfermedad'" :value="data.enfermedad" :options="SiNoOptions" :_key="'enfermedad'" :isYesNo="true" />
             <EditableField @save="updateField" :type="'text-area'" :label="'Enfermedades'" :value="data.enfermedadDetalles" :_key="'enfermedadDetalles'" v-if="data.enfermedad" />
             <EditableField @save="updateField" :type="'select'" :label="'Alguna alergia'" :value="data.alergia" :options="SiNoOptions" :_key="'alergia'" :isYesNo="true" />
@@ -169,9 +171,9 @@
             <EditableField @save="updateField" :type="'select'" :label="'Grado'" :value="data.Grado.id" :options="_grados" :_key="'GradoId'" />
             <EditableField @save="updateField" :type="'select'" :label="'Tipo miembro'" :value="data.TipoMiembro.id" :options="_tiposMiembro" :_key="'TipoMiembroId'" />
             <EditableField @save="updateField" :type="'select'" :label="'Interes'" :value="data.interested" :options="_tipoEntrenamiento" :_key="'interested'" />
-            <EditableField @save="updateField" :type="'select'" :label="'Tiene identificacion'" :value="data.hasIdentification" :options="SiNoOptions" :_key="'hasIdentification'" :isYesNo="true" />
+            <EditableField @save="updateField" :type="'select'" :label="'Tiene uniforme'" :value="data.hasIdentification" :options="SiNoOptions" :_key="'hasIdentification'" :isYesNo="true" />
             <EditableField @save="updateField" :type="'select'" :label="'Otro estilo'" :value="data.otherMartialArt" :options="SiNoOptions" :_key="'otherMartialArt'" :isYesNo="true" />
-            <EditableField @save="updateField" :type="'text-area'" :label="'Identificaciones'" :value="data.idetifications" :_key="'idetifications'" v-if="data.hasIdentification" />
+            <EditableField @save="updateField" :type="'text-area'" :label="'Uniforme'" :value="data.idetifications" :_key="'idetifications'" v-if="data.hasIdentification" />
             <EditableField @save="updateField" :type="'text-area'" :label="'Detalles otro estilo'" :value="data.otherMartialArtDetails" :_key="'otherMartialArtDetails'" v-if="data.otherMartialArt" />
             <EditableField @save="updateField" :type="'text-area'" :label="'Desea prácticar porque...'" :value="data.desire" :_key="'desire'" />
 
@@ -215,7 +217,7 @@
                     <template v-if="_allowRemovePermission">
                         <p class="described-add"><span class="lbl">Permisos actuales:</span></p>
                         <div class="permission-view" v-if="data.permissions">
-                            <p v-for="(key, i) in data.permissions.split(',')" :key="`p-${i}`" class="got-permission">
+                            <p v-for="(key, i) in data.permissions.split(',')" :key="`p-${i}`" class="got-permission" @click="loopBack($event, true)">
                                 <span class="key">{{ key }}</span>
                                 <span class="desc">{{ dictionaries.permisos.filter(p => p.key == key)[0].description }}</span>
                                 <i class="icofont-close" @click="arPermission($event, key, false)"></i>
@@ -229,7 +231,7 @@
                         <p class="described-add"><span class="lbl">Agregar permisos:</span></p>
                         <div class="permission-view">
                             <template v-if="data.permissions">
-                                <p v-for="(permiso, i) in dictionaries.permisos.filter(p => !data.permissions.split(',').includes(p.key))" :key="`pp-${i}`" class="permission">
+                                <p v-for="(permiso, i) in dictionaries.permisos.filter(p => !data.permissions.split(',').includes(p.key))" :key="`pp-${i}`" class="permission" @click="loopBack">
                                     <span class="key">{{ permiso.key }}</span>
                                     <span class="desc">{{ permiso.description }}</span>
                                     <input type="checkbox" @change="arPermission($event, permiso.key, true)">
@@ -237,7 +239,7 @@
                                 </p>
                             </template>
                             <template v-else>
-                                <p v-for="(permiso, i) in dictionaries.permisos" :key="`pp-${i}`" class="permission">
+                                <p v-for="(permiso, i) in dictionaries.permisos" :key="`pp-${i}`" class="permission" @click="loopBack">
                                     <span class="key">{{ permiso.key }}</span>
                                     <span class="desc">{{ permiso.description }}</span>
                                     <input type="checkbox" @change="arPermission($event, permiso.key, true)">
@@ -375,6 +377,7 @@
                 }
             },
             async arPermission(e, key, add) {
+                e.stopPropagation();
                 if (add) {
                     showFieldLoading(e.target);
                     e.target.checked = false;
@@ -653,6 +656,16 @@
                 .then((res) => this.data.Archivos = res.data)
                 .catch(() => null)
                 .finally(() => this.loadinFiles = false);
+            },
+            loopBack(e, remove = false) {
+                let input = null;
+
+                e.stopPropagation();
+
+                if (remove) input = e.target.getElementsByTagName('i')[0]
+                else input = e.target.getElementsByTagName('input')[0];
+
+                if (input) input.click()
             }
         },
         mounted() {
@@ -767,56 +780,71 @@
                 justify-content: center;
             }
             .info {
-                p {
-                    display: flex;
-                    align-items: center;
-                    i {
-                        font-size: 16px;
-                        margin-right: 13px;
-                        cursor: pointer;
-                        margin-bottom: 7px;
+                display: flex;
+                flex-direction: row;
+                overflow: hidden;
+                width: 100%;
+                ._details {
+                    width: 84%;
+                    h2 {
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        overflow: hidden;
                     }
-                    i:first-child {
-                        margin-left: 7px;
-                    }
-                }
-            }
-            .actions {
-                margin-left: auto;
-                padding: 0 20px;
-                div {
-                    display: flex;
-                    flex-direction: row;
-                    align-items: center;
-                    margin-bottom:15px;
-
                     p {
-                        cursor:pointer;
-                        font-size:14px;
                         display: flex;
                         align-items: center;
-                        width: 100%;
                         i {
-                            font-size:17px;
-                            margin-right: 7px;
-                            pointer-events: none;
+                            font-size: 16px;
+                            margin-right: 13px;
+                            cursor: pointer;
+                            margin-bottom: 7px;
                         }
-                        &:last-child {
-                            margin-bottom: 0px;
+                        i:first-child {
+                            margin-left: 7px;
                         }
                     }
-                    .rotating {
-                        height: 15px;
-                        width: 15px;
-                        display: none;
+                }
+                .actions {
+                    margin-left: auto;
+                    padding: 0 20px;
+                    width: 16%;
+                    div {
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+                        margin-bottom:15px;
+
+                        p {
+                            cursor:pointer;
+                            font-size:14px;
+                            display: flex;
+                            align-items: center;
+                            width: 100%;
+                            i {
+                                font-size:17px;
+                                margin-right: 7px;
+                                pointer-events: none;
+                            }
+                            &:last-child {
+                                margin-bottom: 0px;
+                            }
+                        }
+                        .rotating {
+                            height: 15px;
+                            width: 15px;
+                            display: none;
+                        }
                     }
                 }
             }
+
         }
         .cntent {
             height: calc(81% - 25px);
             padding-bottom: 25px;
             overflow-y: auto;
+            display: block;
             h2 {
                 margin: 5px 0 10px 0;
                 text-align: center;
@@ -905,7 +933,7 @@
                     background-color: #bdffb780;
                     border: 1px solid #c4c4c4a2;
                     border-radius: 3px;
-                    max-width: 320px;
+                    max-width: 318px;
                     min-width: 310px;
                     cursor: default;
                     .key {
@@ -915,6 +943,9 @@
                         text-align: right;
                         min-width: 35px;
                         font-weight: bold;
+                    }
+                    span {
+                        pointer-events: none;
                     }
                     .desc {
                         font-style: italic;
@@ -956,10 +987,42 @@
     @media only screen and (max-width: 700px) {
         .blury-cnt {
             .details {
+                .head {
+                    .info {
+                        flex-direction: column;
+                        ._details {
+                            width: 100%;
+                        }
+                        .actions {
+                            flex-direction: row;
+                            justify-content: flex-start;
+                            margin: unset;
+                            width: 100%;
+                            padding: 5px 0;
+                            div {
+                                margin-bottom: 0;
+                            }
+                            div:first-child {
+                                margin-bottom: 0;
+                                margin-right: 20px;
+                            }
+                        }
+                    }
+                }
+
                 .cntent {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
+                    display: block;
+                    text-align: center;
+                    .detail-card, .info-message {
+                        text-align: left;
+                    }
+                    .permission-view {
+                        .got-permission, .permission {
+                            width: calc(100% - 0px);
+                            max-width: unset;
+                            text-align: left;
+                        }
+                    }
                 }
             }
         }

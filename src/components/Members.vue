@@ -98,8 +98,7 @@ export default {
                 let { rows, limit, count } = requestResult.data;
                 this.pages = Math.ceil(count / limit);
                 this.cPage = page ? page : 1;
-                this.Miembros = rows;
-
+                this.Miembros = rows.sort((a, b) => b.id - a.id);
                 this.updateResume({ limit, count, page: this.cPage });
             }
         },
@@ -144,6 +143,7 @@ export default {
 .record-list {
     display: flex;
     flex-direction: column;
+    overflow: hidden;
     height: 100%;
     .steps {
         .resume {
@@ -184,6 +184,7 @@ export default {
                     object-fit: cover;
                     width: 100%;
                     height: 100%;
+                    max-height: 150px;
                 }
                 i {
                     font-size: 35px;

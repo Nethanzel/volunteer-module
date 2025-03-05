@@ -144,7 +144,7 @@
     .tipos {
         display: flex;
         flex-direction: column;
-        height: calc(100vh - 75px);
+        height: calc(100dvh - 75px);
         h1 {
             user-select: none;
         }

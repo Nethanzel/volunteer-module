@@ -129,7 +129,7 @@ export default {
     display: flex;
     align-items: center;
     flex-direction: column;
-    height: calc(100vh - (90px));
+    height: calc(100dvh - (90px));
     padding-bottom: 15px;
     img {
         max-width: 300px;

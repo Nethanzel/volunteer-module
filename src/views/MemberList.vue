@@ -168,7 +168,7 @@
 
 <style lang="scss">
   .list-all {
-    height: calc(100vh - 150px);
+    height: calc(100dvh - 75px);
     display: flex;
     flex-direction: column;
     h1 {

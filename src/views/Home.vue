@@ -51,21 +51,21 @@
 
 <style scoped lang="scss">
   .home {
-    height: 100vh;
+    height: 100dvh;
     overflow-y: scroll;
     scroll-snap-type: y mandatory;
     section {
       display: flex;
       align-items: center;
       flex-direction: column;
-      height: 100vh;
+      height: 100dvh;
       scroll-snap-align: start;
     }
 
     #sec-2,
     #sec-3 {
       padding-top: 80px;
-      height: calc(100vh - 80px);
+      height: calc(100dvh - 80px);
     }
 
     header {

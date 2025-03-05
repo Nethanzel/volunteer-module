@@ -142,9 +142,9 @@
                     v-if="formResult.identificacion == 'true'" 
                     type="textarea" 
                     name="identificacionDetails" 
-                    label="Haga una lista de las identificaciones que tiene, cada una separada por coma (,)" 
+                    label="Haga una lista de los uniformes que tiene, cada uno separada por coma (,)" 
                     validation="required"
-                    validation-name="Identificaciones"
+                    validation-name="Los uniformes que tiene"
                     v-model="formResult.identificacionDetails"
                 />
             </div>
