@@ -80,4 +80,12 @@
       background-color: #ffffffcc;
     }
   }
+
+  @media only screen and (max-width: 850px) {
+    .home {
+      header {
+        width: calc(100% - 5px);
+      }
+    }
+  }
 </style>

@@ -29,8 +29,8 @@
                             <input :value="school.id" :id="'sch'+i" type="radio" name="escuela" :style="{display: 'inline-block', marginRight: '10px'}" />
                             <label>{{school.nombre}}</label> 
                             <br>
-                            <span :style="{ display:'block', marginLeft:'20px' }"><i class="icofont-location-pin" :style="{ marginRight:'2px' }"></i> {{school.municipio}}</span>
-                            <span :style="{ display:'block', marginLeft:'20px' }">
+                            <span :style="{ display:'block', marginLeft:'20px' }"><i class="icofont-location-pin" :style="{ marginRight:'2px' }"></i> {{titleCase(school.municipio)}}</span>
+                            <span :style="{ display:'block', marginLeft:'20px', textOverflow:'ellipsis', whiteSpace:'nowrap', overflow:'hidden' }" v-if="school.lider">
                                 <i class="icofont-star" :style="{ marginRight:'2px' }"></i> 
                                 Profesor {{`${school.lider.nombre} ${school.lider.apellido}`}}
                             </span>
@@ -49,6 +49,7 @@
 <script>
 
 import Request from "../../request/instance.js";
+import { titleCase } from "../../utils/inforFormat.js";
 const provincias = require("../../assets/data/provincias.json");
 const municipios = require("../../assets/data/municipios.json");
 
@@ -64,6 +65,7 @@ export default {
         }
     },
     methods: {
+        titleCase,
         async validateForm() {
             if (!this.formResult.escuela) {
                 this.$throwAppMessage({ 

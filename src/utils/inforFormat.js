@@ -22,7 +22,8 @@ export function formatDate(date, onlyDate = false) {
     if(date != undefined && date != null) {
         date = date.toString().trim();
         let dateInstance = new Date(date);
-
+        dateInstance = new Date(dateInstance.setHours(dateInstance.getHours() + 8));
+        
         let month = `${dateInstance.getMonth() + 1}`.padStart(2,"0");
         let day = `${dateInstance.getDate()}`.padStart(2,"0");
         let year = `${dateInstance.getFullYear()}`;

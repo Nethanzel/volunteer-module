@@ -11,7 +11,7 @@
                 <FormulateInput type="text" name="nombre" label="Nombres" validation="required"/>
                 <FormulateInput type="text" name="apellido" label="Apellidos" validation="required"/>
                 <FormulateInput name="nacimientolugar" label="Lugar de nacimiento" type="select" :options="Prov"/>
-                <FormulateInput type="date" validation-name="Fecha de nacimiento" validation="required" name="nacimientofecha" label="Fecha de nacimiento" @change="birthDateChanged"/>
+                <FormulateInput type="text" validation-name="Fecha de nacimiento" validation="required" name="nacimientofecha" label="Fecha de nacimiento (año/mes/dia)" @input="birthDateChanged" :errors="birthDateErr" />
                 <FormulateInput type="text" validation-name="Cédula" name="identity" label="Cédula" :errors="identityErr" />
                 <FormulateInput type="text" name="ocupacion" label="Ocupación (opcional)" />
                 <FormulateInput type="text" name="peso" label="Peso (en libras)" placeholder="Ejemplo: 125" />
@@ -131,6 +131,7 @@ export default {
             valitinId: false,
             celularErr: [],
             telefonoErr: [],
+            birthDateErr: [],
             isMinor: false,
             familyModel: {
                 name: '',
@@ -145,6 +146,11 @@ export default {
     },
     methods: {
         calcularEdad,
+        isValidDate(dateString) {
+            if (dateString.length < 8) return false;
+            const date = new Date(dateString);
+            return date instanceof Date && !isNaN(date);
+        },
         validate(e) {
             this.validations[e.name] = e;
         },
@@ -169,6 +175,17 @@ export default {
                     }); 
                     return;
                 }
+            }
+
+            if (!this.isValidDate(this.formResult.nacimientofecha)) {
+                this.$throwAppMessage({
+                    message: 'La fecha de nacimiento no es válida',
+                    icon: "icofont-close-circled",
+                    type: 'error',
+                }); 
+                this.birthDateErr = ['Fecha inválida. Ejemplo de fecha: 2024-5-25'];
+                this.isMinor = false;
+                return;
             }
 
             let { error } = userContactSchema.validate({ telefono:this.formResult.telefono, celular:this.formResult.celular });
@@ -221,6 +238,7 @@ export default {
                     }); 
                     stopEmit = true;
                 }
+                this.formResult.nacimientofecha = new Date(this.formResult.nacimientofecha);
                 if (!stopEmit) this.$emit("validation", {result: this.formResult, pos: 2});
             })
             .catch(() => null)
@@ -234,8 +252,17 @@ export default {
             });
         },
         birthDateChanged(e) {
-            let edad = this.calcularEdad(e.target.value);
-            this.isMinor = edad > 17 ? false : true;
+            if (e.length >= 8) {
+                let date = new Date(e);
+                if (this.isValidDate(date)) {
+                    let edad = this.calcularEdad(e);
+                    this.isMinor = edad > 17 ? false : true;
+                    this.birthDateErr = [];
+                    return;
+                }
+            }
+            this.isMinor = false;
+            this.birthDateErr = ['Fecha inválida. Ejemplo de fecha: 2024-5-25'];
         },
         addFamily() {
             let familyMember = {

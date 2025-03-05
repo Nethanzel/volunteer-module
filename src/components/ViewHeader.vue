@@ -33,24 +33,37 @@
     export default {
         data() {
             return {
+                logoToShow: null
             }
         },
         mounted() {
-            
+            this.setLogo();
+            window.matchMedia("(max-width: 450px)").addEventListener('change', e => this.updateLogo(e.matches));
+
         },
         methods: {
             userIconAction() {
                 if (this.$store.getters.isValidatingAccess) return;
                 if (this.$route.name != 'Opciones') this.$router.push({ name: 'Opciones'});
+            },
+            setLogo() {
+                const screenQuery = window.matchMedia("(max-width: 450px)");
+                if (this.$route.name == 'Home' && !screenQuery.matches) return this.logoToShow = textLogo;
+                if (this.$route.name == 'Login' && !screenQuery.matches) return this.logoToShow = textLogo;
+                this.logoToShow = logo;
+            },
+            updateLogo(matches) {
+                if (this.$route.name == 'Home' && !matches) return this.logoToShow = textLogo;
+                if (this.$route.name == 'Login' && !matches) return this.logoToShow = textLogo;
+                this.logoToShow = logo;
             }
         },
-        computed: {
-            logoToShow() {
-                if (this.$route.name == 'Home') return textLogo;
-                if (this.$route.name == 'Login') return textLogo;
-                return logo;
+        watch: {
+            $route() {
+                const screenQuery = window.matchMedia("(max-width: 450px)");
+                this.updateLogo(screenQuery.matches);
             }
-        },
+        }
     }
 </script>
 

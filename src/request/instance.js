@@ -4,7 +4,7 @@ import store from "../store";
 import router from "../router";
 
 const Requester = axios.create({
-    baseURL: process.env.NODE_ENV === "production" ? window.location.origin : "http://127.0.0.1:81"
+    baseURL: process.env.NODE_ENV === "production" ? window.location.origin : "http://192.168.188.153:81"
 });
 
 Requester.interceptors.response.use((response) => response, (err) => {
