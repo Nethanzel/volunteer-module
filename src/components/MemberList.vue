@@ -184,6 +184,7 @@ export default {
                     width: 100%;
                     height: 100%;
                     max-height: 150px;
+                    min-width: 115px;
                 }
                 i {
                     font-size: 35px;

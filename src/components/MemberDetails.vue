@@ -809,6 +809,7 @@
             position: relative;
             img {
                 height: 120px;
+                min-width: 115px;
                 max-width: 120px;
                 margin-right: 10px;
                 margin-left: 5px;
