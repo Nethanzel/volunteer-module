@@ -1,30 +1,31 @@
 <template>
-    <div class="deps">
-        <h1>Grados</h1>
-                
+    <div class="highlights">
+        <h1>Highlights</h1>
+       
         <p class="report-action" v-if="!loadin">
             <span @click="showFiltersBlur = true" class="minimal-action"><i class="icofont-search-user"></i>Busqueda</span>
             <span @click="showFiltersBlur = true" class="minimal-action"><i class="icofont-download"></i>Exportar</span>
         </p>
 
-        <p class="add-info" v-if="_allowCreateDepPermission">
+        <p class="add-info" v-if="_allowCreateHiglightPermission">
             <span @click="showBlur = true"><i class="icofont-duotone icofont-plus-circle"></i> Agregar</span>
         </p>
 
         <div class="dataview">
             <img class="rotating" src="../assets/spinner.png" alt="loadin" v-if="loadin">
-            <h2 v-if="!loadin && !grados.length" :style="{ margin:'auto', color:'#c8c8c8' }">No hay registros</h2>
+
+            <h2 v-if="!loadin && !highlights.length" :style="{ margin:'auto', color:'#c8c8c8' }">No hay registros</h2>
 
             <DynamicConfigurationManager 
-                :data="grados" 
-                :fields="fields"
-                :saveEdited="_allowEditDepPermission"
-                :allowDelete="_allowDeleteDepPermission"
-                :allowRestore="_allowRestoreDepPermission"
+                :data="highlights" 
+                :fields="fields" 
+                :saveEdited="_allowEditHighlightPermission"
+                :allowDelete="_allowDeleteHighlightPermission"
+                :allowRestore="_allowRestoreHighlightPermission"
                 @updateField="updateField" 
-                @delete="handleDelete" 
-                @restore="handleRestore"
-                v-if="!loadin && grados.length"
+                @delete="handleDelete($event)" 
+                @restore="handleRestore($event)" 
+                v-if="!loadin && highlights.length"
             />
         </div>
         <div class="steps">
@@ -33,7 +34,7 @@
                 <p 
                     v-for="page in pages" 
                     :key="page" 
-                    @click="getGrados(page)"
+                    @click="getHighlights(page)"
                     :style="{
                         color: page == cPage ? 'white' : 'black',
                         backgroundColor: page == cPage ? '#008000a8' : 'transparent',
@@ -48,12 +49,13 @@
                 <DynamicModelCreator
                     @hide="showBlur = false"
                     @ready="hideCreatingLoading = $event"
-                    @done="handleCreateDepartment($event)"
+                    @done="handleCreateHighlight($event)"
+                    :title="'Crear highlight'" 
                     :fields="fields" 
-                    :title="'Crear grado'" 
                 />
             </div>
         </transition>
+
     </div>
 </template>
 
@@ -72,28 +74,23 @@
             return {
                 showBlur: false,
                 loadin: true,
-                grados: [],
+                highlights: [],
                 fields: [
                     {
-                        key: 'grado',
-                        display: 'Grado',
+                        key: 'title',
+                        display: 'Titulo',
                         type: 'text'
                     },
                     {
-                        key: 'descripcion',
-                        display: 'Descripcion',
+                        key: 'comment',
+                        display: 'Comentario',
                         type: 'text-area'
                     },
                     {
-                        key: 'color',
-                        display: 'Color',
+                        key: 'image',
+                        display: 'Imagen (url)',
                         type: 'text'
-                    },
-                    {
-                        key: 'prefix',
-                        display: 'Prefijo',
-                        type: 'text'
-                    },
+                    }
                 ],
                 hideCreatingLoading: () => {},
                 pages: 0,
@@ -106,17 +103,17 @@
             }
         },
         mounted() {
-            this.getGrados(1);
+            this.getHighlights(1);
         },
         methods: {
-            async getGrados(page) {
+            async getHighlights(page) {
                 this.loadin = true;
-                let result = await Request.Get.Grados(page).catch(() => null).finally(() => this.loadin = false);
+                let result = await Request.Get.Highlights(page).catch(() => null).finally(() => this.loadin = false);
                 if (result.status == 200) {
                     let { rows, limit, count } = result.data;
                     this.pages = Math.ceil(count / limit);
                     this.cPage = page ? page : 1;
-                    this.grados = rows.sort((a, b) => b.id - a.id);
+                    this.highlights = rows.sort((a, b) => b.id - a.id);
                     this.updateResume({ limit, count, page: this.cPage });
                 }
             },
@@ -124,9 +121,9 @@
                 showFieldLoading(e.target);
 
                 let obj = { id: e.id, field: { [e.field.key]: e.field.value } }
-                let res = await Request.Patch.UpdateDepartment(obj).catch(() => hideFieldLoading(e.target)).finally(() => hideFieldLoading(e.target))
+                let res = await Request.Patch.Highlight(obj).catch(() => hideFieldLoading(e.target)).finally(() => hideFieldLoading(e.target))
                 if (res?.status == 204) {
-                    this.grados.find(x => x.id == e.id)[e.field.key] = e.field.value;
+                    this.highlights.find(x => x.id == e.id)[e.field.key] = e.field.value;
                     this.$throwAppMessage({ 
                         message: "Informacion actualizada!",
                         icon: "icofont-check-circled",
@@ -135,22 +132,22 @@
                 }
             },
             async handleDelete(e) {
-                let res = await Request.Delete.removeDepartment(e.id).catch(() => e.stopLoadin(e.id)).finally(() => e.stopLoadin(e.id));
+                let res = await Request.Delete.removeHighlight(e.id).catch(() => e.stopLoadin(e.id)).finally(() => e.stopLoadin(e.id));
                 if (res?.status == 204) {
-                    this.grados.find(x => x.id == e.id).deleted = true;
+                    this.highlights.find(x => x.id == e.id).deleted = true;
                     this.$throwAppMessage({ 
-                        message: "Grado borrado!",
+                        message: "Highlights borrado!",
                         icon: "icofont-check-circled",
                         type: 'ok',
                     });
                 }
             },
             async handleRestore(e) {
-                let res = await Request.Patch.restoreDepartment(e.id).catch(() => e.stopLoadin(e.id)).finally(() => e.stopLoadin(e.id));
+                let res = await Request.Patch.restoreHighlight(e.id).catch(() => e.stopLoadin(e.id)).finally(() => e.stopLoadin(e.id));
                 if (res?.status == 204) {
-                    this.grados.find(x => x.id == e.id).deleted = false;
+                    this.highlights.find(x => x.id == e.id).deleted = false;
                     this.$throwAppMessage({ 
-                        message: "Grado restaurado!",
+                        message: "Highlights restaurado!",
                         icon: "icofont-check-circled",
                         type: 'ok',
                     });
@@ -159,13 +156,13 @@
             handleHideBlur() {
                 this.showBlur = false;
             },
-            async handleCreateDepartment(e) {
-                let res = await Request.Post.newDepartment(e).catch(() => this.hideCreatingLoading()).finally(() => this.hideCreatingLoading());
+            async handleCreateHighlight(e) {
+                let res = await Request.Post.newHighlight(e).catch(() => this.hideCreatingLoading()).finally(() => this.hideCreatingLoading());
                 if (res?.status == 201) {
                     this.handleHideBlur();
-                    this.getGrados();
+                    this.getHighlights();
                     this.$throwAppMessage({ 
-                        message: "Grado creado!",
+                        message: "Highlight creado!",
                         icon: "icofont-check-circled",
                         type: 'ok',
                     });
@@ -179,24 +176,24 @@
             }
         },
         computed: {
-            _allowCreateDepPermission() {
-                return this.$store.getters.isAllowedToPermission(['CD'])
+            _allowCreateHiglightPermission() {
+                return this.$store.getters.isAllowedToPermission(['CH'])
             },
-            _allowEditDepPermission() {
-                return this.$store.getters.isAllowedToPermission(['UD'])
+            _allowEditHighlightPermission() {
+                return this.$store.getters.isAllowedToPermission(['UH'])
             },
-            _allowDeleteDepPermission() {
-                return this.$store.getters.isAllowedToPermission(['DD'])
+            _allowDeleteHighlightPermission() {
+                return this.$store.getters.isAllowedToPermission(['DH'])
             },
-            _allowRestoreDepPermission() {
-                return this.$store.getters.isAllowedToPermission(['RD'])
+            _allowRestoreHighlightPermission() {
+                return this.$store.getters.isAllowedToPermission(['RDH'])
             },
         }
     }
 </script>
 
 <style lang="scss" scoped>
-    .deps {
+    .highlights {
         display: flex;
         flex-direction: column;
         height: calc(100dvh - 75px);

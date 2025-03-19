@@ -1,85 +1,92 @@
 <template>
-    <div class="content">
-        <div class="slides">
+    <div class="content" v-if="slides.length">
+        <img v-if="loadin" class="rotating" src="../assets/spinner.png" alt="loading">
+
+        <div class="slides" v-if="!loadin">
             <div class="images">
-                <template v-for="(slide, i) in slides">
+                <img v-if="imgLoading" class="rotating" src="../assets/spinner.png" alt="loading">
+
+                <template v-for="(slide, i) in slides.length">                    
                     <img
                         v-if="slidePosition == i"
                         :class="slideAnimation"
-                        :src="slide.image"
+                        :src="slides[i].image"
                         alt="event image"
                         :key="i"
+                        @load="imgLoading = false"
                     >
                 </template>
             </div>
+            
+        </div>
+        <div class="detail" v-if="!loadin">
             <div class="positions">
-                <p
-                    v-for="pos in slides.length"
-                    :class="{selected: slidePosition == pos-1}"
-                    :key="pos"
-                    @click="goToSlide(pos -1)"
-                >
-                </p>
+                <div class="points">
+                    <p
+                        v-for="pos in slides.length"
+                        :class="{selected: slidePosition == pos-1}"
+                        :key="pos"
+                        @click="goToSlide(pos -1)"
+                    >
+                    </p>
+                </div>
+            </div>
 
+            <div class="eventDetail">
+                <h2>{{ slides[slidePosition].title }}</h2>
+                <p>{{ slides[slidePosition].comment }}</p>
             </div>
         </div>
 
-        <div class="eventDetail">
-            <h2>{{ slides[slidePosition].title }}</h2>
-        </div>
     </div>
 </template>
 
 <script>
+    import axiosRequest from '../request/instance';
     export default {
         data() {
             return {
                 slidePosition: 0,
                 slideInterval: undefined,
                 slideAnimation: 'animateRight',
-                slides: [
-                    {
-                        title: "Event Probe 1",
-                        image: "https://plus.unsplash.com/premium_photo-1701534008693-0eee0632d47a?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8d2Vic2l0ZSUyMGJhY2tncm91bmR8ZW58MHx8MHx8fDA%3D",
-                    },
-                    {
-                        title: "Event Probe 2",
-                        image: "https://cdn.pixabay.com/photo/2016/06/02/02/33/triangles-1430105_1280.png",
-                    },
-                    {
-                        title: "Event Probe 3",
-                        image: "https://cdn.pixabay.com/photo/2022/09/21/17/02/blue-background-7470781_1280.jpg",
-                    },
-                    {
-                        title: "Event Probe 4",
-                        image: "https://wallpapers.com/images/hd/pastel-green-aesthetic-desktop-gtyjhjvamfih27zr.jpg",
-                    },
-                    {
-                        title: "Event Probe 5",
-                        image: "https://static.vecteezy.com/system/resources/previews/035/714/700/non_2x/aesthetic-abstract-art-with-a-combination-of-shapes-and-blue-colors-suitable-for-background-and-poster-free-vector.jpg"
-                    }
-                ]
+                slides: [],
+                loadin: true,
+                imgLoading: true
             }
         },
         methods: {
             slideChange() {
+                this.imgLoading = true;
                 this.slidePosition++;
                 if (this.slideAnimation !== "animateRight") this.slideAnimation = "animateRight";
-                if (this.slidePosition >= this.slides.length -1) this.slidePosition = 0;
+                if (this.slidePosition >= this.slides.length) this.slidePosition = 0;
             },
             goToSlide(pos) {
+                this.imgLoading = true;
+
                 clearInterval(this.slideInterval);
 
                 if (pos < this.slidePosition) this.slideAnimation = "animateLeft"
                 this.slidePosition = pos;
 
-                this.slideInterval = setInterval(() => this.slideChange(), 5000);
+                this.slideInterval = setInterval(() => this.slideChange(), 10000);
+            },
+            getHighlights() {
+                axiosRequest.Get.openHighlights()
+                .then(res => {
+                    if (res.status == 200) {
+                        this.slides = res.data;
+                        if (this.slides.length > 1) this.slideInterval = setInterval(() => this.slideChange(), 5000);
+                    }
+                })
+                .catch(() => null)
+                .finally(() => this.loadin = false)
             }
         },
         mounted() {
-            this.slideInterval = setInterval(() => this.slideChange(), 5000);
+            this.getHighlights()
         },
-        unmounted() {
+        destroyed() {
             clearInterval(this.slideInterval);
         }
     }
@@ -89,52 +96,125 @@
     .content {
         width: 100%;
         height: 100%;
+        max-height: 100dvh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        position: relative;
+
+        .rotating {
+            margin: auto;
+            width: 35px;
+            height: 35px;
+        }
+
         .slides {
             width: 100%;
-            height: 80%;
+            height: 100%;
             position: relative;
-            overflow: hidden;
             .images {
                 width: 100%;
                 height: 100%;
+                display: flex;
                 img {
                     width: 100%;
                     height: 100%;
                     object-fit: cover;
                 }
-            }
-            .positions {
-                width: 100%;
-                height: 150px;
-                position: static;
-                transform: translateY(-100%);
-                background: linear-gradient(to bottom, transparent 0%, rgba(255, 255, 255, 0.7) 50%, rgba(255, 255, 255, 1) 90%);
-
-                display: flex;
-                justify-content: center;
-                align-items: flex-end;
-
-                p {
-                    background-color: #000;
-                    border-radius: 50%;
-                    cursor: pointer;
-                    transition: .3s;
-                    margin: 10px;
-                    height: 15px;
-                    width: 15px;
-                    opacity: .3;
-                }
-                .selected {
-                    opacity: 1;
-                    height: 20px;
-                    width: 20px;
+                .rotating {
+                    margin: auto;
+                    width: 35px;
+                    height: 35px;
+                    position: absolute;
                 }
             }
         }
-        .eventDetail {
-            width: calc(100% - 40px);
-            height: calc(20% - 30px);
-            padding: 15px 20px;
+        .detail {
+            width: 100%;
+            margin-top: auto;
+            overflow: hidden;
+            position: absolute;
+            background: linear-gradient(to bottom, transparent 0%, #ffffff80 30%, #ffffffe6 60%, #ffffff 100%);
+
+            .positions {
+                width: 100%;
+                height: 15vh;
+                position: static;
+
+                display: flex;
+                align-items: flex-end;
+                margin-bottom: px;
+
+                .points {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    width: 100%;
+
+                    p {
+                        background-color: #000;
+                        border-radius: 50%;
+                        cursor: pointer;
+                        transition: .3s;
+                        margin: 10px;
+                        height: 15px;
+                        width: 15px;
+                        opacity: .3;
+                    }
+                    .selected {
+                        opacity: 1;
+                        height: 20px;
+                        width: 20px;
+                    }
+                }
+            }
+            .eventDetail {
+                display: flex;
+                flex-direction: column;
+                width: calc(100% - 20px);
+                height: calc(20% - 30px);
+                padding: 15px 10px;
+                h2 {
+                    margin-bottom: 5px;
+                    margin-left: 10px;
+                    text-align: left;
+                }
+                p {
+                    max-width: 680px;
+                    padding: 5px 15px;
+
+                    cursor: default;
+                    text-overflow: ellipsis;
+                    white-space: wrap;
+                    overflow: hidden;
+                    
+                }
+            }
+        }
+    }
+
+    @media only screen and (max-width: 550px) {
+        .content {
+            .detail {
+                .eventDetail {
+                    p {
+                        font-size: 15px;
+                    }
+                }
+                .positions {
+                    .points {
+                        p {
+                            height: 12px;
+                            width: 12px;
+                        }
+                        .selected {
+                            height: 15px;
+                            width: 15px;
+                        }
+                    }
+                }
+            }
         }
     }
 </style>

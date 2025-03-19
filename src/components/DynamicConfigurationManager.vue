@@ -1,6 +1,6 @@
 <template>
     <div class="manager-view">
-        <div :class="{ record:true, deleted:record.deleted }" v-for="(record, i) in data" :key="`mv-${i}`">
+        <div :class="{ record:true, deleted:record.deleted }" v-for="(record, i) in data" :key="`mv-${i}`" :style="{ maxHeight:`${recordMaxHeight}px` }">
             <div class="head" :ref="`mv-${record.id}`">
                 <i 
                     v-if="!record.deleted && allowDelete"
@@ -43,7 +43,8 @@
             fields: Array,
             saveEdited: Boolean,
             allowDelete: Boolean,
-            allowRestore: Boolean
+            allowRestore: Boolean,
+            recordMaxHeight: Number
         },
         components: {
             EditableField
@@ -82,12 +83,14 @@
         margin: 0 auto;
         max-width: 765px;
         padding-bottom: 25px;
+        align-items: flex-start;
         .record {
             margin: 10px;
             padding: 10px;
             max-width: 340px;
             border-radius: 5px;
             background-color: #e7e7e7;
+            overflow: hidden;
             .head {
                 display: flex;
                 justify-content: flex-end;

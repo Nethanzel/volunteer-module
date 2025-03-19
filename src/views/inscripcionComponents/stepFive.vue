@@ -27,7 +27,7 @@
                 <div :style="{ display:'flex', marginTop:'15px' }">
     
                     <button @click="$refs.inputImage.click()">
-                        <i :class="{ 'icofont-refresh':imageLoaded, 'icofont-plus-circle':!imageLoaded }"></i> 
+                        <i :class="{ 'icofont-refresh':imageLoaded, 'icofont-duotone icofont-plus-circle':!imageLoaded }"></i> 
                         {{ imageLoaded ? 'Cambiar' : 'Seleccionar' }}
                     </button>
                     <button :style="{ marginLeft:'15px' }" v-if="imageLoaded" @click="cleanImage">
@@ -37,7 +37,8 @@
                 </div>
             </div>
 
-            <button @click="validateForm">Siguiente <i class="icofont-arrow-right"></i></button>
+            <button @click="validateForm" v-if="memberCategory != 3">Siguiente <i class="icofont-arrow-right"></i></button>
+            <button @click="validateForm" v-else><i class="icofont-check" :style="{ marginLeft:'0px', marginRight:'5px' }"></i> Terminar registro</button>
 
         </FormulateForm>
     </div>
@@ -45,6 +46,9 @@
 
 <script>
 export default {
+    props: {
+        memberCategory: Number
+    },
     data() {
         return {
             imageLoaded: false,

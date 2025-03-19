@@ -45,7 +45,7 @@
 
 <style lang="scss" scoped>
 #message-stack {
-    top: 100px;
+    top: 175px;
     right: 20px;
     width: 300px;
     z-index: 1000;

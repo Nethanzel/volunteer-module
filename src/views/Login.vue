@@ -1,7 +1,6 @@
 <template>
   <div class="login">
-
-    <form class="promptContainer" @submit="runAuthenticate($event)" v-if="!$store.getters.isValidatingAccess">
+    <form class="promptContainer" @submit="runAuthenticate($event)" v-if="!isLoading">
 
       <div class="logo">
         <img src="../assets/logo.png" alt="logo">
@@ -27,7 +26,7 @@
       <div class="actionWrapper" :style="{ height: '40px' }">
         <button v-if="!isAuthenticatin" :disabled="!btn_Enabled"><i class="icofont-arrow-right"></i> Entrar!</button>
         <p v-if="isAuthenticatin" :style="{ fontSize: '19px', display: 'flex', justifyContent: 'center', alignItems: 'center', margin:'0 auto', cursor: 'default' }">
-          <i class="icofont-spinner-alt-6 rotating" :style="{ fontSize: '25px', marginRight: '8px', userSelect: 'none' }"></i>
+          <i class="icofont-spinner rotating" :style="{ fontSize: '25px', marginRight: '8px', userSelect: 'none' }"></i>
           Autenticando...
         </p>
       </div>
@@ -49,9 +48,10 @@
     },
     data() {
       return {
+        isLoading: true,
         isAuthenticatin: false,
-        inp_Name: "",
         inp_Password: "",
+        inp_Name: "",
       }
     },
     computed: {
@@ -60,6 +60,9 @@
       },
       isAuthorized() {
         return this.$store.getters.isAuthorized;
+      },
+      validatingAccess() {
+        return this.$store.getters.isValidatingAccess;
       }
     },
     methods: {
@@ -79,16 +82,28 @@
         }
       }
     },
+    beforeMount() {
+        if (!this.$store.getters.isValidatingAccess) this.isLoading = false;
+        
+    },
     mounted() {
       if (this.isAuthorized) return this.$router.push({ name: "Opciones" });
       window.addEventListener('keypress', this.runAuthenticateByKeyPress);
     },
-    unmounted() {
+    destroyed() {
       window.removeEventListener('keypress', this.runAuthenticateByKeyPress);
     },
     watch: {
       isAuthorized(n) {
         if (n) this.$router.go(-1)
+      },
+      validatingAccess(n) {
+        if (!n) {
+            setTimeout(() => this.isLoading = n, 1000)
+            return;
+        }
+
+        this.isLoading = n
       }
     }
   }

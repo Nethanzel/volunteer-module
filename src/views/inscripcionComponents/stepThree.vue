@@ -49,7 +49,7 @@
                     <FormulateInput v-model="familyModel.relation" type="text" name="Parentezco" label="Parentezco" />
                     <FormulateInput v-model="familyModel.phone" type="text" name="Telefono/Celular" label="Telefono de contacto" />
 
-                    <button @click="addFamily"><i class="icofont-plus-circle"></i> Agregar</button>
+                    <button @click="addFamily"><i class="icofont-duotone icofont-plus-circle"></i> Agregar</button>
                 </div>
             </div>
 
@@ -84,7 +84,7 @@
                     <FormulateInput 
                         v-if="assurance.state" 
                         type="text" 
-                        name="assuranceCompany" 
+                        name="company" 
                         label="Proveedor (compañia)" 
                         validation-name="Proveedor"
                         @validation="validate($event)"
@@ -93,7 +93,7 @@
                     <FormulateInput 
                         v-if="assurance.state"
                         type="text" 
-                        name="assuranceCode" 
+                        name="code" 
                         label="Código afiliado" 
                         validation-name="Código afiliado"
                         @validation="validate($event)"
@@ -258,8 +258,8 @@ export default {
                     });
                     return;
                 }
-                formResult.assurance.assuranceCompany = this.assurance.company;
-                formResult.assurance.assuranceCode = this.assurance.code;
+                formResult.assurance.company = this.assurance.company;
+                formResult.assurance.code = this.assurance.code;
             }
 
             this.$emit("validation", {result: formResult, pos: 3});

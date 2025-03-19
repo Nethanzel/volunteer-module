@@ -20,36 +20,61 @@
                         <i class="icofont-brand-whatsapp"></i>
                     </p>
                 </div>
-                <div class="actions">
-
-                    <div v-if="!data.deleted && _allowDeleteUserPermission">
-                        <p @click="updateSpecialField({ field: { key:'deleted', value:true }, target: $event.target })">
-                            <i class="icofont-ui-delete"></i>
-                            Eliminar
-                        </p>
-                        <img class="rotating" src="../assets/spinner.png" alt="loading">
-                    </div>
-
-                    <div v-if="data.deleted && _allowRestoreUserPermission">
-                        <p @click="updateSpecialField({ field: { key:'deleted', value:false }, target: $event.target })">
-                            <i class="icofont-refresh"></i>
-                            Restaurar
-                        </p>
-                        <img class="rotating" src="../assets/spinner.png" alt="loading">
-                    </div>
-
-                    <div v-if="!data.checked && _allowConfirmUserPermission">
-                        <p @click="updateSpecialField({ field: { key:'checked',value:true }, target: $event.target })">
-                            <i class="icofont-check-circled"></i>
-                            Confirmar
-                        </p>
-                        <img class="rotating" src="../assets/spinner.png" alt="loading">
-                    </div>
-
-                </div>
-
             </div>
         </div>
+
+        <div class="actions">
+
+            <div v-if="!data.deleted && _allowDeleteUserPermission">
+                <p 
+                    class="minimal-action"
+                    @click="updateSpecialField({ field: { key:'deleted', value:true }, target: $event.target })"
+                    :style="{ marginLeft: 0 }"
+                >
+                    <i class="icofont-ui-delete"></i>
+                    Eliminar
+                </p>
+                <img class="rotating" src="../assets/spinner.png" alt="loading">
+            </div>
+
+            <div v-if="data.deleted && _allowRestoreUserPermission">
+                <p 
+                    class="minimal-action"
+                    @click="updateSpecialField({ field: { key:'deleted', value:false }, target: $event.target })"
+                    :style="{ marginLeft: 0 }"
+                >
+                    <i class="icofont-refresh"></i>
+                    Restaurar
+                </p>
+                <img class="rotating" src="../assets/spinner.png" alt="loading">
+            </div>
+
+            <div v-if="!data.checked && _allowConfirmUserPermission">
+                <p 
+                    class="minimal-action"
+                    @click="updateSpecialField({ field: { key:'checked',value:true }, target: $event.target })"
+                    :style="{ marginLeft: 0 }"
+                >
+                    <i class="icofont-check-circled"></i>
+                    Confirmar
+                </p>
+                <img class="rotating" src="../assets/spinner.png" alt="loading">
+            </div>
+
+            <div>
+                <p 
+                    class="minimal-action"
+                    @click="updateSpecialField({ field: { key:'checked',value:true }, target: $event.target })"
+                    :style="{ marginLeft: 0 }"
+                >
+                    <i class="icofont-download"></i>
+                    Exportar
+                </p>
+                <img class="rotating" src="../assets/spinner.png" alt="loading">
+            </div>
+
+        </div>
+
         <div class="cntent">
 
             <!--  -->
@@ -68,7 +93,7 @@
                     </div>
                 </div>
 
-                <h2>Contactos con los tutores</h2>
+                <h2>Contacto de los tutores</h2>
 
                 <div class="detail-card" v-for="(contact, i) in data.tutorInfo" :key="`tc-${i}`">
                     <div class="icn">
@@ -89,7 +114,9 @@
             <!--  -->
 
             <h2>Contactos de emergencia</h2>
-            <p class="add-info" @click="$emit('addEmergencyContact')" v-if="_allowCreateContactPermission"><i class="icofont-plus-circle"></i> Agregar</p>
+            <p class="add-info" v-if="_allowCreateContactPermission">
+                <span @click="$emit('addEmergencyContact')"><i class="icofont-duotone icofont-plus-circle"></i> Agregar</span>
+            </p>
             
             <template v-if="data.contactoEmergencia.length">
                 <div class="detail-card" v-for="(contact, i) in data.contactoEmergencia" :key="`ec-${i}`">
@@ -146,7 +173,7 @@
             <EditableField @save="updateField" :type="'text'" :label="'Idiomas'" :value="data.idiomas" />
             <EditableField @save="updateField" :type="'text'" :label="'Otros idiomas'" :value="data.otherLanguaje" :_key="'otherLanguaje'" />
             
-            <p class="described-add"><span class="lbl">Estudios</span> <span @click="$emit('addAcademicPrep')" class="add-info" v-if="_allowCreateAcademicPrepPermission"><i class="icofont-plus-circle"></i> Agregar</span></p>
+            <p class="described-add"><span class="lbl">Estudios</span> <span @click="$emit('addAcademicPrep')" class="add-info" v-if="_allowCreateAcademicPrepPermission"><i class="icofont-duotone icofont-plus-circle"></i> Agregar</span></p>
             
             <template v-if="data.estudios.length">
                 <div class="detail-card" v-for="(grade, i) in data.estudios" :key="`fa-${i}`">
@@ -167,19 +194,23 @@
             <p v-else :style="{ textAlign: 'center', margin:' 20px 0 50px 0', color: '#848484a2' }">No hay estudios</p> -->
 
             <h2>Informacion institucional</h2>
-            <EditableField @save="updateField" :type="'select'" :label="'Escuela'" :value="data.escuela.id" :options="_escuelas" :_key="'escuelaId'" />
+            <EditableField @save="updateField" :type="'select'" :label="'Escuela'" :value="school" :options="_escuelas" :_key="'escuelaId'" />
             <EditableField @save="updateField" :type="'select'" :label="'Grado'" :value="data.Grado.id" :options="_grados" :_key="'GradoId'" />
             <EditableField @save="updateField" :type="'select'" :label="'Tipo miembro'" :value="data.TipoMiembro.id" :options="_tiposMiembro" :_key="'TipoMiembroId'" />
-            <EditableField @save="updateField" :type="'select'" :label="'Interes'" :value="data.interested" :options="_tipoEntrenamiento" :_key="'interested'" />
+            <EditableField @save="updateField" :type="'select'" :label="'Interes'" :value="traininType" :options="_tipoEntrenamiento" :_key="'interested'" />
             <EditableField @save="updateField" :type="'select'" :label="'Tiene uniforme'" :value="data.hasIdentification" :options="SiNoOptions" :_key="'hasIdentification'" :isYesNo="true" />
             <EditableField @save="updateField" :type="'select'" :label="'Otro estilo'" :value="data.otherMartialArt" :options="SiNoOptions" :_key="'otherMartialArt'" :isYesNo="true" />
             <EditableField @save="updateField" :type="'text-area'" :label="'Uniforme'" :value="data.idetifications" :_key="'idetifications'" v-if="data.hasIdentification" />
             <EditableField @save="updateField" :type="'text-area'" :label="'Detalles otro estilo'" :value="data.otherMartialArtDetails" :_key="'otherMartialArtDetails'" v-if="data.otherMartialArt" />
-            <EditableField @save="updateField" :type="'text-area'" :label="'Desea prácticar porque...'" :value="data.desire" :_key="'desire'" />
+            <EditableField @save="updateField" :type="'text-area'" :label="'Desea practicar porque...'" :value="data.desire" :_key="'desire'" />
 
             <h2>Archivos</h2>
             <input ref="inputFiles" @change="handleFileSelection" :style="{ display: 'none' }" type="file" multiple accept=".jpg, .jpeg, .png, .gif, .bmp, .pdf, .doc, .docx">
-            <p class="add-info" @click="$refs.inputFiles.click()" v-if="_allowAddFilePermission"><i class="icofont-plus-circle"></i> Agregar</p>
+            
+            <p class="add-info" v-if="_allowAddFilePermission">
+                <span @click="$refs.inputFiles.click()"><i class="icofont-duotone icofont-plus-circle"></i> Agregar</span>
+            </p>
+            
             <img v-if="loadinFiles" class="rotating" src="../assets/spinner.png" alt="loading" :style="{ margin:' 20px auto 50px auto', left: 'calc(50% - 15px)', position:'relative' }">
 
             <template v-if="_archivos.length && !loadinFiles">
@@ -672,6 +703,12 @@
             this.getProfilePhoto();
         },
         computed: {
+            school() {
+                return this.data.escuela?.id ?? 0;
+            },
+            traininType() {
+                return this.data.interested ?? 0;
+            },
             isMinorAged() {
                 return calcularEdad(this.data.nacimiento) > 17 ? false : true;
             },
@@ -686,7 +723,7 @@
                 return result;
             },
             _escuelas() {
-                let result = [];
+                let result = [{ key: 0, value: `` }];
                 this.dictionaries?.escuelas?.map(e => result.push({ key: e.id, value: `Escuela ${e.nombre}` }));
                 return result;
             },
@@ -701,7 +738,7 @@
                 return result;
             },
             _tipoEntrenamiento() {
-                let result = [];
+                let result = [{ key: 0, value: "" }];
                 this.dictionaries?.tipoEntrenamiento?.map(e => result.push({ key: e.id, value: e.name }));
                 return result;
             },
@@ -769,10 +806,15 @@
         .head {
             display: flex;
             cursor: default;
+            position: relative;
             img {
                 height: 120px;
-                margin-right: 15px;
-                margin-left: 10px;
+                max-width: 120px;
+                margin-right: 10px;
+                margin-left: 5px;
+                margin-top: auto;
+                margin-bottom: auto;
+                object-fit: cover;
             }
             div {
                 display: flex;
@@ -782,131 +824,84 @@
             .info {
                 display: flex;
                 flex-direction: row;
+                align-items: flex-start;
                 overflow: hidden;
                 width: 100%;
                 ._details {
-                    width: 84%;
+                    width: 100%;
+                    margin-top: 10px;
                     h2 {
                         text-overflow: ellipsis;
                         white-space: nowrap;
                         overflow: hidden;
+                        text-align: left;
                     }
                     p {
                         display: flex;
                         align-items: center;
+                        margin-bottom: 5px;
                         i {
                             font-size: 16px;
                             margin-right: 13px;
                             cursor: pointer;
-                            margin-bottom: 7px;
+                            margin-bottom: 0px;
                         }
                         i:first-child {
                             margin-left: 7px;
                         }
                     }
                 }
-                .actions {
-                    margin-left: auto;
-                    padding: 0 20px;
-                    width: 16%;
-                    div {
-                        display: flex;
-                        flex-direction: row;
-                        align-items: center;
-                        margin-bottom:15px;
-
-                        p {
-                            cursor:pointer;
-                            font-size:14px;
-                            display: flex;
-                            align-items: center;
-                            width: 100%;
-                            i {
-                                font-size:17px;
-                                margin-right: 7px;
-                                pointer-events: none;
-                            }
-                            &:last-child {
-                                margin-bottom: 0px;
-                            }
-                        }
-                        .rotating {
-                            height: 15px;
-                            width: 15px;
-                            display: none;
-                        }
-                    }
-                }
             }
 
         }
+        .actions {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            padding: 0px 20px 10px 20px;
+            width: calc(100% - 40px);
+            height: auto;
+            div {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                margin-right: 15px;
+                margin-bottom: 0;
+
+                &:last-child {
+                    margin-right: 0px;
+                }
+
+                p {
+                    cursor:pointer;
+                    font-size:13px;
+                    display: flex;
+                    align-items: center;
+                    width: 100%;
+                    i {
+                        font-size:15px;
+                        margin-right: 7px;
+                        pointer-events: none;
+                    }
+                    &:last-child {
+                        margin-bottom: 0px;
+                    }
+                }
+                .rotating {
+                    height: 15px;
+                    width: 15px;
+                    display: none;
+                }
+            }
+        }
         .cntent {
-            height: calc(81% - 25px);
-            padding-bottom: 25px;
+            height: calc(100% - (120px + 30px));
             overflow-y: auto;
             display: block;
             h2 {
                 margin: 5px 0 10px 0;
                 text-align: center;
                 user-select: none;
-            }
-            .detail-card {
-                display: inline-flex;
-                align-items: center;
-                max-width: 295px;
-                width: 100%;
-                padding: 10px;
-                margin: 5px 10px;
-                margin-bottom: 15px;
-                border: 1px solid #c4c4c4a2;
-                border-left: 4px solid #000;
-                border-top-right-radius: 5px;
-                border-bottom-right-radius: 5px;
-                position: relative;
-                overflow: hidden;
-                .icn {
-                    margin-right: 15px;
-                    z-index: 5;
-                    i {
-                        font-size: 30px;
-                    }
-                }
-                .cnt {
-                    z-index: 5;
-                    overflow: hidden;
-                    p {
-                        cursor: default;
-                        text-overflow: ellipsis;
-                        white-space: nowrap;
-                        overflow: hidden;
-                    }
-                }
-                .call {
-                    margin-left: auto;
-                    display: flex;
-                    align-items: center;
-                    z-index: 5;
-                    i {
-                        font-size: 25px;
-                        cursor: pointer;
-                    }
-                    img {
-                        height: 25px;
-                        width: 25px;
-                        margin: auto 0;
-                        display: none;
-                    }
-                }
-                .progress {
-                    background-color: #89ff97b8;
-                    position: absolute;
-                    height: 100%;
-                    z-index: 0;
-                    width: 0%;
-                    left: 0;
-                    top: 0;
-                    transition: width .25s, background-color 3s;
-                }
             }
             .described-add {
                 display: flex;
@@ -924,6 +919,7 @@
                 margin-bottom: 15px;
                 margin-top: 5px;
                 flex-wrap: wrap;
+                align-items: center;
                 .got-permission, .permission {
                     display: inline-flex;
                     align-items: center;
@@ -988,25 +984,18 @@
         .blury-cnt {
             .details {
                 .head {
-                    .info {
-                        flex-direction: column;
-                        ._details {
-                            width: 100%;
-                        }
-                        .actions {
-                            flex-direction: row;
-                            justify-content: flex-start;
-                            margin: unset;
-                            width: 100%;
-                            padding: 5px 0;
-                            div {
-                                margin-bottom: 0;
-                            }
-                            div:first-child {
-                                margin-bottom: 0;
-                                margin-right: 20px;
-                            }
-                        }
+                    img {
+                        height: 95px;
+                        max-width: 95px;
+                    }
+                }
+
+                .actions {
+                    margin: unset;
+                    width: 100%;
+                    padding: 5px 0;
+                    div {
+                        margin-bottom: 0;
                     }
                 }
 

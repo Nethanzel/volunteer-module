@@ -9,41 +9,59 @@
       <RecentEvents />
     </section>
 
-    <section id="sec-2" :style="{ backgroundColor: '#ff5b5b' }" v-if="devReady">
-      <h1>Calendario de Actividades recientes (brief)</h1>
+    <section id="sec-2" :style="{ backgroundColor: '#ff0000bf' }" v-if="devReady">
+      <SchoolAndSchdule />
     </section>
 
-    <section id="sec-3" v-if="devReady">
-      <h1>Escuelas y horarios de practica</h1>
-    </section>
+<!--     <section id="sec-3" :style="{ backgroundColor: '#f3cd2a' }" v-if="devReady">
+      <h1>Calendario de Actividades recientes (brief)</h1>
+    </section> -->
   </div>
 </template>
 
 <script>
   import Navigation from '../components/ViewHeader.vue';
   import RecentEvents from '../components/RecentEvents.vue';
+  import SchoolAndSchdule from '../components/SchoolAndSchdule.vue';
 
   export default {
     name: 'Home',
     components: {
       Navigation,
-      RecentEvents
+      RecentEvents,
+      SchoolAndSchdule
     },
     data() {
       return {
-        devReady: false
+        devReady: true
       }
     },
     mounted() {
-      this.$refs.home.addEventListener("scroll", () => this.navScrollBehaivor()); 
+      //this.$refs.home.addEventListener("scroll", () => this.navScrollBehaivor());
+      window.addEventListener('resize', this.updateScrollbarWidth);
+      this.updateScrollbarWidth();
+      this.handleShowSchools();
     },
-    unmounted() {
+    destroyed() {
+      //this.$refs.home.removeEventListener("scroll", () => this.navScrollBehaivor());
+      window.removeEventListener('resize', this.updateScrollbarWidth);
     },
     methods: {
-      navScrollBehaivor() {
+      /* navScrollBehaivor() {
         if (this.$refs.home.scrollTop === 0 || this.$refs.home.scrollTop < 170) {
           this.$refs.home.scrollTop = 0;
         }
+      }, */
+      updateScrollbarWidth() {
+        const homeEl = this.$refs.home;
+        if (!homeEl) return;
+        const scrollbarWidth = homeEl.offsetWidth - homeEl.clientWidth;
+        document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
+      },
+      handleShowSchools() {
+        if (this.$route.params.showSchools === true) {
+            setTimeout(() => document.getElementById('sec-2').scrollIntoView({ behavior: 'smooth' }), 250);
+        } 
       }
     }
   }
@@ -64,8 +82,8 @@
 
     #sec-2,
     #sec-3 {
-      padding-top: 80px;
-      height: calc(100dvh - 80px);
+      padding-top: 75px;
+      height: calc(100dvh - 75px);
     }
 
     header {
@@ -76,16 +94,16 @@
       transition: .5s;
       overflow: hidden;
       position: fixed;
-      width: calc(100% - 35px);
+      width: calc(100% - 19px - var(--scrollbar-width, 0px));
       background-color: #ffffffcc;
     }
   }
 
-  @media only screen and (max-width: 850px) {
+/*   @media only screen and (max-width: 850px) {
     .home {
       header {
-        width: calc(100% - 5px);
+
       }
     }
-  }
+  } */
 </style>

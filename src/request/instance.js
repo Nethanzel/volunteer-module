@@ -4,7 +4,7 @@ import store from "../store";
 import router from "../router";
 
 const Requester = axios.create({
-    baseURL: process.env.NODE_ENV === "production" ? window.location.origin : "http://192.168.188.153:81"
+    baseURL: process.env.NODE_ENV === "production" ? window.location.origin : "http://192.168.37.153:81"
 });
 
 Requester.interceptors.response.use((response) => response, (err) => {
@@ -101,6 +101,18 @@ const axiosRequest = {
             let result = await Requester.post('api/creators/user-type', data, { headers: { Authorization: "*" } });
             return result
         },
+        newHighlight: async (data) => {
+            let result = await Requester.post('api/creators/highlight', data, { headers: { Authorization: "*" } });
+            return result
+        },
+        newSchedule: async (data) => {
+            let result = await Requester.post('api/creators/schedule', data, { headers: { Authorization: "*" } });
+            return result
+        },
+        newPractice: async (data) => {
+            let result = await Requester.post('api/creators/practice', data, { headers: { Authorization: "*" } });
+            return result
+        },
         uploadFile: async (formData, pcb) => {
             let res = await Requester.post(`/api/files/upload`, formData, { headers: { Authorization: '*' }, onUploadProgress: pcb });
             return res;
@@ -111,21 +123,25 @@ const axiosRequest = {
         }
     },
     Get: {
-        tipoMiembros: async () => {
-            let tipos = await Requester.get('api/common/tipo-miembro', { headers: { Authorization: "*" } });
+        tipoMiembros: async (page = null) => {
+            let tipos = await Requester.get(`api/common/tipo-miembro${page > 0 ? '?page=' +page : ''}`, { headers: { Authorization: "*" } });
             return tipos;
         },
-        Grados: async () => {
-            let grados = await Requester.get('api/common/grados', { headers: { Authorization: "*" } });
+        Grados: async (page) => {
+            let grados = await Requester.get(`api/common/grados${page > 0 ? '?page=' +page : ''}`, { headers: { Authorization: "*" } });
             return grados;
         },
-        Escuelas: async () => {
-            let escuelas = await Requester.get('api/common/escuelas', { headers: { Authorization: "*" } });
+        Escuelas: async (page = 0, shorten = false, schedule = false) => {
+            let escuelas = await Requester.get(`api/common/escuelas${page > 0 ? '?page=' +page : ''}${shorten ? '?shorten=true' : ''}${schedule ? '?schedule=true' : ''}`, { headers: { Authorization: "*" } });
             return escuelas;
         },
         tipoEntrenamientos: async () => {
             let tipos = await Requester.get('api/common/tipo-entrenamiento');
             return tipos;
+        },
+        diasDeLaSemana: async () => {
+            let dias = await Requester.get('api/common/dias-semana');
+            return dias;
         },
         Permisos: async () => {
             let permisos = await Requester.get('api/getters/permisos', { headers: { Authorization: "*" } });
@@ -135,12 +151,16 @@ const axiosRequest = {
             let miembros = await Requester.get(`api/getters/miembros?page=${page}`, { headers: { Authorization: "*" } });
             return miembros;
         },
-        NombreMiembros: async () => {
-            let miembros = await Requester.get(`api/getters/miembros/nombres`, { headers: { Authorization: "*" } });
+        NombreMiembros: async (id = null, nombre = null) => {
+            let miembros = await Requester.get(`api/getters/miembros/nombres${id ? `?id=${id}` : ''}${nombre ? `?name=${nombre}` : ''}`, { headers: { Authorization: "*" } });
             return miembros;
         },
         Miembro: async (identity) => {
             let miembro = await Requester.get(`api/getters/miembro?id=${identity}`, { headers: { Authorization: "*" } });
+            return miembro;
+        },
+        MiembroByCode: async (code) => {
+            let miembro = await Requester.get(`api/common/miembro?member-code=${code}`);
             return miembro;
         },
         Files: async (identity) => {
@@ -158,7 +178,23 @@ const axiosRequest = {
         validateIdentityExists: async (identity, email) => {
             let result = await Requester.get(`api/common/identification-existis?${identity ? `identity=${identity}` : ''}${email ? `&email=${email}` : ''}`);
             return result
-        }
+        },
+        Highlights: async (page) => {
+            let highlights = await Requester.get(`api/getters/highlights${page > 0 ? '?page=' +page : ''}`, { headers: { Authorization: "*" } });
+            return highlights;
+        },
+        Schedule: async (id, page, shorten = false) => {
+            let schedule = await Requester.get(`api/getters/schedule?id=${id}${page ? '&page='+page : ''}${shorten ? '&shorten=true' : ''}`, { headers: { Authorization: "*" } });
+            return schedule;
+        },
+        Practices: async (schoolid, page) => {
+            let practices = await Requester.get(`api/getters/practice?id=${schoolid}${page ? '&page='+page : ''}`, { headers: { Authorization: "*" } });
+            return practices;
+        },
+        openHighlights: async () => {
+            let highlights = await Requester.get(`api/common/highlights`,);
+            return highlights;
+        },
     },
     Delete: {
         removeContact: async (data) => {
@@ -184,7 +220,23 @@ const axiosRequest = {
         removeFile: async (data) => {
             let response = await Requester.delete(`api/files/status`, { headers: { Authorization: '*' }, data });
             return response;
-        }
+        },
+        removeHighlight: async (id) => {
+            let response = await Requester.delete(`api/erase/highlight?id=${id}`, { headers: { Authorization: '*' } });
+            return response;
+        },
+        removeSchedule: async (id) => {
+            let response = await Requester.delete(`api/erase/schedule?id=${id}`, { headers: { Authorization: '*' } });
+            return response;
+        },
+        removePractice: async (id) => {
+            let response = await Requester.delete(`api/erase/practice?id=${id}`, { headers: { Authorization: '*' } });
+            return response;
+        },
+        removeAtendance: async (id) => {
+            let response = await Requester.delete(`api/erase/atendance?id=${id}`, { headers: { Authorization: '*' } });
+            return response;
+        },
     },
     Put: {
        
@@ -204,6 +256,14 @@ const axiosRequest = {
         },
         UpdateUserType: async (field) => {
             let response = await Requester.patch('api/setters/user-type', field, { headers: { Authorization: "*" } });
+            return response;
+        },
+        UpdateSchedule: async (field) => {
+            let response = await Requester.patch('api/setters/schedule', field, { headers: { Authorization: "*" } });
+            return response;
+        },
+        UpdatePractice: async (field) => {
+            let response = await Requester.patch('api/setters/practice', field, { headers: { Authorization: "*" } });
             return response;
         },
         allowAccess: async (field) => {
@@ -244,6 +304,30 @@ const axiosRequest = {
         },
         setFilename: async (data) => {
             let response = await Requester.patch(`api/files`, data, { headers: { Authorization: '*' } });
+            return response;
+        },
+        Highlight: async (data) => {
+            let response = await Requester.patch('api/setters/highlight', data, { headers: { Authorization: "*" } });
+            return response;
+        },
+        restoreHighlight: async (id) => {
+            let response = await Requester.patch(`api/setters/restore/highlight?id=${id}`, null, { headers: { Authorization: '*' } });
+            return response;
+        },
+        restoreSchedule: async (id) => {
+            let response = await Requester.patch(`api/setters/restore/schedule?id=${id}`, null, { headers: { Authorization: '*' } });
+            return response;
+        },
+        restorePractice: async (id) => {
+            let response = await Requester.patch(`api/setters/restore/practice?id=${id}`, null, { headers: { Authorization: '*' } });
+            return response;
+        },
+        restoreAtendance: async (id) => {
+            let response = await Requester.patch(`api/setters/restore/atendance?id=${id}`, null, { headers: { Authorization: '*' } });
+            return response;
+        },
+        appendAtendance: async (data) => {
+            let response = await Requester.patch(`api/setters/append/atendance`, data, { headers: { Authorization: '*' } });
             return response;
         },
     },

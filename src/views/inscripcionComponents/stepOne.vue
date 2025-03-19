@@ -6,7 +6,7 @@
             v-model="formResult"
             invalid-message="Completa la informacion requerida"
         >
-            <div class="min-container" :style="{width: '85%', display: loadingOptions ? 'none' : 'block'}">
+            <div class="min-container" :style="{display: loadingOptions ? 'none' : 'block'}">
                 <p>Seleccione la escuela donde práctica:</p>
 
                 <p
@@ -93,12 +93,22 @@ export default {
             e.stopPropagation();
             this.formResult[name] = value;
             this.highlightSelected(e.target, i);
+        },
+        handleSelectedSchoolFromHome() {
+            if (this.$route.params.selectedSchool && this.$route.params.selectedSchool > 0) {
+                let escuela = this.escuelas.find(x => x.id == this.$route.params.selectedSchool);
+                if (escuela) {
+                    this.formResult.escuela = escuela.id;
+                    this.validateForm();
+                    return;
+                }                
+            }
         }
     },
     async mounted() {
         let result = await Request.Get.Escuelas().catch(err => err).finally(() => this.loadingOptions = false);
         if(result.status == 200) {
-            result.data.forEach(es => {
+            result.data.rows.forEach(es => {
                 if (!es.deleted) {
                     let provincia = this.provincias.filter(p => p.provincia_id == es.provincia)[0];
                     let municipio = this.municipios.filter(p => p.municipio_id == es.municipio)[0];
@@ -113,6 +123,7 @@ export default {
 
             if (this.data) this.formResult = this.data;
         }
+        this.handleSelectedSchoolFromHome();
     },
 }
 </script>

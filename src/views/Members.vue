@@ -2,7 +2,19 @@
   <div class="list-all">
     <h1>Lista de miembros</h1>
 
-    <Members v-if="!loading" @details="showDetails($event)" />
+    <p class="report-action" v-if="!membersLoading">
+      <span @click="refreshMembers" class="minimal-action"><i class="icofont-refresh"></i>Actualizar</span>
+      <span @click="showFiltersBlur = true" class="minimal-action"><i class="icofont-search-user"></i>Busqueda</span>
+      <span @click="showFiltersBlur = true" class="minimal-action"><i class="icofont-download"></i>Exportar</span>
+    </p>
+
+    <MembersList 
+      v-if="!loading" 
+      @details="showDetails($event)"
+      @load="membersLoading = false"
+      @loading="membersLoading = true"
+      @ready="refreshMembers = $event"
+    />
 
     <transition name="circle-blur">
       <div class="blury-cnt" @click="handleHideBlur()" v-if="showBlur">
@@ -34,26 +46,38 @@
       </div>
     </transition>
 
+    <transition name="circle-blur">
+      <div class="blury-cnt" @click="handleHideFiltersBlur()" v-if="showFiltersBlur">
+        <FiltersBuilder
+          :title="'Filtrar miembros'"
+          :filters="filters"
+        />
+      </div>
+    </transition>
+
   </div>
 </template>
   
 <script>
   import Request from '../request/instance.js';
-  import Members from '../components/Members.vue';
+  import MembersList from '../components/MemberList.vue';
   import MemberDetails from '../components/MemberDetails.vue';
   import DynamicModelCreator from '../components/DynamicModelCreator.vue';
+  import FiltersBuilder from '../components/FiltersBuilder.vue';
 
   export default {
     components: {
-      Members,
+      MembersList,
       MemberDetails,
-      DynamicModelCreator
+      DynamicModelCreator,
+      FiltersBuilder
     },
     data() {
       return {
         loading: false,
         dictionaries: {},
         showBlur: false,
+        showFiltersBlur: false,
         details: null,
         emergencyContactFields: [
           {
@@ -106,7 +130,23 @@
         ],
         academicPrep: false,
         hideAcademicPrepLoading: () => {},
-        hideEmergencyContactLoading: () => {}
+        hideEmergencyContactLoading: () => {},
+        membersLoading: false,
+        filters: [
+          {
+            display: 'Nombre',
+            key: 'nombre',
+            type: 'text',
+            value: null
+          },
+          {
+            display: 'Apellido',
+            key: 'apellido',
+            type: 'text',
+            value: null
+          },
+        ],
+        refreshMembers: () => {}
       }
     },
     methods: {
@@ -119,9 +159,9 @@
         let requests = [ Request.Get.Grados(), Request.Get.tipoMiembros(), Request.Get.Escuelas(), Request.Get.Permisos(), Request.Get.tipoEntrenamientos() ];
         let [grados, tipoMiembros, escuelas, permisos, tipoEntrenamiento] = await Promise.all(requests).catch(e => e).finally(() => this.loading = false);
         
-        if (tipoMiembros.status == 200) this.dictionaries.tipoMiembros = tipoMiembros.data;
-        if (grados.status == 200) this.dictionaries.grados = grados.data;
-        if (escuelas.status == 200) this.dictionaries.escuelas = escuelas.data;
+        if (tipoMiembros.status == 200) this.dictionaries.tipoMiembros = tipoMiembros.data.rows;
+        if (escuelas.status == 200) this.dictionaries.escuelas = escuelas.data.rows;
+        if (grados.status == 200) this.dictionaries.grados = grados.data.rows;
         if (permisos.status == 200) this.dictionaries.permisos = permisos.data;
         if (tipoEntrenamiento.status == 200) this.dictionaries.tipoEntrenamiento = tipoEntrenamiento.data;
       },
@@ -129,6 +169,9 @@
         this.showBlur = false;
         this.showAddEmergencyContact = false;
         this.academicPrep = false;
+      },
+      handleHideFiltersBlur() {
+        this.showFiltersBlur = false;
       },
       async addEmergencyContact(e) {
         let res = await Request.Patch.addContact({ id: this.details.id, record: e }).catch(() => this.hideEmergencyContactLoading()).finally(() => this.hideEmergencyContactLoading());
@@ -164,7 +207,7 @@
       }
     }
   }
-  </script>
+</script>
 
 <style lang="scss">
   .list-all {
@@ -173,6 +216,9 @@
     flex-direction: column;
     h1 {
       cursor: default;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
   }
 </style>

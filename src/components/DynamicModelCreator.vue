@@ -8,17 +8,20 @@
                 <h2>{{ title }}</h2>
             </div>
         </div>
-        <EditableField 
-            v-for="(field, i) in fields" :key="i" 
-            :type="field.type" 
-            :label="field.display" 
-            :value="null" 
-            :_key="field.key" 
-            :disableSave="true" 
-            :options="field.options"
 
-            @change="field.value = $event"
-        />
+        <div class="cntn">
+            <EditableField 
+                v-for="(field, i) in fields" :key="i" 
+                :type="field.type" 
+                :label="field.display" 
+                :value="null" 
+                :_key="field.key" 
+                :disableSave="true" 
+                :options="field.options"
+
+                @change="field.value = $event"
+            />
+        </div>
 
         <button v-if="!executin" @click="createObj">Terminar</button>
         <img v-else class="rotating" src="../assets/spinner.png" alt="loading">
@@ -70,6 +73,11 @@
         background-color: #ffffff;
         border-radius: 10px;
         overflow: hidden;
+        .cntn {
+            max-height: 430px;
+            overflow: hidden;
+            overflow-y: auto;
+        }
         .head {
             display: flex;
             margin-bottom: 10px;

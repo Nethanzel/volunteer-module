@@ -1,20 +1,48 @@
 <template>
     <div class="stations">
         <h1>Escuelas</h1>
-        <p class="add-info" @click="showBlur = true" v-if="_allowCreateStationPermission"><i class="icofont-plus-circle"></i> Agregar</p>
+                
+        <p class="report-action" v-if="!loadin">
+            <span @click="getEscuelas(1)" class="minimal-action"><i class="icofont-refresh"></i>Actualizar</span>
+            <span @click="showFiltersBlur = true" class="minimal-action"><i class="icofont-search-user"></i>Busqueda</span>
+            <span @click="showFiltersBlur = true" class="minimal-action"><i class="icofont-download"></i>Exportar</span>
+        </p>
+        
+        <p class="add-info" v-if="_allowCreateStationPermission">
+            <span @click="showBlur = true"><i class="icofont-duotone icofont-plus-circle"></i> Agregar</span>
+        </p>
 
-        <img class="rotating" src="../assets/spinner.png" alt="loadin" v-if="loadin">
+        <div class="dataview">
+            <img class="rotating" src="../assets/spinner.png" alt="loadin" v-if="loadin">
+            <h2 v-if="!loadin && !escuelas.length" :style="{ margin:'auto', color:'#c8c8c8' }">No hay registros</h2>
 
-        <DynamicConfigurationManager 
-            :data="escuelas" 
-            :fields="_fields"
-            :saveEdited="_allowEditStationPermission"
-            :allowDelete="_allowDeleteStationPermission"
-            :allowRestore="_allowRestoreStationPermission"
-            @updateField="handleUpdateField" 
-            @delete="handleDelete" 
-            @restore="handleRestore" 
-        />
+            <DynamicConfigurationManager 
+                :data="escuelas" 
+                :fields="_fields"
+                :saveEdited="_allowEditStationPermission"
+                :allowDelete="_allowDeleteStationPermission"
+                :allowRestore="_allowRestoreStationPermission"
+                @updateField="handleUpdateField" 
+                @delete="handleDelete" 
+                @restore="handleRestore"
+                v-if="!loadin && escuelas.length"
+            />
+        </div>
+        <div class="steps">
+            <p class="resume">Visualizando {{ resume.currentX  }} a {{ resume.currentN }} de {{ resume.total }} miembros</p>
+            <div class="stepsView">
+                <p 
+                    v-for="page in pages" 
+                    :key="page" 
+                    @click="getEscuelas(page)"
+                    :style="{
+                        color: page == cPage ? 'white' : 'black',
+                        backgroundColor: page == cPage ? '#008000a8' : 'transparent',
+                        border: page == cPage ? '1px solid gray' : '1px solid black',
+                    }"
+                >{{page}}</p>
+            </div>
+        </div>
         
         <transition name="circle-blur">
             <div class="blury-cnt" @click="handleHideBlur()" v-if="showBlur">
@@ -50,21 +78,34 @@
                 loadin: true,
                 provincias,
                 showBlur: false,
-                hideCreatingLoading: () => {}
+                hideCreatingLoading: () => {},
+                pages: 0,
+                cPage: 0,
+                resume: {
+                    total: 0,
+                    currentX: 0,
+                    currentN: 0
+                }
             }
         },
         mounted() {
-            this.getEscuelas();
+            this.getEscuelas(1);
         },
         methods: {
-            async getEscuelas() {
+            async getEscuelas(page) {
                 this.loadin = true;
                 
-                let requests = [ Request.Get.Escuelas(), Request.Get.NombreMiembros() ];
+                let requests = [ Request.Get.Escuelas(page), Request.Get.NombreMiembros(null) ];
                 let [escuelas, nombres] = await Promise.all(requests).catch(() => null).finally(() => this.loadin = false);
 
-                if (escuelas?.status == 200) this.escuelas = escuelas.data;
-                if (nombres?.status == 200) this.nombres = nombres.data.rows;
+                if (escuelas?.status == 200) {
+                    let { rows, limit, count } = escuelas.data;
+                    this.pages = Math.ceil(count / limit);
+                    this.cPage = page ? page : 1;
+                    this.escuelas = rows.sort((a, b) => b.id - a.id);
+                    this.updateResume({ limit, count, page: this.cPage });
+                }
+                if (nombres?.status == 200) this.nombres = nombres.data;
 
             },
             async handleUpdateField(e) {
@@ -137,6 +178,12 @@
                         type: 'ok',
                     });
                 }
+            },
+            updateResume(e) {
+                let lastElement = e.page * e.limit;
+                this.resume.currentN = lastElement > e.count ? e.count : lastElement;
+                this.resume.currentX = ((e.page * e.limit) - e.limit) + 1;
+                this.resume.total = e.count
             }
         },
         computed: {
@@ -191,7 +238,7 @@
                 return this.$store.getters.isAllowedToPermission(['DE'])
             },
             _allowRestoreStationPermission() {
-                return this.$store.getters.isAllowedToPermission(['RDE'])
+                return this.$store.getters.isAllowedToPermission(['RE'])
             },
         }
     }
@@ -208,7 +255,15 @@
         .rotating {
             width: 50px;
             height: 50px;
-            margin: 20px auto;
+            margin: auto;
+        }
+        .steps {
+            .resume {
+                margin-bottom: -5px;
+                text-align: center;
+                font-size: 14px;
+                cursor: default;
+            }
         }
     }
 </style>

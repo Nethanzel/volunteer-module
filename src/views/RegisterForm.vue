@@ -3,17 +3,63 @@
     <img src="../assets/text-logo.png" alt="logo">
     <h1>Formulario de inscripción</h1>
     <div id="viewer" ref="viewer" v-if="!resultCode">
-      <stepOne @validation="catchResult($event)" v-if="slides.pos == 1" :class="{animateRight : animationToggle, animateLeft : !animationToggle}" />
-      <stepTwo @validation="catchResult($event)" v-if="slides.pos == 2" :class="{animateRight : animationToggle, animateLeft : !animationToggle}" />
-      <step-three @validation="catchResult($event)" v-if="slides.pos == 3" :class="{animateRight : animationToggle, animateLeft : !animationToggle}" />
-      <step-four @validation="catchResult($event)" v-if="slides.pos == 4" :class="{animateRight : animationToggle, animateLeft : !animationToggle}" />
-      <step-five @validation="catchResult($event)" v-if="slides.pos == 5" :class="{animateRight : animationToggle, animateLeft : !animationToggle}" />
-      <step-six @accepted="catchResult($event)" v-if="slides.pos == 6" :class="{animateRight : animationToggle, animateLeft : !animationToggle}" />
+
+      <stepZero 
+        @category="catchCategory($event)" 
+        v-if="slides.pos == 0" 
+        :class="{animateRight : animationToggle, animateLeft : !animationToggle}"
+      />
+
+      <stepOne 
+        @validation="catchResult($event)" 
+        v-if="slideToShow.showStepOne" 
+        :class="{animateRight : animationToggle, animateLeft : !animationToggle}"
+      />
+
+      <stepTwo 
+        @validation="catchResult($event)" 
+        v-if="slideToShow.showStepTwo" 
+        :memberCategory="memberCategory"
+        :class="{animateRight : animationToggle, animateLeft : !animationToggle}"
+      />
+
+      <step-three 
+        @validation="catchResult($event)" 
+        v-if="slideToShow.showStepThree" 
+        :class="{animateRight : animationToggle, animateLeft : !animationToggle}"
+      />
+
+      <step-four 
+        @validation="catchResult($event)" 
+        v-if="slideToShow.showStepFour"
+        :memberCategory="memberCategory"
+        :class="{animateRight : animationToggle, animateLeft : !animationToggle}"
+      />
+
+      <step-five 
+        @validation="catchResult($event)" 
+        v-if="slideToShow.showStepFive" 
+        :memberCategory="memberCategory"
+        :class="{animateRight : animationToggle, animateLeft : !animationToggle}"
+      />
+
+      <step-six 
+        @accepted="catchResult($event)" 
+        v-if="slideToShow.showStepSix" 
+        :class="{animateRight : animationToggle, animateLeft : !animationToggle}"
+      />
+
+      <stepSeven 
+        @validation="catchResult($event)" 
+        v-if="slideToShow.showStepSeven" 
+        :class="{animateRight : animationToggle, animateLeft : !animationToggle}"
+      />
     
-      <div v-if="slides.pos == 7" class="await">
+      <div v-if="slideToShow.HoldOnScreen" class="await">
         <img src="../assets/spinner.png" class="rotating">
         <h2>Guardando registro...</h2>
       </div>
+
     </div>
 
     <div class="steps" v-if="!resultCode">
@@ -32,61 +78,80 @@
         </div>
     </div>
 
-    <ActionResult v-if="resultCode != null" :status="resultCode" :from="'registro'" :userCode="resultUserCode" @return="handleResultBack" @retry="finishCollection" />
+    <ActionResult 
+      v-if="resultCode != null" 
+      :status="resultCode" 
+      :from="'registro'" 
+      :userCode="resultUserCode" 
+      @return="handleResultBack" 
+      @retry="finishCollection"
+    />
 
   </div>
 </template>
 
 <script>
+import stepZero from "./inscripcionComponents/stepZero.vue";
 import stepOne from "./inscripcionComponents/stepOne.vue";
 import stepTwo from "./inscripcionComponents/stepTwo.vue";
 import stepThree from "./inscripcionComponents/stepThree.vue";
 import stepFour from "./inscripcionComponents/stepFour.vue";
 import stepFive from "./inscripcionComponents/stepFive.vue";
 import stepSix from "./inscripcionComponents/stepSix.vue";
+import stepSeven from "./inscripcionComponents/stepSeven.vue";
 import ActionResult from "../components/ActionResult.vue";
 import Request from "../request/instance.js";
 
 export default {
   components: {
+    stepZero,
     stepOne,
     stepTwo,
     stepThree,
     stepFour,
     stepFive,
     stepSix,
+    stepSeven,
     ActionResult
   },
   data() {
     return {
       slides: {
         count: 5,
-        pos: 1
+        pos: 0
       },
       data: {},
       letMego: false,
       resultCode: null,
       resultUserCode: null,
       validating: false,
-      animationToggle: false
+      animationToggle: false,
+      memberCategory: null,
+      slideToShow: {
+        showStepOne: false,
+        showStepTwo: false,
+        showStepThree: false,
+        showStepFour: false,
+        showStepFive: false,
+        showStepSix: false,
+        showStepSeven: false,
+        HoldOnScreen: false
+      }
     }
   },
   methods: {
-    nextStep(pos) {
-        if(!pos) {
-            this.validating = false;
-            this.animationToggle = true;
-            this.slides.pos++;
-            if (this.slides.pos > 6) setTimeout(() => this.finishCollection(), 500);
-            this.$refs.viewer.scrollTo(0, 0);
+    nextStep() {
+        this.validating = false;
+        this.animationToggle = true;
+        this.determineWhatToShow();
+        if (this.slides.pos > 6 || (this.memberCategory == 3 && this.slides.pos > 5)) {
+          setTimeout(() => this.finishCollection(), 500);
+          this.slideToShow.HoldOnScreen = true;
         }
-        else {
-            this.animationToggle = true;
-            this.slides.pos = pos;
-        }
+        this.$refs.viewer.scrollTo(0, 0);
     },
     catchResult(e) {
-        if (e.pos > 5) {
+        if (this.slides.pos > 6 || (this.memberCategory == 3 && this.slides.pos > 5)) {
             this.nextStep();
             return;
         }
@@ -96,8 +161,22 @@ export default {
         this.letMego = true;
         this.nextStep();
     },
+    catchCategory(e) {
+      if (isNaN(e) || e < 1) {
+        this.$throwAppMessage({ 
+            message: "Opción inválida!",
+            icon: "icofont-close-circled",
+            type: 'error',
+        });
+        return;
+      }
+
+      this.memberCategory = e;
+      this.nextStep();
+    },
     async finishCollection() {
         this.resultCode = null;
+        this.slideToShow.HoldOnScreen = true;
         if(Object.keys(this.data).length >= 0) {
             await Request.Post.newMember(this.data)
                 .then(res => {
@@ -105,7 +184,10 @@ export default {
                   this.resultCode = res.status;
                 })
                 .catch(e => this.resultCode = e.response?.status > 0 ? e.response?.status : 503)
-                .finally(() => this.validating = false);
+                .finally(() => {
+                  this.validating = false;
+                  this.slideToShow.HoldOnScreen = false;
+                });
         }
         else {
             this.$throwAppMessage({ 
@@ -113,12 +195,74 @@ export default {
                 icon: "icofont-close-circled",
                 type: 'error',
             });
-            //this.slides.pos = 1;
+            this.slides.pos = 0;
         }
     },
     handleResultBack() {
+        this.hideWhatNotToShow();
         this.resultCode = null;
-        this.slides.pos = 1;
+        this.slides.pos = 0;
+    },
+    hideWhatNotToShow() {
+        Object.keys(this.slideToShow).forEach(x => this.slideToShow[x] = false);
+    },
+    determineWhatToShow() {
+        this.hideWhatNotToShow();
+        this.slides.pos++;
+
+        if (this.slides.pos == 1) {
+            if (this.memberCategory == 3) {
+                this.slideToShow.showStepTwo = true;
+            }
+            else {
+                this.slideToShow.showStepOne = true;
+            }
+        }
+        else if (this.slides.pos == 2) {
+            if (this.memberCategory == 3) {
+                this.slideToShow.showStepThree = true;
+            }
+            else {
+                this.slideToShow.showStepTwo = true;
+            }
+        }
+        else if (this.slides.pos == 3) {
+            if (this.memberCategory == 3) {
+                this.slideToShow.showStepFour = true;
+            }
+            else {
+                this.slideToShow.showStepThree = true;
+            }
+        }
+        else if (this.slides.pos == 4) {
+            if (this.memberCategory == 3) {
+                this.slideToShow.showStepSeven = true;
+            }
+            else {
+                this.slideToShow.showStepFour = true;
+            }
+        }
+        else if (this.slides.pos == 5) {
+            if (this.memberCategory == 3) {
+                this.slideToShow.showStepFive = true;
+            }
+            else {
+                this.slideToShow.showStepFive = true;
+            }
+        }
+        else if (this.slides.pos == 6) {
+            if (this.memberCategory == 3) {
+                this.slideToShow.showStepSeven = false;
+                this.slideToShow.HoldOnScreen = true;
+                this.slides.pos++;
+            }
+            else {
+                this.slideToShow.showStepSix = true;
+            }
+        }
+        else if (this.slides.pos == 7) {
+            /*  */
+        }
     }
   }
 }
@@ -157,7 +301,7 @@ export default {
   overflow: hidden;
 }
 
-.stepsix, .stepfive, .stepfour, .stepthree, .steptwo, .stepone {
+.stepseven, .stepsix, .stepfive, .stepfour, .stepthree, .steptwo, .stepone, .stepzero {
     border: 2px solid #aaaaaa5e;
     padding: 15px 0px 15px 0px;
 
@@ -296,7 +440,7 @@ export default {
         align-items: center;
     }
 
-    .stepsix, .stepfive, .stepfour, .stepthree, .steptwo, .stepone {
+    .stepseven, .stepsix, .stepfive, .stepfour, .stepthree, .steptwo, .stepone, .stepzero {
         width: calc(100% - 10px);
     }
 

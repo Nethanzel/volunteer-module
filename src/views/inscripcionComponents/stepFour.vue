@@ -5,7 +5,7 @@
             class="stepfour" 
             v-model="formResult"
         >
-            <div class="min-container" :style="{marginTop: '0px'}">
+            <div class="min-container" :style="{marginTop: '0px'}" v-if="memberCategory != 3">
                 <p :style="{marginBottom: '10px'}">¿Ha prácticado artes marciales anteriormente?</p>
                 <p
                     v-if="otherMartialArtRequired"
@@ -36,8 +36,8 @@
                 />
             </div>
 
-            <div class="min-container" :style="{marginTop: '0px'}">
-                <p :style="{marginBottom: '10px'}">¿Qué está más interesado en prácticar?</p>
+            <div class="min-container" :style="{marginTop: '0px'}" v-if="memberCategory != 3">
+                <p :style="{marginBottom: '10px'}">¿Qué está más interesado en practicar?</p>
                 <p
                     v-if="interestRequired"
                     :style="{ color: '#ff3300', marginTop: '0px', fontSize: '13px', fontWeight:'bold',
@@ -53,12 +53,12 @@
                 </div>
             </div>
 
-            <div class="min-container" :style="{marginTop: '0px'}">
-                <p :style="{marginBottom: '10px'}">¿Por qué desea prácticar?</p>
+            <div class="min-container" :style="{marginTop: '0px'}" v-if="memberCategory != 3">
+                <p :style="{marginBottom: '10px'}">¿Por qué desea practicar?</p>
                 <FormulateInput 
                     name="desire"
                     type="textarea"
-                    validation-name="Por qué desea prácticar"
+                    validation-name="Por qué desea practicar"
                     v-model="formResult.desire"
                 />
             </div>
@@ -77,7 +77,7 @@
                     <img v-if="loadingDepartments" :src="loadingIcon" class="_spinner rotating">
                     <div 
                         class="option"
-                        v-for="(type, index) in dictionaries.grados" 
+                        v-for="(type, index) in _grados"
                         :key="index"
                         :style="{
                             borderLeft: type.color ? `10px solid #${type.color}` : `10px solid transparent`
@@ -116,7 +116,7 @@
                 </div>
             </div>
 
-            <div class="min-container" :style="{marginTop: '0px'}">
+            <div class="min-container" :style="{marginTop: '0px'}" v-if="memberCategory != 3">
                 <p :style="{marginBottom: '10px'}">¿Tiene su uniforme para las prácticas?</p>
                 <p
                     v-if="identificationRequired"
@@ -157,6 +157,9 @@ import Request from "../../request/instance.js";
 import loadingIcon from "../../assets/spinner.png";
 
 export default {
+    props: {
+        memberCategory: Number
+    },
     data() {
         return {
             formResult: {
@@ -194,7 +197,13 @@ export default {
             this.identificationRequired = false;
             this.otherMartialArtRequired = false;
 
-            if(!this.formResult.tipoMiembro || !this.formResult.grado || !this.formResult.identificacion || !this.formResult.otherMartialArt || !this.formResult.interested) {
+            if (!this.formResult.tipoMiembro 
+                || !this.formResult.grado 
+                || (!this.formResult.identificacion && this.memberCategory != 3) 
+                || (!this.formResult.otherMartialArt && this.memberCategory != 3)
+                || (!this.formResult.interested && this.memberCategory != 3)) 
+            {
+
                 if(!this.formResult.grado) {
                     this.depRequired = true;
                 }
@@ -214,6 +223,7 @@ export default {
                 if(!this.formResult.interested) {
                     this.interestRequired = true;
                 }
+                
                 return;
             }
 
@@ -253,6 +263,14 @@ export default {
             this.highlightSelected(e.target, i);
         }
     },
+    computed: {
+        _grados() {
+            if (this.memberCategory == 1) return this.dictionaries.grados.filter(g => g.category == 1);
+            if (this.memberCategory == 2) return this.dictionaries.grados.filter(g => g.category <= 2);
+            if (this.memberCategory == 3) return this.dictionaries.grados.filter(g => g.category >= 2);
+            return this.dictionaries.grados
+        }
+    },
     async mounted() {
         let requests = [
             Request.Get.Grados(),
@@ -269,11 +287,11 @@ export default {
         if(grados?.status == 200 && tipoMiembros?.status == 200 && tipoEntrenamiento?.status == 200) {
             this.dictionaries.interestTrain = tipoEntrenamiento.data;
 
-            grados.data.forEach(dep => {
+            grados.data.rows.forEach(dep => {
                 if (!dep.deleted) this.dictionaries.grados.push(dep);
             });
 
-            tipoMiembros.data.forEach((tp) => {
+            tipoMiembros.data.rows.forEach((tp) => {
                 if (!tp.deleted) this.dictionaries.tipoMiembros.push(tp);
             });
         }

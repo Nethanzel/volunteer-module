@@ -90,6 +90,34 @@ export const userContactSchema = Joi.object({
     })
 });
 
+export const schoolSchema = Joi.object({
+    nombre: Joi.string()
+    .min(3)
+    .required()
+    .messages({
+        "string.base": "El nombre de la escuela debe ser un texto",
+        "string.empty": "El nombre de la escuela no puede estar vacío",
+        "string.min": "El nombre de la escuela debe tener al menos 3 caracteres",
+        "any.required": "El nombre de la escuela es obligatorio"
+    }),
+
+    provincia: Joi.number()
+    .positive()
+    .required()
+    .messages({
+        "number.base": "Seleccione en qué provincia está la escuela",
+        "any.required": "Seleccione en qué provincia está la escuela"
+    }),
+
+    municipio: Joi.number()
+    .positive()
+    .required()
+    .messages({
+        "number.base": "Seleccione en qué municipio está la escuela",
+        "any.required": "Seleccione en qué municipio está la escuela"
+    })
+});
+
 export const arraysAreEqual = (arr1, arr2) =>
     arr1?.length === arr2?.length &&
     [...arr1 ?? []].sort().every((val, index) => val === [...arr2 ?? []].sort()[index]);

@@ -1,20 +1,47 @@
 <template>
     <div class="tipos">
         <h1>Tipos de miembro</h1>
-        <p class="add-info" @click="showBlur = true" v-if="_allowCreateUserTypePermission"><i class="icofont-plus-circle"></i> Agregar</p>
+        
+        <p class="report-action" v-if="!loadin">
+            <span @click="showFiltersBlur = true" class="minimal-action"><i class="icofont-search-user"></i>Busqueda</span>
+            <span @click="showFiltersBlur = true" class="minimal-action"><i class="icofont-download"></i>Exportar</span>
+        </p>
 
-        <img class="rotating" src="../assets/spinner.png" alt="loadin" v-if="loadin">
+        <p class="add-info" v-if="_allowCreateUserTypePermission">
+            <span @click="showBlur = true"><i class="icofont-duotone icofont-plus-circle"></i> Agregar</span>
+        </p>
 
-        <DynamicConfigurationManager 
-            :data="tipos" 
-            :fields="fields" 
-            :saveEdited="_allowEditUserTypePermission"
-            :allowDelete="_allowDeleteUserTypePermission"
-            :allowRestore="_allowRestoreUserTypePermission"
-            @updateField="updateField" 
-            @delete="handleDelete($event)" 
-            @restore="handleRestore($event)" 
-        />
+        <div class="dataview">
+            <img class="rotating" src="../assets/spinner.png" alt="loadin" v-if="loadin">
+            <h2 v-if="!loadin && !tipos.length" :style="{ margin:'auto', color:'#c8c8c8' }">No hay registros</h2>
+
+            <DynamicConfigurationManager 
+                :data="tipos" 
+                :fields="fields" 
+                :saveEdited="_allowEditUserTypePermission"
+                :allowDelete="_allowDeleteUserTypePermission"
+                :allowRestore="_allowRestoreUserTypePermission"
+                @updateField="updateField" 
+                @delete="handleDelete($event)" 
+                @restore="handleRestore($event)" 
+                v-if="!loadin && tipos.length"
+            />
+        </div>
+        <div class="steps">
+            <p class="resume">Visualizando {{ resume.currentX  }} a {{ resume.currentN }} de {{ resume.total }} miembros</p>
+            <div class="stepsView">
+                <p 
+                    v-for="page in pages" 
+                    :key="page" 
+                    @click="getTipos(page)"
+                    :style="{
+                        color: page == cPage ? 'white' : 'black',
+                        backgroundColor: page == cPage ? '#008000a8' : 'transparent',
+                        border: page == cPage ? '1px solid gray' : '1px solid black',
+                    }"
+                >{{page}}</p>
+            </div>
+        </div>
 
         <transition name="circle-blur">
             <div class="blury-cnt" @click="handleHideBlur()" v-if="showBlur">
@@ -59,17 +86,30 @@
                         type: 'text-area'
                     }
                 ],
-                hideCreatingLoading: () => {}
+                hideCreatingLoading: () => {},
+                pages: 0,
+                cPage: 0,
+                resume: {
+                    total: 0,
+                    currentX: 0,
+                    currentN: 0
+                }
             }
         },
         mounted() {
-            this.getTipos();
+            this.getTipos(1);
         },
         methods: {
-            async getTipos() {
+            async getTipos(page) {
                 this.loadin = true;
-                let result = await Request.Get.tipoMiembros().catch(() => null).finally(() => this.loadin = false);
-                if (result.status == 200) this.tipos = result.data;
+                let result = await Request.Get.tipoMiembros(page).catch(() => null).finally(() => this.loadin = false);
+                if (result.status == 200) {
+                    let { rows, limit, count } = result.data;
+                    this.pages = Math.ceil(count / limit);
+                    this.cPage = page ? page : 1;
+                    this.tipos = rows.sort((a, b) => b.id - a.id);
+                    this.updateResume({ limit, count, page: this.cPage });
+                }
             },
             async updateField(e) {
                 showFieldLoading(e.target);
@@ -121,6 +161,12 @@
                         type: 'ok',
                     });
                 }
+            },
+            updateResume(e) {
+                let lastElement = e.page * e.limit;
+                this.resume.currentN = lastElement > e.count ? e.count : lastElement;
+                this.resume.currentX = ((e.page * e.limit) - e.limit) + 1;
+                this.resume.total = e.count
             }
         },
         computed: {
@@ -134,7 +180,7 @@
                 return this.$store.getters.isAllowedToPermission(['DVT'])
             },
             _allowRestoreUserTypePermission() {
-                return this.$store.getters.isAllowedToPermission(['RDE'])
+                return this.$store.getters.isAllowedToPermission(['RVT'])
             },
         }
     }
@@ -151,7 +197,15 @@
         .rotating {
             width: 50px;
             height: 50px;
-            margin: 20px auto;
+            margin: auto;
+        }
+        .steps {
+            .resume {
+                margin-bottom: -5px;
+                text-align: center;
+                font-size: 14px;
+                cursor: default;
+            }
         }
     }
 </style>

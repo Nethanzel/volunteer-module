@@ -57,6 +57,38 @@ export default {
                         icon: "icofont-crying"
                     }
                 },
+                externalMemberQuery: {
+                    400: {
+                        titulo: "Algo acaba de salir mal!",
+                        mensaje: "Su pedido no puede ser procesado, aparentemente la solicitud no está bien formulada.",
+                        icon: "icofont-crying"
+                    },
+                    401: {
+                        titulo: "Algo acaba de salir mal!",
+                        mensaje: "Su pedido no puede ser procesado, el servidor se niega a hacerlo porque no tiene autorizado visualizar la información.",
+                        icon: "icofont-crying"
+                    },
+                    403: {
+                        titulo: "Algo acaba de salir mal!",
+                        mensaje: "Su pedido no puede ser procesado, el servidor se niega a hacerlo porque no tiene autorizado visualizar la información.",
+                        icon: "icofont-crying"
+                    },
+                    404: {
+                        titulo: "No se encontró resultado!",
+                        mensaje: "La información solicitada no fue encontrada.",
+                        icon: "icofont-confused"
+                    },
+                    500: {
+                        titulo: "Algo acaba de salir mal!",
+                        mensaje: "Tu información no pudo ser guardada debido a un error. Por favor, intentalo luego.",
+                        icon: "icofont-crying"
+                    },
+                    503: {
+                        titulo: "Algo acaba de salir mal!",
+                        mensaje: "Tu información no pudo ser guardada debido a un error. Por favor, intentalo luego.",
+                        icon: "icofont-crying"
+                    }
+                },
                 notFound: {
                     404: {
                         titulo: "Destino equivocado!",

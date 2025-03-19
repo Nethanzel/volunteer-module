@@ -14,13 +14,13 @@
                 <FormulateInput type="text" validation-name="Fecha de nacimiento" validation="required" name="nacimientofecha" label="Fecha de nacimiento (año/mes/dia)" @input="birthDateChanged" :errors="birthDateErr" />
                 <FormulateInput type="text" validation-name="Cédula" name="identity" label="Cédula" :errors="identityErr" />
                 <FormulateInput type="text" name="ocupacion" label="Ocupación (opcional)" />
-                <FormulateInput type="text" name="peso" label="Peso (en libras)" placeholder="Ejemplo: 125" />
-                <FormulateInput type="text" name="estatura" label="Estatura (en pies)" placeholder="Ejemplo 5.8" />
+                <FormulateInput type="text" name="peso" label="Peso (en libras)" placeholder="Ejemplo: 125" v-if="memberCategory != 3" />
+                <FormulateInput type="text" name="estatura" label="Estatura (en pies)" placeholder="Ejemplo 5.8" v-if="memberCategory != 3" />
             </div>
 
             <div class="min-container inputBreak">
-                <h2>¿Donde vives?</h2>
-                <FormulateInput label="Provincia" type="select" :options="Prov" v-model="selectedProv" />
+                <h2>¿Dónde vives?</h2>
+                <FormulateInput label="Provincia" type="select" name="provincia" :options="Prov" v-model="selectedProv" />
                 <FormulateInput type="select" :options="_municipios" name="municipio" label="Municipio (primero elegir provincia)" validation="required" />
                 <FormulateInput type="text" name="sector" label="Sector" validation="required" />
                 <FormulateInput type="text" name="calle" label="Calle" validation="required" />
@@ -89,7 +89,7 @@
                     <FormulateInput v-model="familyModel.phone" type="text" name="Telefono/Celular" label="Telefono de contacto" />
                     <FormulateInput v-model="familyModel.otherPhone" type="text" name="Telefono" label="Otro telefono" />
 
-                    <button @click="addFamily" :disabled="family.length > 1"><i class="icofont-plus-circle"></i> Agregar</button>
+                    <button @click="addFamily" :disabled="family.length > 1"><i class="icofont-duotone icofont-plus-circle"></i> Agregar</button>
                 </div>
             </div>
 
@@ -101,12 +101,15 @@
 
 <script>
 import { contactSchema, userContactSchema } from "../../utils/modelValidate";
-import { calcularEdad, titleCase } from "../../utils/inforFormat";
+import { calcularEdad, isValidDate, titleCase } from "../../utils/inforFormat";
 const provincias = require("../../assets/data/provincias.json");
 const municipios = require("../../assets/data/municipios.json");
 import axiosRequest from "../../request/instance";
 
 export default {
+    props: {
+        memberCategory: Number
+    },
     data() {
         return {
             formResult: {},
@@ -146,19 +149,15 @@ export default {
     },
     methods: {
         calcularEdad,
-        isValidDate(dateString) {
-            if (dateString.length < 8) return false;
-            const date = new Date(dateString);
-            return date instanceof Date && !isNaN(date);
-        },
+        isValidDate,
         validate(e) {
             this.validations[e.name] = e;
         },
         validateForm() {
             delete this.formResult.Nombre;
-            delete this.formResult.select_9;
             delete this.formResult.Telefono;
             delete this.formResult.Parentezco;
+            delete this.formResult.provincia;
             delete this.formResult['Telefono/Celular'];
 
             this.emailErr = [];
@@ -175,17 +174,6 @@ export default {
                     }); 
                     return;
                 }
-            }
-
-            if (!this.isValidDate(this.formResult.nacimientofecha)) {
-                this.$throwAppMessage({
-                    message: 'La fecha de nacimiento no es válida',
-                    icon: "icofont-close-circled",
-                    type: 'error',
-                }); 
-                this.birthDateErr = ['Fecha inválida. Ejemplo de fecha: 2024-5-25'];
-                this.isMinor = false;
-                return;
             }
 
             let { error } = userContactSchema.validate({ telefono:this.formResult.telefono, celular:this.formResult.celular });
@@ -215,11 +203,23 @@ export default {
                 this.formResult.tutorInfo = this.family;
             }
 
+            if (!this.isValidDate(this.formResult.nacimientofecha)) {
+                this.$throwAppMessage({
+                    message: 'La fecha de nacimiento no es válida',
+                    icon: "icofont-close-circled",
+                    type: 'error',
+                }); 
+                this.birthDateErr = ['Fecha inválida. Ejemplo de fecha: 2024-5-25'];
+                this.isMinor = false;
+                return;
+            }
+
             this.valitinId = true;
 
             this.validateIdentity(this.formResult.identity, this.formResult.email)
             .then((validation) => {
                 let stopEmit = false;
+
                 if (validation.identityExists) {
                     this.identityErr = ['Ya hay un registro con esta cédula/pasaporte'];
                     this.$throwAppMessage({ 
@@ -238,8 +238,11 @@ export default {
                     }); 
                     stopEmit = true;
                 }
-                this.formResult.nacimientofecha = new Date(this.formResult.nacimientofecha);
-                if (!stopEmit) this.$emit("validation", {result: this.formResult, pos: 2});
+
+                if (!stopEmit) {
+                    this.formResult.nacimientofecha = new Date(this.formResult.nacimientofecha);
+                    this.$emit("validation", {result: this.formResult, pos: 2});
+                }
             })
             .catch(() => null)
             .finally(() => this.valitinId = false);

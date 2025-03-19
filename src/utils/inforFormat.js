@@ -61,3 +61,9 @@ export function titleCase(texto) {
         .map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1)) // Capitalizamos cada palabra
         .join(" "); // Unimos nuevamente
 }
+
+export function isValidDate(dateString) {
+    if (dateString.length < 8) return false;
+    const date = new Date(dateString);
+    return date instanceof Date && !isNaN(date);
+}

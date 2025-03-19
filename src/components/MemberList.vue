@@ -89,10 +89,14 @@ export default {
         formatIdentification,
         async getMembers(page) {
             this.isRequesting = true;
+            this.$emit("loading");
 
             let requestResult = await Request.Get.Miembros(page ? page : 1)
                 .catch(() => null)
-                .finally(() => this.isRequesting = false);
+                .finally(() => {
+                    this.isRequesting = false;
+                    this.$emit("load");
+                });
             
             if(requestResult?.status == 200) {
                 let { rows, limit, count } = requestResult.data;
@@ -135,6 +139,7 @@ export default {
     },
     mounted() {
         this.getMembers();
+        this.$emit('ready', () => this.getMembers(1));
     }
 }
 </script>
@@ -155,20 +160,14 @@ export default {
     }
 
     .dataview {
-        display: flex;
-        overflow: hidden;
-        flex-wrap: wrap;
-        margin: 0 auto;
-        max-width: 1235px;
-        width: 100%;
-        max-height: calc(100% - 60px);
-        overflow-y: auto;
-        justify-content: center;
+        align-content: flex-start;
+        align-items: stretch;
         .element {
             display: inline-flex;
             flex-wrap: wrap;
             max-width: 330px;
             min-width: 315px;
+            max-height: 150px;
             margin: 10px 15px;
             border-radius: 5px;
             border: 1px solid rgb(187, 187, 187);

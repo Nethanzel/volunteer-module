@@ -1,15 +1,17 @@
 <template>
     <div class="navigation" @click="clickCatch($event)">
         <span class="_close" @click="ShowHideManu()"><i class="icofont-close-squared-alt"></i></span>
-        
         <div class="float_menu_icon" @click="ShowHideManu()" v-if="!showMenu && $store.getters.isAuthorized"><i class="icofont-navigation-menu"></i></div>
-
         <div class="routes">
+            <h3>Hola {{ $store.getters.userFirstName }}</h3>
             <router-link :to="{ name: 'Registrar'}"><i class="icofont-duotone icofont-add-users"></i> Registro</router-link>
-            <router-link :to="{ name: 'Miembros'}" v-if="_allowViewAllUserPermission"><i class="icofont-duotone icofont-groups"></i> Listado de miembros</router-link>
-            <router-link :to="{ name: 'Escuelas'}"><i class="icofont-duotone icofont-cogs"></i> Escuelas</router-link>
+            <router-link :to="{ name: 'Miembros'}" v-if="_allowViewAllUserPermission"><i class="icofont-people"></i> Listado de miembros</router-link>
+            <router-link :to="{ name: 'Escuelas'}"><i class="icofont-university"></i> Escuelas</router-link>
             <router-link :to="{ name: 'Grados'}"><i class="icofont-duotone icofont-cogs"></i> Grados</router-link>
-            <router-link :to="{ name: 'TiposMiembro'}"><i class="icofont-duotone icofont-cogs"></i> Tipos de miembro</router-link>
+            <router-link :to="{ name: 'TiposMiembro'}"><i class="icofont-duotone icofont-groups"></i> Tipos de miembro</router-link>
+            <router-link :to="{ name: 'Highlights'}" v-if="_allowViewAllHighlightPermission"><i class="icofont-star"></i> Highlights</router-link>
+            <router-link :to="{ name: 'Schedule'}" v-if="_allowViewAllPracticeSchedulePermission"><i class="icofont-tasks-alt"></i> Horarios de práctica</router-link>
+            <router-link :to="{ name: 'Practicas'}" v-if="_allowViewAllPracticePermission"><i class="icofont-tasks"></i> Prácticas y asistencia</router-link>
         </div>
     </div>
 </template>
@@ -55,6 +57,15 @@ export default {
         _allowViewAllUserPermission() {
             return this.$store.getters.isAllowedToPermission(['QVL'])
         },
+        _allowViewAllHighlightPermission() {
+            return this.$store.getters.isAllowedToPermission(['QH'])
+        },
+        _allowViewAllPracticeSchedulePermission() {
+            return this.$store.getters.isAllowedToPermission(['QPS']) 
+        },
+        _allowViewAllPracticePermission() {
+            return this.$store.getters.isAllowedToPermission(['QPR']) 
+        }
     }
 }
 </script>
@@ -73,7 +84,7 @@ export default {
     
     .float_menu_icon {
         position: fixed;
-        top: 10px;
+        top: 5px;
         left: calc(100% + 80px);
         z-index: 500;
         width: 40px;
@@ -103,17 +114,34 @@ export default {
     .routes {
         display: flex;
         flex-direction: column;
-        padding: 20px;
+        padding: 10px 15px 20px 15px;
         a {
-            margin: 10px 0;
+            margin: 5px 0;
+            padding: 10px;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-
             i {
                 font-size: 25px;
                 margin-right: 10px;
             }
+            &:hover {
+                background-color: #777777;
+                color: #e6e6e6;
+            }
+        }
+        h3 {
+            margin-bottom: 15px;
+            margin-left: 10px;
+            cursor: default;
+        }
+    }
+}
+
+@media only screen and (max-width: 470px) {
+    .navigation {
+        .float_menu_icon {
+            left: calc(100% + 70px);
         }
     }
 }

@@ -10,12 +10,19 @@
             </router-link>
         </div>
 
-        <div class="options">
-            <router-link v-if="!$store.getters.isAuthorized && $route.name != 'Registrar'" :to="{ name:'Registrar' }">
-                <i class="icofont-duotone icofont-add-users" :style="{ paddingBottom:'5px' }"></i> Inscribirme
-            </router-link>
+        <div class="options" :style="{ marginRight: `${optionsRightMargin}px` }">
+            <p
+                @click="whereToPracticeAction()"
+                v-if="showWhereToPractice" 
+                :style="{ 
+                    marginRight: `${(optionsRightMargin == 0 && $route.name == 'Login') ? 15 : 0}px`,
+                    cursor:'pointer'
+                }"
+            >
+                <!-- <i class="icofont-location-pin" :style="{ paddingBottom:'5px' }"></i> --> ¿Dónde practicar?
+            </p>
                 
-            <p v-if="$route.name != 'Login'" @click="userIconAction()" :style="{ cursor:'pointer', marginLeft:'25px' }">
+            <p v-if="$route.name != 'Login'" @click="userIconAction()" :style="{ cursor:'pointer', marginLeft:'15px' }">
                 <template v-if="!$store.getters.isValidatingAccess">
                     <span v-if="!$store.getters.isAuthorized"><i class="icofont-duotone icofont-user"></i></span>
                     <img v-else :src="$store.getters.userImage" class="user-image" alt="user image">
@@ -33,35 +40,54 @@
     export default {
         data() {
             return {
-                logoToShow: null
+                logoToShow: null,
+                optionsRightMargin: 0,
             }
         },
         mounted() {
-            this.setLogo();
-            window.matchMedia("(max-width: 450px)").addEventListener('change', e => this.updateLogo(e.matches));
-
+            const screenQuery = window.matchMedia("(max-width: 475px)");
+            screenQuery.addEventListener('change', e => this.updateLogo(e.matches));
+            this.updateLogo(screenQuery.matches);
         },
         methods: {
             userIconAction() {
                 if (this.$store.getters.isValidatingAccess) return;
                 if (this.$route.name != 'Opciones') this.$router.push({ name: 'Opciones'});
             },
-            setLogo() {
-                const screenQuery = window.matchMedia("(max-width: 450px)");
-                if (this.$route.name == 'Home' && !screenQuery.matches) return this.logoToShow = textLogo;
-                if (this.$route.name == 'Login' && !screenQuery.matches) return this.logoToShow = textLogo;
-                this.logoToShow = logo;
+            whereToPracticeAction() {
+                if (this.$route.name != 'Home') {
+                    this.$router.push({ name:'Home', params: { showSchools: true } });
+                }
+                else {
+                    document.getElementById('sec-2').scrollIntoView({ behavior: 'smooth' });
+                }
             },
             updateLogo(matches) {
-                if (this.$route.name == 'Home' && !matches) return this.logoToShow = textLogo;
-                if (this.$route.name == 'Login' && !matches) return this.logoToShow = textLogo;
+                let routeName = this.$route.name;
+
+                if (routeName == 'Home' && !matches) {
+                    return this.logoToShow = textLogo;
+                }
+                if (routeName == 'Login' && !matches) {
+                    return this.logoToShow = textLogo;
+                }
+
+                this.optionsRightMargin = matches ? (routeName == 'Login' || routeName == 'Home' ? 0 : 15) : 15;
                 this.logoToShow = logo;
             }
         },
         watch: {
             $route() {
-                const screenQuery = window.matchMedia("(max-width: 450px)");
+                const screenQuery = window.matchMedia("(max-width: 475px)");
                 this.updateLogo(screenQuery.matches);
+            }
+        },
+        computed: {
+            showWhereToPractice() {
+                return !this.$store.getters.isValidatingAccess 
+                && !this.$store.getters.isAuthorized 
+                && this.$route.name != 'Registrar'
+                //&& this.$route.name != 'Login'
             }
         }
     }
@@ -96,7 +122,7 @@
             display: flex;
             justify-content: flex-end;
             align-items: center;
-            margin: 0 15px 0 auto;
+            margin: 0 0 0 auto;
             height: 100%;
 
             span {
@@ -124,7 +150,7 @@
             .user-image {
                 height: 35px;
                 width: 35px;
-                object-fit: contain;
+                object-fit: cover;
                 border-radius: 50%;
             }
         }

@@ -121,7 +121,7 @@ body {
   background-color: #fff;
   box-shadow: 0px 1px 5px 0px;
   padding: 5px 10px 0px 10px;
-  width: calc(100% - 20px);
+  width: calc(100% - 5px);
 }
 
 aside {
@@ -135,7 +135,7 @@ aside {
     color: #2c3e50;
     font-size: 15px;
     &.router-link-exact-active {
-      background-color: #42b983;
+      background-color: #b94242;
       padding: 10px;
       color: #fff;
     }
@@ -154,8 +154,15 @@ aside {
 
 h1 {
   text-align: center;
-  margin-bottom: 15px;
+  margin-bottom: 5px;
   margin-top: 10px;
+  user-select: none;
+  cursor: default;
+}
+h2 {
+  user-select: none;
+  cursor: default;
+  text-align: center;
 }
 
 </style>

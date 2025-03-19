@@ -19,7 +19,7 @@ const routes = [
   {
     path: '/member-list',
     name: 'Miembros',
-    component: () => import('../views/MemberList.vue'),
+    component: () => import('../views/Members.vue'),
     meta: {
       requiresAuth: true,
       requiredPermission: ['QVL']
@@ -61,6 +61,39 @@ const routes = [
     meta: {
       requiresAuth: true
     }
+  },
+  {
+    path: '/highlights',
+    name: 'Highlights',
+    component: () => import('../views/Highlights.vue'),
+    meta: {
+      requiresAuth: true,
+      requiredPermission: ['QH']
+    }
+  },
+  {
+    path: '/schedule',
+    name: 'Schedule',
+    component: () => import('../views/Schedule.vue'),
+    meta: {
+      requiresAuth: true,
+      requiredPermission: ['QPS']
+    }
+  },
+  {
+    path: '/practice',
+    name: 'Practicas',
+    component: () => import('../views/Practicas.vue'),
+    meta: {
+      requiresAuth: true,
+      requiredPermission: ['QPR']
+    }
+  },
+  {
+    path: '/confirm-member',
+    name: 'ExternalMemberQuery',
+    component: () => import('../views/ExternalMemberQuery.vue'),
+    meta: {}
   },
   {
     path: '*',

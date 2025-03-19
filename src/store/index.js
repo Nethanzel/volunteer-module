@@ -21,6 +21,12 @@ export default new Vuex.Store({
             let userHas = state.userData?.permissions?.filter((p) => requiredKeys.includes(p));
             if (!arraysAreEqual(userHas, requiredKeys)) return false;
             return true;
+        },
+        userFullName: (state) => {
+            return `${(state.userData?.firstName ?? "")} ${(state.userData?.lastName ?? "")}`;
+        },
+        userFirstName: (state) => {
+            return state.userData?.firstName ?? "";
         }
     },
     mutations: {
@@ -36,6 +42,7 @@ export default new Vuex.Store({
             router.push({ name: "Opciones" });
         },
         endSession: (state, requiresAuth) => {
+            state.hasAuthorization = false;
             localStorage.removeItem("authorization");
             if (requiresAuth) router.push({ name: 'Login' });
         }
