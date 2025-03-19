@@ -16,10 +16,6 @@
 		"provincia" : "Santo Domingo Norte"
 	},
 	{
-		"provincia_id" : 1,
-		"provincia" : "Santo Domingo"
-	},
-	{
 		"provincia_id" : 21,
 		"provincia" : "San Pedro de Macorís"
 	},
@@ -101,7 +97,7 @@
 	},
 	{
 		"provincia_id" : 72,
-		"provincia" : "San Juan de la Maguana"
+		"provincia" : "San Juan"
 	},
 	{
 		"provincia_id" : 73,
