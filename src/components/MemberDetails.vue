@@ -145,7 +145,6 @@
             <EditableField @save="updateField" :type="'text'" :label="'Proveedor de segruo'" :value="data.assuranceCompany" :_key="'assuranceCompany'" v-if="data.assurance" />
             <EditableField @save="updateField" :type="'text'" :label="'Código afiliado'" :value="data.assuranceCode" :_key="'assuranceCode'" v-if="data.assurance" />
 
-
             <h2>Informacion personal</h2>
             <EditableField @save="updateField" :type="'text'" :label="'Cédula'" :value="data.identity" :_key="'identity'" />
             <EditableField @save="updateField" :type="'text'" :label="'Nombre'" :value="data.nombre" />
@@ -157,12 +156,20 @@
             <EditableField @save="updateField" :type="'text'" :label="'Altura'" :value="data.altura" />
 
             <h2>Direccion</h2>
-            <EditableField @save="updateField" :type="'select'" :label="'Municipio'" :value="data.municipio" :options="_municipios" />
-            <EditableField @save="updateField" :type="'text'" :label="'Sector'" :value="data.sector" />
-            <EditableField @save="updateField" :type="'text'" :label="'Calle'" :value="data.calle" />
-            <EditableField @save="updateField" :type="'text'" :label="'Casa'" :value="data.casa" />
-            <EditableField @save="updateField" :type="'text'" :label="'Apartamento'" :value="data.apartamento" />
+            <EditableField @save="updateField" :type="'select'" :label="'Vive en otro pais'" :value="data.otherCountry" :options="SiNoOptions" :_key="'otherCountry'" :isYesNo="true" />
+            
+            <EditableField @save="updateField" :type="'select'" :label="'Municipio'" :value="data.municipio" :options="_municipios" v-if="!data.otherCountry" />
+            <EditableField @save="updateField" :type="'text'" :label="'Pais'" :value="data.pais" v-else />
+            
+            <EditableField @save="updateField" :type="'text'" :label="'Sector'" :value="data.sector" v-if="!data.otherCountry" />
+            <EditableField @save="updateField" :type="'text'" :label="'Estado/Región/Provincia'" :value="data.estado" :_key="'estado'" v-else />
+            
+            <EditableField @save="updateField" :type="'text'" :label="'Calle'" :value="data.calle" v-if="!data.otherCountry" />
+            <EditableField @save="updateField" :type="'text'" :label="'Ciudad/Poblado'" :value="data.ciudad" v-else :_key="'ciudad'" />
 
+            <EditableField @save="updateField" :type="'text'" :label="!data.otherCountry ? 'Casa' : 'Casa/Edificio/Apartamento'" :value="data.casa" />
+            
+            <EditableField @save="updateField" :type="'text'" :label="'Apartamento'" :value="data.apartamento" v-if="!data.otherCountry" />
 
             <h2>Contacto</h2>
             <EditableField @save="updateField" :type="'text'" :label="'Correo'" :value="data.correo" />
@@ -718,7 +725,7 @@
                 return result;
             },
             _municipios() {
-                let result = [];
+                let result = [{ value: 0, label: 'No especificado' }];
                 municipios?.map(m => result.push({ key: m.municipio_id, value: titleCase(m.municipio) }));
                 return result;
             },

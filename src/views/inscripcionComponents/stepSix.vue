@@ -80,17 +80,6 @@
         .point-last {
             margin-top: 5px;
         }
-        .check {
-            margin-top: 35px;
-            padding: 5px 25px;
-
-            input {
-                margin-right: 10px;
-            }
-            label {
-                font-weight: bold;
-            }
-        }
     }
 
     @media only screen and (max-width: 600px) {

@@ -371,6 +371,17 @@ export default {
         margin-right: 5px;
     }
   }
+  .check {
+      margin-top: 35px;
+      padding: 5px 25px;
+
+      input {
+        margin-right: 10px;
+      }
+      label {
+        font-weight: bold;
+      }
+  }
 }
 
 .inputBreak {

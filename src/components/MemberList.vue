@@ -145,96 +145,97 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.record-list {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    height: 100%;
-    .steps {
-        .resume {
-            margin-bottom: -5px;
-            text-align: center;
-            font-size: 14px;
-            cursor: default;
-        }
-    }
-
-    .dataview {
-        align-content: flex-start;
-        align-items: stretch;
-        .element {
-            display: inline-flex;
-            flex-wrap: wrap;
-            max-width: 330px;
-            min-width: 315px;
-            max-height: 150px;
-            margin: 10px 15px;
-            border-radius: 5px;
-            border: 1px solid rgb(187, 187, 187);
-            user-select: none;
-            overflow: hidden;
-            cursor: pointer;
-            .photo {
-                display: flex;
-                justify-content: center;
-                align-items: center; 
-                width: 35%;
-                img {
-                    object-fit: cover;
-                    width: 100%;
-                    height: 100%;
-                    max-height: 150px;
-                    min-width: 115px;
-                }
-                i {
-                    font-size: 35px;
-                }
-            }
-            .info {
-                width: 65%;
-                padding: 8px 0 8px 0;
-                display: flex;
-                flex-direction: column;
-                p {
-                    font-size: 13px;
-                    margin: 0px 0px 3px 10px;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
-                    overflow: hidden;
-                }
-            }
-
-            &:hover {
-                background-color: #ebebeb;
+    .record-list {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        height: 100%;
+        .steps {
+            .resume {
+                margin-bottom: -5px;
+                text-align: center;
+                font-size: 14px;
+                cursor: default;
             }
         }
-        .nocheck {
-            background-color: #ffb30059;
-        }
-        .deleted {
-            opacity: .5;
-        }
-    }
 
-    .await {
-        width: 50px;
-        height: 50px;
-        margin: auto;
-    }
-
-    @media only screen and (max-width: 400px) {
         .dataview {
+            align-content: flex-start;
+            align-items: stretch;
             .element {
+                display: inline-flex;
+                flex-wrap: wrap;
+                max-width: 330px;
+                min-width: 315px;
+                max-height: 150px;
+                margin: 10px 15px;
+                border-radius: 5px;
+                border: 1px solid rgb(187, 187, 187);
+                user-select: none;
+                overflow: hidden;
+                cursor: pointer;
                 .photo {
-                    width: 30%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center; 
+                    width: 35%;
+                    img {
+                        object-fit: cover;
+                        width: 100%;
+                        height: 100%;
+                        max-height: 150px;
+                        min-width: 115px;
+                    }
+                    i {
+                        font-size: 35px;
+                    }
                 }
                 .info {
-                    width: 70%;
+                    width: 65%;
+                    padding: 8px 0 8px 0;
+                    display: flex;
+                    flex-direction: column;
+                    p {
+                        font-size: 13px;
+                        margin: 0px 0px 3px 10px;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        overflow: hidden;
+                    }
+                }
+
+                &:hover {
+                    background-color: #ebebeb;
+                }
+            }
+            .nocheck {
+                background-color: #ffb30059;
+            }
+            .deleted {
+                opacity: .5;
+            }
+        }
+
+        .await {
+            width: 50px;
+            height: 50px;
+            margin: auto;
+        }
+
+        @media only screen and (max-width: 400px) {
+            .dataview {
+                .element {
+                    .photo {
+                        width: 30%;
+                        img {
+                            min-width: 100px;
+                        }
+                    }
+                    .info {
+                        width: 70%;
+                    }
                 }
             }
         }
     }
-}
-
-
 </style>

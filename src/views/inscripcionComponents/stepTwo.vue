@@ -10,7 +10,7 @@
             <div class="min-container inputBreak">
                 <FormulateInput type="text" name="nombre" label="Nombres" validation="required"/>
                 <FormulateInput type="text" name="apellido" label="Apellidos" validation="required"/>
-                <FormulateInput name="nacimientolugar" label="Lugar de nacimiento" type="select" :options="Prov"/>
+                <FormulateInput name="nacimientolugar" label="Lugar de nacimiento" type="select" :options="birthProv"/>
                 <FormulateInput type="text" validation-name="Fecha de nacimiento" validation="required" name="nacimientofecha" label="Fecha de nacimiento (año/mes/dia)" @input="birthDateChanged" :errors="birthDateErr" />
                 <FormulateInput type="text" validation-name="Cédula" name="identity" label="Cédula" :errors="identityErr" />
                 <FormulateInput type="text" name="ocupacion" label="Ocupación (opcional)" />
@@ -20,12 +20,34 @@
 
             <div class="min-container inputBreak">
                 <h2>¿Dónde vives?</h2>
-                <FormulateInput label="Provincia" type="select" name="provincia" :options="Prov" v-model="selectedProv" />
-                <FormulateInput type="select" :options="_municipios" name="municipio" label="Municipio (primero elegir provincia)" validation="required" />
-                <FormulateInput type="text" name="sector" label="Sector" validation="required" />
-                <FormulateInput type="text" name="calle" label="Calle" validation="required" />
-                <FormulateInput type="text" name="casa_no" label="Casa/Edificio" />
-                <FormulateInput type="text" name="apartamento" label="Apartamento (opcional)" />
+
+                <div class="check" :style="{ marginTop: '0' }">
+                    <input type="checkbox" name="livesInOtherCountry" id="livesInOtherCountry" @change="handleLivesInOtherCountry">
+                    <label for="livesInOtherCountry">Vivo fuera del pais.</label>
+                </div>
+
+                <template v-if="otherCountry">
+                    <div>
+                        <FormulateInput type="text" name="country" label="Pais" validation="required" validation-name="Pais" v-model="formResult.country" />
+                        <FormulateInput type="text" name="state" label="Estado/Región/Provincia" validation="required"
+                            validation-name="Estado/Región/Provincia" v-model="formResult.state" />
+                        <FormulateInput type="text" name="city" label="Ciudad/Poblado" validation="required" validation-name="Ciudad/Poblado" v-model="formResult.city" />
+                        <FormulateInput type="text" name="street" label="Calle/Avenida" v-model="formResult.street" />
+                        <FormulateInput type="text" name="building" label="Casa/Edificio/Apartamento" v-model="formResult.building" />
+                    </div>
+                </template>
+
+                <template v-else>
+                    <div>
+                        <FormulateInput label="Provincia" type="select" name="provincia" :options="Prov" v-model="selectedProv" />
+                        <FormulateInput type="select" :options="_municipios" name="municipio" 
+                            label="Municipio (primero elegir provincia)" validation="required" v-model="formResult.municipio" />
+                        <FormulateInput type="text" name="sector" label="Sector" validation="required" v-model="formResult.sector" />
+                        <FormulateInput type="text" name="calle" label="Calle" validation="required" v-model="formResult.calle" />
+                        <FormulateInput type="text" name="casa_no" label="Casa/Edificio" v-model="formResult.casa_no" />
+                        <FormulateInput type="text" name="apartamento" label="Apartamento (opcional)" v-model="formResult.apartamento" />
+                    </div>
+                </template>
             </div>
             
             <div class="min-container inputBreak">
@@ -144,7 +166,8 @@ export default {
             },
             family: [],
             familyRequired: false,
-            selectedProv: null
+            selectedProv: null,
+            otherCountry: false
         }
     },
     methods: {
@@ -157,13 +180,26 @@ export default {
             delete this.formResult.Nombre;
             delete this.formResult.Telefono;
             delete this.formResult.Parentezco;
-            delete this.formResult.provincia;
             delete this.formResult['Telefono/Celular'];
+            delete this.formResult.provincia;
 
             this.emailErr = [];
             this.celularErr = [];
             this.telefonoErr = [];
             this.identityErr = [];
+
+            if (this.otherCountry) {
+                delete this.validations.municipio;
+                delete this.validations.sector;
+                delete this.validations.calle;
+            }
+            else {
+                delete this.validations.country;
+                delete this.validations.state;
+                delete this.validations.city;
+            }
+
+            this.cleanModel(this.otherCountry);
 
             for (var input in this.validations) {
                 if(this.validations[input].hasErrors) {
@@ -175,6 +211,10 @@ export default {
                     return;
                 }
             }
+
+            this.formResult.telefono = this.formResult.telefono?.trim();
+            this.formResult.celular = this.formResult.celular?.trim();
+            this.formResult.email = this.formResult.email?.trim();
 
             let { error } = userContactSchema.validate({ telefono:this.formResult.telefono, celular:this.formResult.celular });
 
@@ -189,6 +229,7 @@ export default {
             }
 
             this.formResult.tutorInfo = null;
+            this.formResult.otherCountry = this.otherCountry;
 
             if (this.isMinor) {
                 if (this.family.length == 0) {
@@ -297,6 +338,28 @@ export default {
         removeFamily(index) {
             this.family.splice(index, 1);
         },
+        handleLivesInOtherCountry(e) {
+            this.otherCountry = e.target.checked;
+            this.cleanModel(this.otherCountry);
+        },
+        cleanModel(useOtherCountry) {
+            if (useOtherCountry) {
+                this.selectedProv = null;
+                delete this.formResult.apartamento;
+                delete this.formResult.provincia;
+                delete this.formResult.municipio;
+                delete this.formResult.casa_no;
+                delete this.formResult.sector;
+                delete this.formResult.calle;
+            }
+            else {
+                delete this.formResult.building;
+                delete this.formResult.country;
+                delete this.formResult.street;
+                delete this.formResult.state;
+                delete this.formResult.city;
+            }
+        }
     },
     mounted() {
         provincias.forEach(pro => this.Prov.push({ value: pro.provincia_id, label: pro.provincia }));
@@ -308,6 +371,11 @@ export default {
             let selected = municipios.filter(x => x.provincia_id == this.selectedProv);
             selected.forEach(m => result.push({ value: m.municipio_id, label: titleCase(m.municipio) }));
             return result;
+        },
+        birthProv() {
+            let p = [{ value: 0, label: 'No especificar' }];
+            provincias.forEach(pro => p.push({ value: pro.provincia_id, label: pro.provincia }));
+            return p;
         }
     }
 }
