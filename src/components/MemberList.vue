@@ -164,6 +164,7 @@ export default {
             align-content: flex-start;
             align-items: stretch;
             .element {
+                width: 100%;
                 display: inline-flex;
                 flex-wrap: wrap;
                 max-width: 330px;
