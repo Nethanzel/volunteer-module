@@ -10,7 +10,8 @@
                     <p v-if="miembro.identity">{{formatIdentification(miembro.identity)}}</p>
                     <p :style="{ fontWeight:'bold', fontSize: '16px' }">{{miembro.nombre}} {{miembro.apellido}}</p>
                     <p>{{ formatDate(miembro.nacimiento, true) }} <span>({{ calcularEdad(miembro.nacimiento) }} años)</span></p>
-                    <p v-if="miembro.municipio">De {{getMunicipio(miembro.municipio, true)}}</p>
+                    <p v-if="miembro.municipio && !miembro.otherCountry">De {{getMunicipio(miembro.municipio, true)}}</p>
+                    <p v-if="miembro.otherCountry">De {{miembro.estado}}, {{ miembro.pais }}</p>
                     <p 
                         :style="{ marginBottom:'5px' }" 
                         v-if="miembro.escuela"
