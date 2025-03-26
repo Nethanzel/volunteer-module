@@ -167,7 +167,7 @@
             <EditableField @save="updateField" :type="'text'" :label="'Calle'" :value="data.calle" v-if="!data.otherCountry" />
             <EditableField @save="updateField" :type="'text'" :label="'Ciudad/Poblado'" :value="data.ciudad" v-else :_key="'ciudad'" />
 
-            <EditableField @save="updateField" :type="'text'" :label="!data.otherCountry ? 'Casa' : 'Casa/Edificio/Apartamento'" :value="data.casa" />
+            <EditableField @save="updateField" :type="'text'" :label="!data.otherCountry ? 'Casa' : 'Casa/Edificio/Apartamento'" :value="data.casa" :_key="'casa'" />
             
             <EditableField @save="updateField" :type="'text'" :label="'Apartamento'" :value="data.apartamento" v-if="!data.otherCountry" />
 
