@@ -64,7 +64,7 @@
             <div>
                 <p 
                     class="minimal-action"
-                    @click="updateSpecialField({ field: { key:'checked',value:true }, target: $event.target })"
+                    @click="getMemberForm(data.id, $event.target)"
                     :style="{ marginLeft: 0 }"
                 >
                     <i class="icofont-download"></i>
@@ -154,6 +154,8 @@
             <EditableField @save="updateField" :type="'date'" :label="'Fecha nacimiento'" :value="data.nacimiento.split('T')[0]" :_key="'nacimiento'" />
             <EditableField @save="updateField" :type="'text'" :label="'Peso'" :value="data.peso" />
             <EditableField @save="updateField" :type="'text'" :label="'Altura'" :value="data.altura" />
+            <EditableField @save="updateField" :type="'select'" :label="'Género'" :value="data.genero" :_key="'genero'" :options="generoOptions" />
+
 
             <h2>Direccion</h2>
             <EditableField @save="updateField" :type="'select'" :label="'Vive en otro pais'" :value="data.otherCountry" :options="SiNoOptions" :_key="'otherCountry'" :isYesNo="true" />
@@ -365,6 +367,20 @@
                     {
                         key: false,
                         value: "No"
+                    }
+                ],
+                generoOptions: [
+                    {
+                        key: "M",
+                        value: "Masculino"
+                    },
+                    {
+                        key: "F",
+                        value: "Femenino"
+                    },
+                    {
+                        key: null,
+                        value: ""
                     }
                 ],
                 showProflePhoto: false,
@@ -704,6 +720,20 @@
                 else input = e.target.getElementsByTagName('input')[0];
 
                 if (input) input.click()
+            },
+            getMemberForm(id, target) {
+                showFieldLoading(target);
+                Request.Get.generateMemberForm(id)
+                    .then(res => {
+                        this.$throwAppMessage({ 
+                            message: "Archivo descargado!",
+                            icon: "icofont-check-circled",
+                            type: 'ok',
+                        });
+                        blobToFile(res.data, res.headers['content-disposition'].split('filename=')[1].replace(/"/g, ''))
+                    })
+                    .catch(() => hideFieldLoading(target))
+                    .finally(() => hideFieldLoading(target));
             }
         },
         mounted() {
@@ -862,46 +892,7 @@
             }
 
         }
-        .actions {
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            padding: 0px 20px 10px 20px;
-            width: calc(100% - 40px);
-            height: auto;
-            div {
-                display: flex;
-                flex-direction: row;
-                align-items: center;
-                margin-right: 15px;
-                margin-bottom: 0;
 
-                &:last-child {
-                    margin-right: 0px;
-                }
-
-                p {
-                    cursor:pointer;
-                    font-size:13px;
-                    display: flex;
-                    align-items: center;
-                    width: 100%;
-                    i {
-                        font-size:15px;
-                        margin-right: 7px;
-                        pointer-events: none;
-                    }
-                    &:last-child {
-                        margin-bottom: 0px;
-                    }
-                }
-                .rotating {
-                    height: 15px;
-                    width: 15px;
-                    display: none;
-                }
-            }
-        }
         .cntent {
             height: calc(100% - (120px + 30px));
             overflow-y: auto;
@@ -995,15 +986,6 @@
                     img {
                         height: 95px;
                         max-width: 95px;
-                    }
-                }
-
-                .actions {
-                    margin: unset;
-                    width: 100%;
-                    padding: 5px 0;
-                    div {
-                        margin-bottom: 0;
                     }
                 }
 

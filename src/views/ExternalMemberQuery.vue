@@ -132,13 +132,13 @@
             }
         },
         mounted() {
-            if (!this.$route.query['member-id']) {
+            if (!this.$route.query['id']) {
                 this.resultCode = 400;
                 this.isLoadin = false;
                 return;
             }
 
-            Request.Get.MiembroByCode(this.$route.query['member-id'])
+            Request.Get.MiembroByCode(this.$route.query['id'])
                 .then(res => {
                     this.resultCode = res.status;
                     if (res.status == 200) this.memberData = res.data;

@@ -2,11 +2,43 @@
   <div class="list-all">
     <h1>Lista de miembros</h1>
 
-    <p class="report-action" v-if="!membersLoading">
-      <span @click="refreshMembers" class="minimal-action"><i class="icofont-refresh"></i>Actualizar</span>
-      <span @click="showFiltersBlur = true" class="minimal-action"><i class="icofont-search-user"></i>Busqueda</span>
-      <span @click="showFiltersBlur = true" class="minimal-action"><i class="icofont-download"></i>Exportar</span>
-    </p>
+    <div class="actions" v-if="!membersLoading">
+        <div>
+            <p 
+                class="minimal-action"
+                @click="refreshMembers"
+                :style="{ marginLeft: 0 }"
+            >
+                <i class="icofont-refresh"></i>
+                Actualizar
+            </p>
+            <img class="rotating" src="../assets/spinner.png" alt="loading">
+        </div>
+
+        <div>
+            <p 
+                class="minimal-action"
+                @click="showFiltersBlur = true"
+                :style="{ marginLeft: 0 }"
+            >
+                <i class="icofont-search-user"></i>
+                Busqueda
+            </p>
+            <img class="rotating" src="../assets/spinner.png" alt="loading">
+        </div>
+
+        <div>
+            <p 
+                class="minimal-action"
+                @click="getReport($event.target)"
+                :style="{ marginLeft: 0 }"
+            >
+                <i class="icofont-download"></i>
+                Exportar
+            </p>
+            <img class="rotating" src="../assets/spinner.png" alt="loading">
+        </div>
+    </div>
 
     <MembersList 
       v-if="!loading" 
@@ -63,7 +95,9 @@
   import MembersList from '../components/MemberList.vue';
   import MemberDetails from '../components/MemberDetails.vue';
   import DynamicModelCreator from '../components/DynamicModelCreator.vue';
+  import { hideFieldLoading, showFieldLoading } from '../utils/handleEditableField.js';
   import FiltersBuilder from '../components/FiltersBuilder.vue';
+  import { blobToFile } from '../utils/downloadFile.js';
 
   export default {
     components: {
@@ -197,6 +231,21 @@
           });
         }
       },
+      getReport(target) {
+        showFieldLoading(target);
+
+        Request.Get.generateMembersListForm()
+        .then(res => {
+          this.$throwAppMessage({ 
+              message: "Archivo descargado!",
+              icon: "icofont-check-circled",
+              type: 'ok',
+          });
+          blobToFile(res.data, res.headers['content-disposition'].split('filename=')[1].replace(/"/g, ''))
+        })
+        .then(() => hideFieldLoading(target))
+        .catch(() => hideFieldLoading(target))
+      }
     },
     mounted() {
       this.loadDictionaries();

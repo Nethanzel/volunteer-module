@@ -33,7 +33,9 @@
                     validation-name="Otros estilos"
                     placeholder="Ejemplo: Nombre estilo (grado/nivel obtenido)"
                     v-model="formResult.otherMartialArtDetails"
+                    maxlength="100"
                 />
+                <p class="info-text" v-if="formResult.otherMartialArt == 'true'" >{{formResult.otherMartialArtDetails ? formResult.otherMartialArtDetails.length : 0}}/100</p>
             </div>
 
             <div class="min-container" :style="{marginTop: '0px'}" v-if="memberCategory != 3">
@@ -60,7 +62,9 @@
                     type="textarea"
                     validation-name="Por qué desea practicar"
                     v-model="formResult.desire"
+                    maxlength="175"
                 />
+                <p class="info-text">{{formResult.desire ? formResult.desire.length : 0}}/175</p>
             </div>
 
             <div class="min-container" :style="{marginTop: '0px'}">
@@ -143,7 +147,9 @@
                     validation="required"
                     validation-name="Los uniformes que tiene"
                     v-model="formResult.identificacionDetails"
+                    maxlength="100"
                 />
+                <p class="info-text" v-if="formResult.identificacion == 'true'" >{{formResult.identificacionDetails ? formResult.identificacionDetails.length : 0}}/100</p>
             </div>
 
             <button @click="validateForm">Siguiente <i class="icofont-arrow-right"></i></button>
@@ -244,7 +250,11 @@ export default {
                 });
                 return;
             }
-            
+
+            if (this.formResult.otherMartialArtDetails?.length > 100) this.formResult.otherMartialArtDetails = this.formResult.otherMartialArtDetails.slice(0, 100);
+            if (this.formResult.identificacionDetails?.length > 100) this.formResult.identificacionDetails = this.formResult.identificacionDetails.slice(0, 100);
+            if (this.formResult.desire?.length > 175) this.formResult.desire = this.formResult.desire.slice(0, 175);
+
             this.$emit("validation", {result: this.formResult, pos: 4});
         },
         highlightSelected(element, child) {

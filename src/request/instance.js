@@ -195,6 +195,14 @@ const axiosRequest = {
             let highlights = await Requester.get(`api/common/highlights`,);
             return highlights;
         },
+        generateMemberForm: async (id) => {
+            let form = await Requester.get(`/api/reporter/print/member?id=${id}`, { responseType: 'blob', headers: { Authorization: "*" } });
+            return form;
+        },
+        generateMembersListForm: async () => {
+            let form = await Requester.get(`/api/reporter/print/members`, { responseType: 'blob', headers: { Authorization: "*" } });
+            return form;
+        },
     },
     Delete: {
         removeContact: async (data) => {

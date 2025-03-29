@@ -382,6 +382,12 @@ export default {
         font-weight: bold;
       }
   }
+  .info-text {
+    text-align: right;
+    margin-top: 5px;
+    color: #a6a6a6;
+    font-size: 14px;
+  }
 }
 
 .inputBreak {
