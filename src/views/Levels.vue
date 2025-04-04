@@ -1,5 +1,5 @@
 <template>
-    <div class="deps">
+    <div class="levels">
         <h1>Grados</h1>
                 
         <p class="report-action" v-if="!loadin">
@@ -28,7 +28,7 @@
             />
         </div>
         <div class="steps">
-            <p class="resume">Visualizando {{ resume.currentX  }} a {{ resume.currentN }} de {{ resume.total }} miembros</p>
+            <p v-if="resume.total > 0" class="resume">Visualizando {{ resume.currentX  }} a {{ resume.currentN }} de {{ resume.total }} miembros</p>
             <div class="stepsView">
                 <p 
                     v-for="page in pages" 
@@ -196,10 +196,10 @@
 </script>
 
 <style lang="scss" scoped>
-    .deps {
+    .levels {
         display: flex;
         flex-direction: column;
-        height: calc(100dvh - 75px);
+        height: calc(100dvh - 65px);
         h1 {
             user-select: none;
         }

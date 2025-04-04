@@ -43,9 +43,11 @@
 
                 </div>
             </div>
+            
+            <h2 v-if="!resume.total">No hay registros</h2>
         </div>
         <div v-if="!isRequesting" class="steps">
-            <p class="resume">Visualizando {{ resume.currentX  }} a {{ resume.currentN }} de {{ resume.total }} miembros</p>
+            <p class="resume" v-if="resume.total">Visualizando {{ resume.currentX  }} a {{ resume.currentN }} de {{ resume.total }} miembros</p>
             <div class="stepsView">
                 <p 
                     v-for="page in pages" 
@@ -65,13 +67,16 @@
 </template>
 
 <script>
-import { formatIdentification, formatDate, calcularEdad, titleCase } from "../utils/inforFormat.js"
+import { formatIdentification, formatDate, calcularEdad, titleCase, getFilters } from "../utils/inforFormat.js"
 import municipios from '../assets/data/municipios.json';
 import provincias from '../assets/data/provincias.json';
 import { bufferToBase64 } from "../utils/image.js";
 import Request from "../request/instance.js";
 
 export default {
+    props: {
+        filters: Array
+    },
     data() {
         return {
             isRequesting: false,
@@ -86,13 +91,16 @@ export default {
         }
     },
     methods: {
+        getFilters,
         titleCase,
         formatIdentification,
         async getMembers(page) {
             this.isRequesting = true;
             this.$emit("loading");
 
-            let requestResult = await Request.Get.Miembros(page ? page : 1)
+            let filters = this.getFilters(this.filters);
+
+            let requestResult = await Request.Get.Miembros(page ? page : 1, filters)
                 .catch(() => null)
                 .finally(() => {
                     this.isRequesting = false;
@@ -215,6 +223,12 @@ export default {
             }
             .deleted {
                 opacity: .5;
+            }
+            h2 {
+                top: 50%;
+                margin: auto;
+                color: #c8c8c8;
+                position: absolute;
             }
         }
 

@@ -67,3 +67,119 @@ export function isValidDate(dateString) {
     const date = new Date(dateString);
     return date instanceof Date && !isNaN(date);
 }
+
+export function convertToBase64(texto) {
+    if (!texto) return;
+
+    const buffer = Buffer.from(texto, 'utf8');
+    const base64 = buffer.toString('base64');
+    return base64;
+}
+
+export function getFilters(filters) {
+    let resultFilters = {};
+
+    Object.keys(filters).forEach(i => {
+        if (filters[i].value) {
+            let queryParts = getParts(filters[i]);
+            let filter = { 
+                [filters[i].key] : {
+                    description: filters[i].filterDescription,
+                    value: queryParts.value,
+                    type: queryParts.op
+                }
+            }
+            resultFilters = { ...filter, ...resultFilters }
+        }
+    });
+
+    return Object.keys(resultFilters).length == 0 ? null : resultFilters;
+}
+
+export function getParts(param, convert = true) {
+    let values = param.op.split('/');
+
+    let op = values[0];
+    const dataType = values[1];
+
+    let value = null;
+
+    if (dataType == 'text') value = param.value
+    else if (dataType == 'number') 
+    {
+        if (op == 'between') {
+            let v = param.value.split('-');
+            if (v.length == 1) op = 'eq';
+            v.forEach((x, i) => v[i] = Number(x));
+            value = v;
+        }
+        else {
+            value = Number(param.value);
+        }
+    }
+    else if (dataType == 'date') 
+    {
+        if (op == 'between') {
+            let v = param.value.split('-');
+            if (v.length == 1) op = 'eq';
+            v.forEach((x,i) => v[i] = convert ? getDate(x) : x);
+            v = v.sort((a ,b) => a - b);
+            v.forEach((x,i) => v[i] = convert ? new Date(x).toISOString() : x);
+            value = v;
+        }
+        else {
+            value = getDate(param.value);
+        }
+    }
+    else if (dataType == 'age')
+    {
+        if (op == 'between') 
+        {
+            let v = param.value.split('-');
+            if (v.length == 1) op = 'eq';
+            let dates = convert ? getDateRange(v[0], v[1]) : null;
+            value = convert ? [dates.fechaMinima, dates.fechaMaxima] : v;
+        }
+        else 
+        {
+            value = convert ? getDateRange(param.value) : param.value;
+        }
+    }
+
+    return { value, op }
+}
+
+function getDate(age) {
+    let today = new Date();
+    let newDate = new Date(today.setFullYear(today.getFullYear() - age));
+
+    newDate.setHours(0);
+    newDate.setMinutes(0);
+    newDate.setSeconds(0);
+    newDate.setMilliseconds(0);
+
+    return newDate.getTime();
+}
+
+function getDateRange(minAge, maxAge) {
+    const fechaActual = new Date();
+    const añoActual = fechaActual.getFullYear();
+  
+    let fechaMinima;
+    let fechaMaxima;
+  
+    if (maxAge === undefined) {
+      // Si solo se proporciona una edad, genera un rango de un año.
+      fechaMaxima = new Date(añoActual - minAge, fechaActual.getMonth(), fechaActual.getDate() -1, 20, 0, 0, 0);
+      fechaMinima = new Date(añoActual - minAge - 1, fechaActual.getMonth(), fechaActual.getDate() + 1, 20, 0, 0, 0);
+    } else {
+      // Si se proporciona un rango de edades, genera el rango correspondiente.
+      fechaMaxima = new Date(añoActual - minAge, fechaActual.getMonth(), fechaActual.getDate() -1, 20, 0, 0, 0);
+      fechaMinima = new Date(añoActual - maxAge - 1, fechaActual.getMonth(), fechaActual.getDate(), 20, 0, 0, 0);
+    }
+  
+    return {
+      fechaMinima: fechaMinima.toISOString(),
+      fechaMaxima: fechaMaxima.toISOString(),
+    };
+}

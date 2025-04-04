@@ -13,7 +13,7 @@
 
     <header 
       class="header" 
-      :style="{ position: 'fixed', display: navDisplay, height: '65px' }"
+      :style="{ position: 'fixed', display: navDisplay, height: '55px' }"
     >
       <ViewHeader/>
     </header>
@@ -38,7 +38,7 @@
     },
     data() {
       return {
-        paddingTop: '75px',
+        paddingTop: '65px',
         navDisplay: 'flex',
         hideMenu: () => {}
       }
@@ -50,7 +50,7 @@
           this.navDisplay = 'none';
           return;
         }
-        this.paddingTop = '75px';
+        this.paddingTop = '65px';
         this.navDisplay = 'flex';
       }
     },
@@ -120,8 +120,8 @@ body {
   transition: .5s;
   background-color: #fff;
   box-shadow: 0px 1px 5px 0px;
-  padding: 5px 10px 0px 10px;
-  width: calc(100% - 5px);
+  padding: 3px 5px 3px 5px;
+  width: calc(100% - 10px);
 }
 
 aside {

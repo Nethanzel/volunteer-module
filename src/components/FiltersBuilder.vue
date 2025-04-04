@@ -1,6 +1,6 @@
 <template>
     <div class="filter-builder" @click="preventHide">
-        <h2><i class="icofont-arrow-left"></i>{{ title }}</h2>
+        <h2><i class="icofont-arrow-left" @click="$emit('hide')"></i>{{ title }}</h2>
         <div class="cntn">
             <p v-if="!filters" class="no-filter">No hay filtros</p>
 
@@ -15,10 +15,11 @@
                 :options="filter.options"
 
                 @change="filter.value = $event"
+                :style="{ maxWidth:'220px' }"
             />
 
         </div>
-        <button>Terminar</button>
+        <button @click="$emit('done')">Buscar <i class="icofont-arrow-right"></i></button>
     </div>
 </template>
 
@@ -36,7 +37,7 @@
         methods: {
             preventHide(e) {
                 e.stopPropagation();
-            },
+            }
         }
     }
 </script>
@@ -44,7 +45,8 @@
 <style scoped lang="scss">
     .filter-builder {
         background-color: #fff;
-        min-width: 410px;
+        max-width: 560px;
+        max-height: 450px;
         width: auto;
         padding: 10px;
         overflow: hidden;
@@ -67,6 +69,16 @@
         button {
             align-self: flex-end;
             margin-top: 10px;
+            padding: 4px 10px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            i {
+                font-size: 18px;
+                margin-top: 4px;
+                margin-left: 7px;
+            }
         }
         .cntn {
             width: calc(100% - 10px);
@@ -75,6 +87,9 @@
 
             display: flex;
             flex-wrap: wrap;
+            justify-content: space-around;
+
+            overflow-x: auto;
             .no-filter {
                 color: #b6b6b6;
                 cursor: default;

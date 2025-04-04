@@ -158,7 +158,7 @@
     .query {
         display: flex;
         flex-direction: column;
-        min-height: calc(100dvh - (75px + 30px));
+        min-height: calc(100dvh - (65px + 30px));
         padding: 15px 0;
         width: 100%;
         .rotating {

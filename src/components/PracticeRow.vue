@@ -36,7 +36,7 @@
                     {{ row.schedule.endHour }}
                 </span>
 
-                <div class="actions" :ref="`rv-${row.id}`">
+                <div class="_actions" :ref="`rv-${row.id}`">
                     <i class="icofont-ui-delete" @click="deleteRecord(row, $event)" v-if="!row.deleted && allowDelete" :style="{ fontSize:'16px' }"></i>
                     <i class="icofont-refresh" @click="restoreRecord(row, $event)" v-if="row.deleted && allowRestore"></i>
                     <i class="icofont-eye-alt" @click="$emit('show', row)" :style="{ marginLeft:'15px' }"></i>
@@ -129,7 +129,7 @@ import { formatDate } from '../utils/inforFormat';
                     margin: 0 5px 0 10px;
                 }
             }
-            .actions {
+            ._actions {
                 margin-left: auto;
                 display: flex;
                 justify-content: center;
@@ -162,7 +162,7 @@ import { formatDate } from '../utils/inforFormat';
                 span {
                     width: 100%;
                 }
-                .actions {
+                ._actions {
                     margin-top: 13px;
                     margin-right: 10px;
                 }

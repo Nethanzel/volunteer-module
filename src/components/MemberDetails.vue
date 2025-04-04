@@ -61,7 +61,7 @@
                 <img class="rotating" src="../assets/spinner.png" alt="loading">
             </div>
 
-            <div>
+            <div v-if="_allowGenerateFormPermission">
                 <p 
                     class="minimal-action"
                     @click="getMemberForm(data.id, $event.target)"
@@ -78,7 +78,7 @@
         <div class="cntent">
 
             <!--  -->
-            <template v-if="isMinorAged && !data.checked">
+            <template v-if="isMinorAged">
                 <div class="info-message warn">
                     <div class="icon">
                         <i class="icofont-warning"></i>
@@ -87,13 +87,13 @@
                         <p class="title">
                             Según la fecha de nacimiento, este miembro es menor de edad!
                         </p>
-                        <p>
+                        <p v-if="!data.checked">
                             Antes de confirmar el registro se debe comunicar con su(s) tutor(es).
                         </p>
                     </div>
                 </div>
 
-                <h2>Contacto de los tutores</h2>
+                <h2>Contacto con los tutores</h2>
 
                 <div class="detail-card" v-for="(contact, i) in data.tutorInfo" :key="`tc-${i}`">
                     <div class="icn">
@@ -826,6 +826,9 @@
             },
             _allowConfirmUserPermission() {
                 return this.$store.getters.isAllowedToPermission(['CUI'])
+            },
+            _allowGenerateFormPermission() {
+                return this.$store.getters.isAllowedToPermission(['PMF'])
             },
         }
     }

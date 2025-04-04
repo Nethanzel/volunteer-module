@@ -2,12 +2,12 @@
     <div class="viewHead">
 
         <div class="logo">
-            <router-link :to="{ name: 'Home'}">
-                <img 
-                    :src="logoToShow" 
-                    alt="logo"
-                >
-            </router-link>
+            <img 
+                :style="{ cursor:'pointer' }"
+                :src="logoToShow" 
+                @click="goHome"
+                alt="logo"
+            >
         </div>
 
         <div class="options" :style="{ marginRight: `${optionsRightMargin}px` }">
@@ -15,20 +15,20 @@
                 @click="whereToPracticeAction()"
                 v-if="showWhereToPractice" 
                 :style="{ 
-                    marginRight: `${(optionsRightMargin == 0 && $route.name == 'Login') ? 15 : 0}px`,
+                    marginRight: `${($route.name != 'Login') ? 10 : 5}px`,
                     cursor:'pointer'
                 }"
             >
-                <!-- <i class="icofont-location-pin" :style="{ paddingBottom:'5px' }"></i> --> ¿Dónde practicar?
+                ¿Dónde practicar?
             </p>
                 
-            <p v-if="$route.name != 'Login'" @click="userIconAction()" :style="{ cursor:'pointer', marginLeft:'15px' }">
+            <template v-if="$route.name != 'Login'">
                 <template v-if="!$store.getters.isValidatingAccess">
-                    <span v-if="!$store.getters.isAuthorized"><i class="icofont-duotone icofont-user"></i></span>
-                    <img v-else :src="$store.getters.userImage" class="user-image" alt="user image">
+                    <span v-if="!$store.getters.isAuthorized" @click="userIconAction()" :style="{ cursor:'pointer' }"><i class="icofont-duotone icofont-user"></i></span>
+                    <img v-else :src="$store.getters.userImage" @click="userIconAction()" :style="{ cursor:'pointer' }" class="user-image" alt="user image">
                 </template>
                 <img v-else class="rotating" src="../assets/spinner.png" alt="loadin" :style="{ pointerEvents: 'none' }">
-            </p>
+            </template>
         </div>
     </div>
 </template>
@@ -50,6 +50,11 @@
             this.updateLogo(screenQuery.matches);
         },
         methods: {
+            goHome() {
+                if (this.$route.name != 'Home') {
+                    this.$router.push({ name: 'Home'});
+                }
+            },
             userIconAction() {
                 if (this.$store.getters.isValidatingAccess) return;
                 if (this.$route.name != 'Opciones') this.$router.push({ name: 'Opciones'});
@@ -72,7 +77,7 @@
                     return this.logoToShow = textLogo;
                 }
 
-                this.optionsRightMargin = matches ? (routeName == 'Login' || routeName == 'Home' ? 0 : 15) : 15;
+                this.optionsRightMargin = matches ? 0 : 15;
                 this.logoToShow = logo;
             }
         },

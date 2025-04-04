@@ -115,7 +115,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-height: calc(100dvh - 75px);
+  min-height: calc(100dvh - 65px);
   width: 100%;
   overflow: auto;
   h2 {

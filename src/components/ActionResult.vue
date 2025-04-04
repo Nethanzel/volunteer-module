@@ -38,7 +38,7 @@ export default {
                 registro: {
                     208: {
                         titulo: "El registro ya habia sido realizado.",
-                        mensaje: "El número de cedula/pasaporte que intentaste registrar, ya está registrado.",
+                        mensaje: "El número de cédula/pasaporte que intentaste registrar, ya está registrado.",
                         icon: "icofont-confused"
                     },
                     201: {

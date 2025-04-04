@@ -319,6 +319,11 @@
                         display: flex;
                         flex-direction: row;
                         cursor: default;
+
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        overflow: hidden;
+
                         i {
                             height: unset;
                             width: unset;
@@ -392,7 +397,7 @@
             height: 36px;
             margin-top: 15px;
             margin-left: auto;
-            margin-right: calc(125px / 2 - 36px / 2);
+            //margin-right: calc(125px / 2 - 36px / 2);
         }
     }
 </style>

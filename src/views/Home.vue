@@ -76,34 +76,28 @@
       display: flex;
       align-items: center;
       flex-direction: column;
-      height: 100dvh;
       scroll-snap-align: start;
+      height: 100dvh;
     }
 
     #sec-2,
     #sec-3 {
-      padding-top: 75px;
-      height: calc(100dvh - 75px);
+      padding-top: 65px;
+      height: calc(100dvh - 65px);
     }
 
     header {
       top: 0;
       left: 0;
       z-index: 100;
-      padding: 5px 10px 0px 10px;
+      padding: 3px 5px 3px 5px;
       transition: .5s;
       overflow: hidden;
       position: fixed;
-      width: calc(100% - 19px - var(--scrollbar-width, 0px));
+      height: 55px;
+      width: calc(100% - 9px - var(--scrollbar-width, 0px));
       background-color: #ffffffcc;
     }
   }
 
-/*   @media only screen and (max-width: 850px) {
-    .home {
-      header {
-
-      }
-    }
-  } */
 </style>

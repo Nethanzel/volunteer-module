@@ -364,7 +364,7 @@
     .practica {
         display: flex;
         flex-direction: column;
-        height: calc(100dvh - 75px);
+        height: calc(100dvh - 65px);
         .rotating {
             width: 50px;
             height: 50px;
@@ -395,6 +395,19 @@
             }
             p {
                 margin: 0;
+            }
+        }
+    }
+
+    @media only screen and (max-width: 490px) {
+        .practica {
+            ._firstAction {
+                flex-direction: column-reverse;
+                align-items: flex-end;
+                .add-info {
+                    max-width: 120px;
+                    margin-top: 10px;
+                }
             }
         }
     }

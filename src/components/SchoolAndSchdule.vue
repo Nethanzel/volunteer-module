@@ -16,12 +16,15 @@
                 </div>
                 <div class="detail">
                     <h5>
-                        <i class="icofont-tasks-alt"></i>Horarios
+                        <span v-if="escuela.schedule.length"><i class="icofont-tasks-alt"></i>Horarios</span>
                         <router-link :to="{ name: 'Registrar', params: { selectedSchool: escuela.id } }">
                             <span>Inscribirme</span>
                             <i class="icofont-arrow-right"></i>
                         </router-link>
                     </h5>
+
+                    <h4 v-if="!escuela.schedule.length">No hay horarios</h4>
+
                     <div class="schedule" v-for="(schedule, x) in escuela.schedule" :key="`schule-${x}`">
                         <i class="icofont-wall-clock"></i>
                         <div>
@@ -95,12 +98,12 @@
             flex-wrap: wrap;
             overflow-y: auto;
             justify-content: center;
-            align-items: flex-start;
             .item {
                 margin: 10px;
-                padding: 7px 5px 5px 5px;
                 width: 100%;
                 overflow: hidden;
+                min-height: 181px;
+                padding: 7px 5px 5px 5px;
                 max-width: calc(350px - (30px));
                 background-color: #ffffffab;
                 outline: 1px solid #48484870;
@@ -132,12 +135,21 @@
                     }
                 }
                 .detail {
+                    height: 100%;
                     overflow: hidden;
                     padding-bottom: 5px;
+
+                    display: flex;
+                    flex-direction: column;
                     p {
                         text-overflow: ellipsis;
                         white-space: nowrap;
                         overflow: hidden;
+                    }
+                    h4 {
+                        margin: auto;
+                        text-align: center;
+                        color: #a1a1a187;
                     }
                     h5 {
                         margin-left: 10px;

@@ -43,7 +43,8 @@ const routes = [
     name: 'Escuelas',
     component: () => import('../views/Schools.vue'),
     meta: {
-      requiresAuth: true
+      requiresAuth: true,
+      requiredPermission: ['VE']
     }
   },
   {
@@ -51,7 +52,8 @@ const routes = [
     name: 'Grados',
     component: () => import('../views/Levels.vue'),
     meta: {
-      requiresAuth: true
+      requiresAuth: true,
+      requiredPermission: ['VD']
     }
   },
   {
@@ -59,7 +61,8 @@ const routes = [
     name: 'TiposMiembro',
     component: () => import('../views/UserTypes.vue'),
     meta: {
-      requiresAuth: true
+      requiresAuth: true,
+      requiredPermission: ['VVT']
     }
   },
   {

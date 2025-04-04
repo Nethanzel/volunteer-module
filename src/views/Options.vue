@@ -17,7 +17,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-height: calc(100vh - 75px);
+  min-height: calc(100vh - 65px);
 }
 </style>
   

@@ -6,9 +6,9 @@
             <h3>Hola {{ $store.getters.userFirstName }}</h3>
             <router-link :to="{ name: 'Registrar'}"><i class="icofont-duotone icofont-add-users"></i> Registro</router-link>
             <router-link :to="{ name: 'Miembros'}" v-if="_allowViewAllUserPermission"><i class="icofont-people"></i> Listado de miembros</router-link>
-            <router-link :to="{ name: 'Escuelas'}"><i class="icofont-university"></i> Escuelas</router-link>
-            <router-link :to="{ name: 'Grados'}"><i class="icofont-duotone icofont-cogs"></i> Grados</router-link>
-            <router-link :to="{ name: 'TiposMiembro'}"><i class="icofont-duotone icofont-groups"></i> Tipos de miembro</router-link>
+            <router-link :to="{ name: 'Escuelas'}" v-if="_allowViewAllSchoolsPermission"><i class="icofont-university"></i> Escuelas</router-link>
+            <router-link :to="{ name: 'Grados'}" v-if="_allowViewAllLevelsPermission"><i class="icofont-duotone icofont-cogs"></i> Grados</router-link>
+            <router-link :to="{ name: 'TiposMiembro'}" v-if="_allowViewAllMemberTypePermission"><i class="icofont-duotone icofont-groups"></i> Tipos de miembro</router-link>
             <router-link :to="{ name: 'Highlights'}" v-if="_allowViewAllHighlightPermission"><i class="icofont-star"></i> Highlights</router-link>
             <router-link :to="{ name: 'Schedule'}" v-if="_allowViewAllPracticeSchedulePermission"><i class="icofont-tasks-alt"></i> Horarios de práctica</router-link>
             <router-link :to="{ name: 'Practicas'}" v-if="_allowViewAllPracticePermission"><i class="icofont-tasks"></i> Prácticas y asistencia</router-link>
@@ -65,6 +65,15 @@ export default {
         },
         _allowViewAllPracticePermission() {
             return this.$store.getters.isAllowedToPermission(['QPR']) 
+        },
+        _allowViewAllMemberTypePermission() {
+            return this.$store.getters.isAllowedToPermission(['VVT'])
+        },
+        _allowViewAllSchoolsPermission() {
+            return this.$store.getters.isAllowedToPermission(['VE'])
+        },
+        _allowViewAllLevelsPermission() {
+            return this.$store.getters.isAllowedToPermission(['VD'])
         }
     }
 }

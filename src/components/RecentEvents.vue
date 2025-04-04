@@ -9,11 +9,11 @@
                 <template v-for="(slide, i) in slides.length">                    
                     <img
                         v-if="slidePosition == i"
+                        @load="imgLoading = false"
                         :class="slideAnimation"
                         :src="slides[i].image"
                         alt="event image"
                         :key="i"
-                        @load="imgLoading = false"
                     >
                 </template>
             </div>
@@ -108,7 +108,6 @@
             width: 35px;
             height: 35px;
         }
-
         .slides {
             width: 100%;
             height: 100%;
@@ -123,10 +122,12 @@
                     object-fit: cover;
                 }
                 .rotating {
-                    margin: auto;
+                    z-index: 10;
                     width: 35px;
                     height: 35px;
                     position: absolute;
+                    top: calc(50% - (35px / 2));
+                    left: calc(50% - (35px / 2));
                 }
             }
         }

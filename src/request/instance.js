@@ -2,9 +2,10 @@ import Vue from "vue";
 import axios from "axios";
 import store from "../store";
 import router from "../router";
+import { convertToBase64 } from "../utils/inforFormat";
 
 const Requester = axios.create({
-    baseURL: process.env.NODE_ENV === "production" ? window.location.origin : "http://192.168.0.10:81"
+    baseURL: process.env.NODE_ENV === "production" ? window.location.origin : "http://192.168.37.153:81"
 });
 
 Requester.interceptors.response.use((response) => response, (err) => {
@@ -147,8 +148,8 @@ const axiosRequest = {
             let permisos = await Requester.get('api/getters/permisos', { headers: { Authorization: "*" } });
             return permisos;
         },
-        Miembros: async (page) => {
-            let miembros = await Requester.get(`api/getters/miembros?page=${page}`, { headers: { Authorization: "*" } });
+        Miembros: async (page, filters) => {
+            let miembros = await Requester.get(`api/getters/miembros?page=${page}${filters ? `&filters=${convertToBase64(JSON.stringify(filters))}` : ''}`, { headers: { Authorization: "*" }} );
             return miembros;
         },
         NombreMiembros: async (id = null, nombre = null) => {
@@ -199,8 +200,8 @@ const axiosRequest = {
             let form = await Requester.get(`/api/reporter/print/member?id=${id}`, { responseType: 'blob', headers: { Authorization: "*" } });
             return form;
         },
-        generateMembersListForm: async () => {
-            let form = await Requester.get(`/api/reporter/print/members`, { responseType: 'blob', headers: { Authorization: "*" } });
+        generateMembersListForm: async (filters) => {
+            let form = await Requester.get(`/api/reporter/print/members${filters ? `?filters=${convertToBase64(JSON.stringify(filters))}`: ''}`, { responseType: 'blob', headers: { Authorization: "*" } });
             return form;
         },
     },

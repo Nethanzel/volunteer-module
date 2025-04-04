@@ -3,7 +3,8 @@
         <p class="close"><i class="icofont-close" @click="$emit('close')"></i></p>
         <div class="inp_Wrapper" :style="{ pointerEvents: isLookinUp ? 'none' : 'initial', opacity: isLookinUp ? '.75' : '1' }">
             <div class="box icon">
-                <i class="icofont-search-user"></i>
+                <i v-if="!isLookinUp" class="icofont-search-user"></i>
+                <img v-else class="rotating" src="../assets/spinner.png" alt="loading">
                 <input 
                     :style="{ minWidth: 'unset', border: 'unset', padding: '5px 10px 5px 0px' }" 
                     name="name"
@@ -13,7 +14,7 @@
             </div>
         </div>
 
-        <p class="title no-query" v-if="!selected.length && !_results.length && !isLookinUp">{{ sugestionText }}</p>
+        <p class="title no-query" v-if="!selected.length && !_results.length">{{ sugestionText }}</p>
 
         <p class="title" v-if="selected.length">Seleccionado ({{ selected.length }})</p>
         <div class="selected-results" v-if="selected.length">
@@ -28,8 +29,6 @@
                 <i class="icofont-close"></i>
             </p>
         </div>
-
-        <img v-if="isLookinUp" class="rotating" src="../assets/spinner.png" alt="loading">
 
         <p class="title" v-if="_results.length">Resultados ({{ _results.length }})</p>
         <div class="results" v-if="_results.length">
@@ -55,10 +54,10 @@
     export default {
         data() {
             return {
-                isLookinUp: false,
-                searchTimeout: null,
                 results: [],
                 selected: [],
+                isLookinUp: false,
+                searchTimeout: null,
                 sugestionText: "Escriba un nombre"
             }
         },
@@ -118,17 +117,19 @@
             cursor: pointer;
             font-size: 18px;
         }
-        .rotating {
-            height: 25px;
-            width: 25px;
-            margin: auto;
-        }
         .inp_Wrapper {
             outline: 1px solid #80808080;
             border-radius: 5px;
             padding-left: 0;
             margin-bottom: 10px;
             width: calc(100% - 10px);
+            .box {
+                .rotating {
+                    margin: 6px 8px;
+                    height: 20px;
+                    width: 20px;
+                }
+            }
         }
         .title {
             align-self: flex-start;
