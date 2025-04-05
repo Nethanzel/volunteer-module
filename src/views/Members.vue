@@ -425,10 +425,50 @@
         cleanFilter(filter) {
             this.filters.find(f => f.key == filter.key).value = null;
             this.currentFilters = this.currentFilters.filter(f => f.key != filter.key);
+        },
+        addConfirmedStatusFilter() {
+            let newFilter = {
+                options: [
+                    { key: null, value: '' },
+                    { key: 'true', value: "Si" },
+                    { key: 'false', value: "No" }
+                ],
+                display: 'Confirmado',
+                key: 'checked',
+                type: 'select',
+                value: null,
+                op: 'eq/bool',
+                desc: '',
+                valueDesc: (v, options) => {
+                    return options.find(x => x.key == v).value;
+                }
+            }
+            this.filters.push(newFilter);
+        },
+        addDeletedStatusFilter() {
+            let newFilter = {
+                options: [
+                    { key: null, value: '' },
+                    { key: 'true', value: "Si" },
+                    { key: 'false', value: "No" }
+                ],
+                display: 'Borrado',
+                key: 'deleted',
+                type: 'select',
+                value: null,
+                op: 'eq/bool',
+                desc: '',
+                valueDesc: (v, options) => {
+                    return options.find(x => x.key == v).value;
+                }
+            }
+            this.filters.push(newFilter);
         }
     },
     mounted() {
       this.loadDictionaries();
+      if (this._allowViewDeletedMembersPermission) this.addDeletedStatusFilter();
+      if (this._allowViewNonConfirmedMembersPermission) this.addConfirmedStatusFilter();
     },
     computed: {
       _allowViewUserPermission() {
@@ -437,6 +477,13 @@
       _allowExportMembersPermission() {
         return this.$store.getters.isAllowedToPermission(['PML'])
       },
+      _allowViewNonConfirmedMembersPermission() {
+        return this.$store.getters.isAllowedToPermission(['VNC'])
+      },
+      _allowViewDeletedMembersPermission() {
+        return this.$store.getters.isAllowedToPermission(['QDI'])
+      },
+      
     }
   }
 </script>

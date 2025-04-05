@@ -117,6 +117,9 @@ export function getParts(param, convert = true) {
             value = Number(param.value);
         }
     }
+    else if (dataType == 'bool') {
+        value = JSON.parse(param.value);
+    }
     else if (dataType == 'date') 
     {
         if (op == 'between') {
