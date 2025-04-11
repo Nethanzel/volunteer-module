@@ -57,7 +57,7 @@
             },
             userIconAction() {
                 if (this.$store.getters.isValidatingAccess) return;
-                if (this.$route.name != 'Opciones') this.$router.push({ name: 'Opciones'});
+                if (this.$route.name != 'Dashboard') this.$router.push({ name: 'Dashboard'});
             },
             whereToPracticeAction() {
                 if (this.$route.name != 'Home') {

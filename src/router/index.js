@@ -26,9 +26,9 @@ const routes = [
     }
   },
   {
-    path: '/options',
-    name: 'Opciones',
-    component: () => import('../views/Options.vue'),
+    path: '/dashboard',
+    name: 'Dashboard',
+    component: () => import('../views/Dashboard.vue'),
     meta: {
       requiresAuth: true
     }
@@ -119,7 +119,7 @@ router.beforeEach((to, from, next) => {
 
     if (to.matched.some(x => x.meta.requiresAuth)) {
         if (!authorized) {
-            if (to.name != 'Opciones' && typeof Vue.prototype.$throwAppMessage === 'function') {
+            if (to.name != 'Dashboard' && typeof Vue.prototype.$throwAppMessage === 'function') {
                 Vue.prototype.$throwAppMessage({ 
                 message: "Autenticacion requerida",
                 icon: "icofont-warning",
@@ -138,7 +138,7 @@ router.beforeEach((to, from, next) => {
                     type: 'warn',
                     });
                 }
-                next({ name:'Opciones' });
+                next({ name:'Dashboard' });
                 return;
             }
         }

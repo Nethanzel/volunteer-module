@@ -41,6 +41,26 @@ export function formatDate(date, onlyDate = false) {
     return "No hay fecha"
 }
 
+export function formatToLongDate(date) {
+    // Validamos que la fecha no sea nula o indefinida
+    if (!date) return "Fecha no válida";
+
+    // Convertimos el valor en un objeto Date
+    let dateInstance = new Date(date);
+
+    // Verificamos si la conversión fue exitosa
+    if (isNaN(dateInstance.getTime())) return "Fecha inválida";
+
+    let pDate = dateInstance.setHours(dateInstance.getHours() +5);
+
+    // Formateamos la fecha en español
+    const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+    let formattedDate = new Intl.DateTimeFormat('es-ES', options).format(pDate);
+
+    // Capitalizamos la primera letra de cada palabra y agregamos "del" antes del año
+    return formattedDate//.replace(/\b\w/g, char => char.toUpperCase()).replace(',', ' del');
+}
+
 export function calcularEdad(fechaNacimiento) {
     const fechaNac = new Date(fechaNacimiento);
     const hoy = new Date();
@@ -55,6 +75,10 @@ export function calcularEdad(fechaNacimiento) {
 }
 
 export function titleCase(texto) {
+    if (!texto) return "";
+    
+    if (typeof texto != 'string') texto = `${texto}`;
+
     return texto
         .toLowerCase() // Convertimos todo a minúsculas
         .split(" ") // Dividimos en palabras

@@ -39,7 +39,7 @@ export default new Vuex.Store({
             state.hasAuthorization = true;
             state.userData = data.user;
             localStorage.setItem("authorization", data.key);
-            router.push({ name: "Opciones" });
+            router.push({ name: "Dashboard" });
         },
         endSession: (state, requiresAuth) => {
             state.hasAuthorization = false;

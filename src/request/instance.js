@@ -5,7 +5,7 @@ import router from "../router";
 import { convertToBase64 } from "../utils/inforFormat";
 
 const Requester = axios.create({
-    baseURL: process.env.NODE_ENV === "production" ? window.location.origin : "http://192.168.37.153:81"
+    baseURL: process.env.NODE_ENV === "production" ? window.location.origin : "http://192.168.51.153:81"
 });
 
 Requester.interceptors.response.use((response) => response, (err) => {
@@ -189,7 +189,7 @@ const axiosRequest = {
             return schedule;
         },
         Practices: async (schoolid, page) => {
-            let practices = await Requester.get(`api/getters/practice?id=${schoolid}${page ? '&page='+page : ''}`, { headers: { Authorization: "*" } });
+            let practices = await Requester.get(`api/getters/practice?${schoolid ? '&id='+schoolid : ''}${page ? '&page='+page : ''}`, { headers: { Authorization: "*" } });
             return practices;
         },
         openHighlights: async () => {
@@ -204,6 +204,14 @@ const axiosRequest = {
             let form = await Requester.get(`/api/reporter/print/members${filters ? `?filters=${convertToBase64(JSON.stringify(filters))}`: ''}`, { responseType: 'blob', headers: { Authorization: "*" } });
             return form;
         },
+        LevelResume: async () => {
+            let resume = await Requester.get(`api/getters/members-by-level`, { headers: { Authorization: "*" } });
+            return resume;
+        },
+        MemberResume: async () => {
+            let resume = await Requester.get(`api/getters/members-resume`, { headers: { Authorization: "*" } });
+            return resume;
+        }
     },
     Delete: {
         removeContact: async (data) => {

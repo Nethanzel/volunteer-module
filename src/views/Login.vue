@@ -32,7 +32,7 @@
       </div>
 
       <div class="options" :style="{justifyContent:'right', padding:'20px 0 5px 0'}">
-        <p class="option" @click="() => false"><i class="icofont-key"></i> Olvidé mi contraseña</p>
+        <!-- <p class="option" @click="() => false"><i class="icofont-key"></i> Olvidé mi contraseña</p> -->
       </div>
     </form>
 
@@ -87,7 +87,7 @@
         
     },
     mounted() {
-      if (this.isAuthorized) return this.$router.push({ name: "Opciones" });
+      if (this.isAuthorized) return this.$router.push({ name: "Dashboard" });
       window.addEventListener('keypress', this.runAuthenticateByKeyPress);
     },
     destroyed() {

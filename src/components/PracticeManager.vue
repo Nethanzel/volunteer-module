@@ -11,7 +11,7 @@
         </div>
 
         <div class="cnt">
-            <div class="fields">
+            <div class="fields" v-if="fields">
                 <template v-for="(field, i) in fields.length" >
                     <EditableField 
                         v-if="!fields[i].ignore"
@@ -28,26 +28,33 @@
                 </template>
             </div>
 
+            <div class="detail-labels" v-else>
+                <p><b><i class="icofont-university"></i> Escuela: </b>{{ record.escuela.nombre }}.</p>
+                <p><b><i class="icofont-wall-clock"></i> Horario:</b> {{ getSchedule(record) }}.</p>
+                <p><b><i class="icofont-users-social"></i> Asistencia: </b> {{ record.asistencia.length }} miembro(s).</p>
+            </div>
+
             <div class="atendance">
                 <h2>Asistencia</h2>
+                <template v-if="fields">
+                    <h3>Miembros de la escuela</h3>
+                    <div class="_memberList">
+                        <template v-if="_members.length">
+                            <p class="member " v-for="(member, i) in _members" :key="`memb-${i}`">
+                                <i class="icofont-ui-user"></i>
+                                {{ `${member.nombre} ${member.apellido}` }}
 
-                <h3>Miembros de la escuela</h3>
-                <div class="_memberList">
-                    <template v-if="_members.length">
-                        <p class="member " v-for="(member, i) in _members" :key="`memb-${i}`">
-                            <i class="icofont-ui-user"></i>
-                            {{ `${member.nombre} ${member.apellido}` }}
-
-                            <i class="icofont-check" @click="handleAddAtendant(member, $event)"></i>
-                            <img class="rotating" src="../assets/spinner.png" alt="loading">
-                        </p>
-                    </template>
-                    <p v-else class="nothing">No hay miembros</p>
-                </div>
+                                <i class="icofont-check" @click="handleAddAtendant(member, $event)"></i>
+                                <img class="rotating" src="../assets/spinner.png" alt="loading">
+                            </p>
+                        </template>
+                        <p v-else class="nothing">No hay miembros</p>
+                    </div>
+                </template>
 
                 <h3 :style="{ marginTop:'15px' }">
                     Miembros que asistieron 
-                    <span @click="showBlur = true" v-if="!addingFromSearch" class="minimal-action"><i class="icofont-search-user"></i>Agregar</span>
+                    <span @click="showBlur = true" v-if="!addingFromSearch && fields" class="minimal-action"><i class="icofont-search-user"></i>Agregar</span>
                     <span v-if="addingFromSearch" class="loadin minimal-action"><i class="icofont-spinner rotating"></i>Agregando asistencia...</span>
                 </h3>
                 <div class="_memberList">
@@ -58,8 +65,8 @@
                         <i class="icofont-ui-user"></i>
                         {{ `${atendant.nombre} ${atendant.apellido}` }}
 
-                        <i class="icofont-close" v-if="!atendant.deleted"  @click="handleRemoveAtendant(atendant, $event)"></i>
-                        <i class="icofont-refresh" v-if="atendant.deleted"  @click="handleRestoreAtendant(atendant, $event)"></i>
+                        <i class="icofont-close" v-if="!atendant.deleted && fields"  @click="handleRemoveAtendant(atendant, $event)"></i>
+                        <i class="icofont-refresh" v-if="atendant.deleted && fields"  @click="handleRestoreAtendant(atendant, $event)"></i>
 
                         <img class="rotating" src="../assets/spinner.png" alt="loading">
                     </p>
@@ -67,7 +74,7 @@
                 </div>
             </div>
 
-            <button v-if="!executin && !editMode" @click="createObj">Terminar</button>
+            <button v-if="!executin && !editMode && fields" @click="createObj">Terminar</button>
             <img v-if="executin" class="rotating" src="../assets/spinner.png" alt="loading">
         </div>
 
@@ -84,6 +91,7 @@
 
 <script>
     import GlobalMemberSearch from './GlobalMemberSearch.vue';
+    import { formatToLongDate } from '../utils/inforFormat';
     import EditableField from './EditableField.vue';
     import Request from '../request/instance';
 
@@ -109,6 +117,7 @@
             GlobalMemberSearch
         },
         methods: {
+            formatToLongDate,
             preventHide(e) {
                 e.stopPropagation();
             },
@@ -244,11 +253,18 @@
             },
             handleHideBlur() {
                 this.showBlur = false;
+            },
+            getSchedule(practice) {
+                if (practice.schedule) {
+                    return `${practice.schedule.dayOfWeekText}, de ${practice.schedule.startHour} a ${practice.schedule.endHour}`
+                }
+
+                return this.formatToLongDate(practice.fecha ? practice.fecha : practice.createdAt) + `, de ${practice.startHour} a ${practice.endHour}`
             }
         },
         mounted() {
             this.$emit('ready', this.stopExcutin);
-            if (this.editMode) this.loadRecord();
+            if (this.editMode || !this.fields) this.loadRecord();
         },
         computed: {
             _members() {
@@ -375,6 +391,14 @@
                         user-select: none;
                         color: #9a9a9a80;
                     }
+                }
+            }
+            .detail-labels {
+                p {
+                    margin-bottom: 5px;
+                }
+                p:last-child {
+                    margin-bottom: 0px;
                 }
             }
             .fields {
