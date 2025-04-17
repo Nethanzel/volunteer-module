@@ -5,36 +5,38 @@
             class="stepseven" 
             invalid-message="Completa la informacion requerida"
         >
-            <div class="min-container">
-                <p>¿Está ofreciendo sus conocimientos en alguna escuela?</p>
+            <div v-if="!isLoading" class="min-container">
+                <p>¿Tiene alguna escuela bajo su liderazgo?</p>
 
                 <div type="group" class="custom-radio" :style="{marginTop: '10px'}">
                     
                     <div 
                         class="option"
                         :style="{}"
-                        @click="selectOption($event, 'hs-1', 'hasSchool', true)"
+                        @click="selectOption($event, 'hs-1', 'isProfessor', true)"
                     >
-                        <input :value="true" :id="'hs-1'" type="radio" name="hasSchool" :style="{display: 'inline-block', marginRight: '10px'}" />
+                        <input :value="true" :id="'hs-1'" type="radio" name="isProfessor" :style="{display: 'inline-block', marginRight: '10px'}" />
                         <label>Si</label> 
                     </div>
 
                     <div 
                         class="option"
                         :style="{}"
-                        @click="selectOption($event, 'hs-2', 'hasSchool', false)"
+                        @click="selectOption($event, 'hs-2', 'isProfessor', false)"
                     >
-                        <input :value="false" :id="'hs-2'" type="radio" name="hasSchool" :style="{display: 'inline-block', marginRight: '10px'}" />
+                        <input :value="false" :id="'hs-2'" type="radio" name="isProfessor" :style="{display: 'inline-block', marginRight: '10px'}" />
                         <label>No</label> 
                     </div>
                 </div>
 
             </div>
 
-            <div class="min-container inputBreak" v-if="hasSchool">
+            <img v-else src="../../assets/spinner.png" class="_spinner rotating">
+
+            <div class="min-container inputBreak" v-if="isProfessor == true">
                 <div :style="{ display:'flex', flexDirection:'column' }">
                     <h2>Detalles de las escuelas</h2>
-                    <p :style="{  }">Agregue la(s) escuela(s) donde da clases:</p>
+                    <p :style="{ marginBottom:'5px' }">Por favor, agregue la(s) escuela(s) donde es profesor:</p>
 
                     <p
                         v-if="schoolsRequired"
@@ -62,12 +64,48 @@
                 </div>
             </div>
 
-            <button @click="validateForm">Siguiente <i class="icofont-arrow-right"></i></button>
+            <div class="min-container inputBreak" v-if="isProfessor == false">
+                <p>Por favor, seleccione la escuela donde asiste:</p>
+
+                <p
+                    v-if="schRequired"
+                    :style="{ color: '#ff3300', marginTop: '0px', fontSize: '13px', fontWeight:'bold',
+                        marginLeft: '20px', fontFamily: 'Avenir, Helvetica, Arial, sans-serif'
+                    }"
+                >Esta información es necesaria.</p>
+
+                <div type="group" class="custom-radio" :style="{marginTop: '10px'}">
+                    
+                    <div class="option-wrapper">
+                        <div 
+                            class="option"
+                            v-for="(school, i) in escuelasExitentes" 
+                            :key="i"
+                            :style="{}"
+                            @click="selectSchoolOption($event, 'sch'+i, 'escuela', school.id)"
+                        >
+                            <input :value="school.id" :id="'sch'+i" type="radio" name="escuela" :style="{display: 'inline-block', marginRight: '10px'}" />
+                            <label>{{school.nombre}}</label> 
+                            <br>
+                            <span :style="{ display:'block', marginLeft:'20px' }" v-if="school.municipio"><i class="icofont-location-pin" :style="{ marginRight:'2px' }"></i> {{titleCase(school.municipio)}}</span>
+                            <span :style="{ display:'block', marginLeft:'20px', textOverflow:'ellipsis', whiteSpace:'nowrap', overflow:'hidden' }" v-if="school.lider">
+                                <i class="icofont-star" :style="{ marginRight:'2px' }"></i> 
+                                Profesor {{`${school.lider.nombre} ${school.lider.apellido}`}}
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <button v-if="!isLoading" @click="validateForm">Siguiente <i class="icofont-arrow-right"></i></button>
         </FormulateForm>
     </div>
 </template>
 
 <script>
+    import Request from "../../request/instance";
     import { titleCase } from "../../utils/inforFormat";
     import { schoolSchema } from "../../utils/modelValidate";
     const provincias = require("../../assets/data/provincias.json");
@@ -76,7 +114,8 @@
     export default {
         data() {
             return {
-                hasSchool: false,
+                isLoading: true,
+                isProfessor: null,
                 schoolsRequired: false,
                 schoolModel: {
                     nombre: '',
@@ -85,21 +124,44 @@
                 },
                 selectedProv: null,
                 schools: [],
+                escuelasExitentes: [],
+                selectedSchool: undefined,
+                schRequired: false
             }
         },
         methods: {
+            titleCase,
             validateForm() {
-                if (this.hasSchool && !this.schools.length) {
+                if (this.isProfessor == null) {
+                    this.$throwAppMessage({
+                        message: "Seleccione una opción",
+                        icon: "icofont-close-circled",
+                        type: 'error',
+                    });
+                    return;
+                }
+
+                if (this.isProfessor && !this.schools.length) {
                     this.$throwAppMessage({
                         message: "Debe agregar al menos una escuela",
                         icon: "icofont-close-circled",
                         type: 'error',
-                    }); 
+                    });
                     this.schoolsRequired = true;
                     return;
                 }
 
-                this.$emit("validation", { result: { hasSchool: this.hasSchool, schools: this.schools }, pos: 7 });
+                if (this.isProfessor === false && this.selectedSchool === undefined) {
+                    this.$throwAppMessage({
+                        message: "Seleccione una escuela",
+                        icon: "icofont-close-circled",
+                        type: 'error',
+                    });
+                    this.schRequired = true;
+                    return;
+                }
+
+                this.$emit("validation", { result: { isProfessor: this.isProfessor, schools: this.schools, school: this.selectedSchool }, pos: 7 });
             },
             highlightSelected(element, child) {
                 const siblings = element.parentElement.getElementsByTagName("div");
@@ -113,7 +175,12 @@
             },
             selectOption(e, i, name, value) {
                 e.stopPropagation();
-                this.hasSchool = value;
+                this.isProfessor = value;
+                this.highlightSelected(e.target, i);
+            },
+            selectSchoolOption(e, i, name, value) {
+                e.stopPropagation();
+                this.selectedSchool = value;
                 this.highlightSelected(e.target, i);
             },
             removeSchool(i) {
@@ -154,6 +221,27 @@
                 return titleCase(nombre)
             }
         },
+        mounted() {
+            Request.Get.Escuelas(null, true)
+                .then(result => {
+                    let noSchool = { id:null, nombre:'No especificar', municipio:'', };
+                    this.escuelasExitentes.push(noSchool);
+
+                    result.data.rows.forEach(es => {
+                        if (!es.deleted) {
+                            let provincia = provincias.filter(p => p.provincia_id == es.provincia)[0];
+                            let municipio = municipios.filter(p => p.municipio_id == es.municipio)[0];
+
+                            es.municipio = municipio.municipio;
+                            es.provincia = provincia.provincia;
+
+                            this.escuelasExitentes.push(es)
+                        }
+                    });
+                })
+                .catch(() => null)
+                .finally(() => this.isLoading = false);
+        },
         computed: {
             _municipios() {
                 if (!this.selectedProv) return [];
@@ -172,5 +260,9 @@
 </script>
 
 <style lang="scss" scoped>
-
+    .stepseven {
+        ._spinner {
+            display: flex;
+        }
+    }
 </style>
