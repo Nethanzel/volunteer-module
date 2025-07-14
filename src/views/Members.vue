@@ -30,8 +30,9 @@
         <div v-if="_allowExportMembersPermission">
             <p 
                 class="minimal-action"
-                @click="getReport($event.target)"
+                @click="showReportOptions = true"
                 :style="{ marginLeft: 0 }"
+                ref="exportBtn"
             >
                 <i class="icofont-download"></i>
                 Exportar
@@ -104,6 +105,18 @@
       </div>
     </transition>
 
+    <transition name="circle-blur">
+      <div class="blury-cnt" @click="handleHideReportFiltersBlur()" v-if="showReportOptions">
+        <FiltersBuilder
+          :title="'Opciones de exportación'"
+          :filters="reportFilters"
+          @hide="showReportOptions = false"
+          @done="runReportGeneration"
+          :btnText="'Generar'"
+        />
+      </div>
+    </transition>
+
   </div>
 </template>
   
@@ -129,6 +142,7 @@
         dictionaries: {},
         showBlur: false,
         showFiltersBlur: false,
+        showReportOptions: false,
         details: null,
         emergencyContactFields: [
           {
@@ -314,6 +328,23 @@
                 desc: 'años'
             }
         ],
+        reportFilters: [
+            {
+                options: [
+                    { key: 'false', value: "No" },
+                    { key: 'true', value: "Si" },
+                ],
+                display: 'Incluir fotos',
+                key: 'includePhotos',
+                type: 'select',
+                value: "false",
+                op: 'eq/bool',
+                desc: null,
+                valueDesc: function (v, options) {
+                    return options.find(x => x.key == v).value;
+                }
+            }
+        ],
         currentFilters: [],
         refreshMembers: () => {}
       }
@@ -359,6 +390,9 @@
         handleHideFiltersBlur() {
             this.showFiltersBlur = false;
         },
+        handleHideReportFiltersBlur() {
+            this.showReportOptions = false;
+        },
         async addEmergencyContact(e) {
             let res = await Request.Patch.addContact({ id: this.details.id, record: e }).catch(() => this.hideEmergencyContactLoading()).finally(() => this.hideEmergencyContactLoading());
             if (res?.status == 204) {
@@ -383,10 +417,10 @@
             });
             }
         },
-        getReport(target) {
+        getReport(target, includePhotos) {
             showFieldLoading(target);
 
-            Request.Get.generateMembersListForm(this.getFilters(this.filters))
+            Request.Get.generateMembersListForm(this.getFilters(this.filters), includePhotos)
             .then(res => {
             this.$throwAppMessage({ 
                 message: "Archivo descargado!",
@@ -407,6 +441,11 @@
             this.showFiltersBlur = false;
             this.getFiltersDisplay();
             this.refreshMembers();
+        },
+        runReportGeneration() {
+            this.showReportOptions = false;
+            let photoFilter = this.reportFilters.find(x => x.key == "includePhotos");
+            this.getReport(this.$refs.exportBtn, photoFilter?.value ?? false)
         },
         getFiltersDisplay() {
             this.currentFilters = [];

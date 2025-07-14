@@ -19,7 +19,7 @@
             />
 
         </div>
-        <button @click="$emit('done')">Buscar <i class="icofont-arrow-right"></i></button>
+        <button @click="$emit('done')">{{ btnText || 'Buscar' }} <i class="icofont-arrow-right"></i></button>
     </div>
 </template>
 
@@ -29,7 +29,8 @@
     export default {
         props: {
             title: String,
-            filters: { type: [Array, null] }
+            filters: { type: [Array, null] },
+            btnText: String
         },
         components: {
             EditableField
